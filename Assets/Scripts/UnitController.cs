@@ -13,7 +13,8 @@ public class UnitController : Unit {
 	public enum UnitState {
 		PLACING,
 		BUILT,
-		ATTACKING
+		ATTACKING,
+		DEAD
 	};
 	
 	[HideInInspector]
@@ -32,6 +33,10 @@ public class UnitController : Unit {
 	// Update is called once per frame
 	protected override void Update () {
 		base.Update();
+		
+		if (IsDead) {
+			this.currentUnitState = UnitState.DEAD;
+		}
 		
 		if (currentUnitState == UnitState.PLACING) {
 			if (Input.GetMouseButtonDown(0)) {
@@ -79,4 +84,12 @@ public class UnitController : Unit {
 		}
 	}
 	
+	protected override void LateUpdate() {
+		base.LateUpdate();
+		
+		if (currentUnitState == UnitState.DEAD) {
+			playerOwner.unitsList.Remove(this.gameObject);
+			Destroy(this.gameObject);	
+		}
+	}
 }

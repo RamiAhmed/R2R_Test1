@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour {
 		
 		RaycastHit hit;
 		if (Physics.Raycast(mouseRay, out hit)) {
-			Vector3 clickedPos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+			Vector3 clickedPos = new Vector3(hit.point.x, 0f, hit.point.z);
 			selectedUnit.GetComponent<UnitController>().moveToPosition = clickedPos;
 		}
 	}

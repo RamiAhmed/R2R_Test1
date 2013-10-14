@@ -8,7 +8,8 @@ public class EnemyController : Enemy {
 		SPAWNING,
 		MOVING,
 		ATTACKING,
-		FLEEING
+		FLEEING,
+		DEAD
 	};
 	
 	private EnemyState currentEnemyState = EnemyState.SPAWNING;
@@ -16,6 +17,8 @@ public class EnemyController : Enemy {
 	private GameObject counterPlayer;
 	
 	private Transform endPoint = null;
+	
+	private GameController _gameController;
 	
 	// Use this for initialization
 	protected override void Start () {
@@ -35,6 +38,16 @@ public class EnemyController : Enemy {
 			counterPlayer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0];
 		
 			currentEnemyState = EnemyState.MOVING;
+		}
+		
+		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+	}
+	
+	protected override void Update() {
+		base.Update();
+		
+		if (IsDead) {
+			this.currentEnemyState = EnemyState.DEAD;
 		}
 	}
 	
@@ -72,6 +85,15 @@ public class EnemyController : Enemy {
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
 			
+		}
+	}
+	
+	protected override void LateUpdate() {
+		base.LateUpdate();
+		
+		if (currentEnemyState == EnemyState.DEAD) {
+			_gameController.enemies.Remove(this.gameObject);
+			Destroy(this.gameObject);	
 		}
 	}
 	

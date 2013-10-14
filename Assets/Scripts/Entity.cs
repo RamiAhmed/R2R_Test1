@@ -16,7 +16,8 @@ public class Entity : MonoBehaviour {
 				AttackingRange = 1f,
 				AttacksPerSecond = 1f;
 	
-	public bool Selected = false;
+	public bool Selected = false,
+				IsDead = false;
 	
 	private float lastAttack = 0f;
 	
@@ -25,6 +26,8 @@ public class Entity : MonoBehaviour {
 	protected virtual void Update() {}
 
 	protected virtual void FixedUpdate() {}
+	
+	protected virtual void LateUpdate() {}
 	
 	public bool MoveTowards(Transform target) {
 		if (target == null || !target) {
@@ -78,6 +81,7 @@ public class Entity : MonoBehaviour {
 		this.CurrentHitPoints -= damage;
 		if (this.CurrentHitPoints <= 0f) {
 			Debug.Log(this.ToString() + " is dead");
+			this.IsDead = true;
 		}
 	}
 	
