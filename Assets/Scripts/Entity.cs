@@ -52,7 +52,7 @@ public class Entity : MonoBehaviour {
 		}
 			
 		float distance = Vector3.Distance(this.transform.position, target);
-		if (distance > AttackingRange/2f) {
+		if (distance > 1f) {
 			this.transform.LookAt(target);
 			
 			Vector3 direction = this.transform.forward * MovementSpeed * distance;
@@ -92,7 +92,7 @@ public class Entity : MonoBehaviour {
 	}
 	
 	protected bool Attack(Entity opponent) {
-		bool result = false;
+		bool hitResult = false;
 		float currentTime = Time.time;
 		if (currentTime - lastAttack > AttacksPerSecond) {
 			lastAttack = currentTime;
@@ -100,13 +100,13 @@ public class Entity : MonoBehaviour {
 			if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 				float damage = (this.Damage - opponent.Armor) + fGetD20();
 				opponent.ReceiveDamage(damage);
-				result = true;
+				hitResult = true;
 				Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
 			}
 			else {
 				Debug.Log(this.Name + " missed " + opponent.Name);	
 			}
 		}
-		return result;
+		return hitResult;
 	}
 }

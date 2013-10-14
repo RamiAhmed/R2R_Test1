@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		if (Input.GetMouseButtonDown(1)) {
-			if (selectedUnit != null) {
+			if (selectedUnit != null && selectedUnit.GetComponent<UnitController>() != null) {
 				moveUnit();
 			}
 		}
@@ -46,11 +46,13 @@ public class PlayerController : MonoBehaviour {
 					
 	private void moveUnit() {
 		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-		
-		RaycastHit hit;
-		if (Physics.Raycast(mouseRay, out hit)) {
-			Vector3 clickedPos = new Vector3(hit.point.x, 0f, hit.point.z);
-			selectedUnit.GetComponent<UnitController>().moveToPosition = clickedPos;
+		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
+		foreach (RaycastHit hit in hits) {
+			if (hit.collider.GetType() == typeof(TerrainCollider)) {
+				Vector3 clickedPos = new Vector3(hit.point.x, 0f, hit.point.z);
+				selectedUnit.GetComponent<UnitController>().moveToPosition = clickedPos;					
+				break;
+			}
 		}
 	}
 	
