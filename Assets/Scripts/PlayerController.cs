@@ -64,20 +64,11 @@ public class PlayerController : MonoBehaviour {
 		
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
-			/*if (hit.transform.CompareTag("Unit") ||	hit.transform.tag == "Unit") {
-				UnitController selectedController = hit.transform.GetComponent<Entity>();
-				if (selectedController.playerOwner == this) {
-					selectedUnit = hit.transform.gameObject;
-					selectedController.Selected = true;
-					break;
-					
-				}
-			}*/
 			if (hit.transform.GetComponent<Entity>() != null) {
 				selectedUnit = hit.transform.gameObject;
 				selectedUnit.GetComponent<Entity>().Selected = true;
-			}
-			
+				break;
+			}			
 		}	
 		
 	}
