@@ -4,16 +4,16 @@ using System.Collections;
 public class Entity : MonoBehaviour {
 	
 	public string Name = "Entity";
-	public float Damage = 0f,
-				Accuracy = 0f,
-				Evasion = 0f,
-				Armor = 0f,
+	public float Damage = 1f,
+				Accuracy = 1f,
+				Evasion = 1f,
+				Armor = 1f,
 				CurrentHitPoints = 100f,
 				MaxHitPoints = 100f,
-				MovementSpeed = 1f,
-				MaxForce = 1f,
-				PerceptionRange = 5f,
-				AttackingRange = 1f,
+				MovementSpeed = 5f,
+				MaxForce = 10f,
+				PerceptionRange = 25f,
+				AttackingRange = 5f,
 				AttacksPerSecond = 1f;
 	
 	public bool Selected = false,
