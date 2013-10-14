@@ -18,7 +18,6 @@ public class EnemyController : Enemy {
 	
 	private Transform endPoint = null;
 	
-	private GameController _gameController;
 	
 	// Use this for initialization
 	protected override void Start () {
@@ -40,7 +39,6 @@ public class EnemyController : Enemy {
 			currentEnemyState = EnemyState.MOVING;
 		}
 		
-		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 	}
 	
 	protected override void Update() {

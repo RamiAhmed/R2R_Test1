@@ -20,14 +20,11 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public UnitState currentUnitState;
 	
-	private GameController _gameController;
 	
 	// Use this for initialization
 	protected override void Start () {	
 		base.Start();
 		currentUnitState = UnitState.PLACING;
-		
-		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 	}
 	
 	// Update is called once per frame

@@ -19,7 +19,13 @@ public class Entity : MonoBehaviour {
 	public bool Selected = false,
 				IsDead = false;
 	
+	protected GameController _gameController;
+	
 	private float lastAttack = 0f;
+	
+	void Awake() {
+		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+	}
 	
 	protected virtual void Start() {}
 	
