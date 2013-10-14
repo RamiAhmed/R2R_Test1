@@ -5,8 +5,7 @@ public class UnitController : Unit {
 	
 	[HideInInspector]
 	public PlayerController playerOwner;
-	[HideInInspector]
-	public bool selected;
+
 	[HideInInspector]
 	public Vector3 moveToPosition = Vector3.zero;
 	

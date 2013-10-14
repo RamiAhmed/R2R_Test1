@@ -58,20 +58,24 @@ public class PlayerController : MonoBehaviour {
 		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
 		
 		if (selectedUnit != null) {
-			selectedUnit.GetComponent<UnitController>().selected = false;
+			selectedUnit.GetComponent<Entity>().Selected = false;
 			selectedUnit = null;
 		}
 		
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
-			if (hit.transform.CompareTag("Unit") ||	hit.transform.tag == "Unit") {
-				UnitController selectedController = hit.transform.GetComponent<UnitController>();
+			/*if (hit.transform.CompareTag("Unit") ||	hit.transform.tag == "Unit") {
+				UnitController selectedController = hit.transform.GetComponent<Entity>();
 				if (selectedController.playerOwner == this) {
 					selectedUnit = hit.transform.gameObject;
-					selectedController.selected = true;
+					selectedController.Selected = true;
 					break;
 					
 				}
+			}*/
+			if (hit.transform.GetComponent<Entity>() != null) {
+				selectedUnit = hit.transform.gameObject;
+				selectedUnit.GetComponent<Entity>().Selected = true;
 			}
 			
 		}	
@@ -85,7 +89,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderSelectedUnitGUI() {
-		if (selectedUnit != null && selectedUnit.GetComponent<UnitController>().selected) {
+		if (selectedUnit != null && selectedUnit.GetComponent<Entity>().Selected) {
 			float width = screenWidth * 0.2f,
 				height = screenHeight * 0.6f;
 			float x = screenWidth - width - 5f,
@@ -94,10 +98,9 @@ public class PlayerController : MonoBehaviour {
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			GUILayout.BeginVertical();
 			
-			UnitController selectedController = selectedUnit.GetComponent<UnitController>();
+			Entity selectedController = selectedUnit.GetComponent<Entity>();
 			string unitString = "Selected unit: " + selectedController.Name;
-			unitString += "\nUnit hitpoints: " + Mathf.Round(selectedController.CurrentHitPoints) + " / " + Mathf.Round(selectedController.MaxHitPoints);
-			unitString += "\nUnit stats: ";
+			unitString += "\nHitpoints: " + Mathf.Round(selectedController.CurrentHitPoints) + " / " + Mathf.Round(selectedController.MaxHitPoints);
 			unitString += "\nDamage: " + selectedController.Damage;
 			unitString += "\nAccuracy: " + selectedController.Accuracy;
 			unitString += "\nEvasion: " + selectedController.Evasion;

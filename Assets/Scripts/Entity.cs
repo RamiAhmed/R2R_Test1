@@ -16,6 +16,8 @@ public class Entity : MonoBehaviour {
 				AttackingRange = 1f,
 				AttacksPerSecond = 1f;
 	
+	public bool Selected = false;
+	
 	private float lastAttack = 0f;
 	
 	protected virtual void Start() {}
