@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour {
 			
 			UnitController selectedController = selectedUnit.GetComponent<UnitController>();
 			string unitString = "Selected unit: " + selectedController.Name;
-			unitString += "\nUnit hitpoints: " + selectedController.CurrentHitPoints + " / " + selectedController.MaxHitPoints;
+			unitString += "\nUnit hitpoints: " + Mathf.Round(selectedController.CurrentHitPoints) + " / " + Mathf.Round(selectedController.MaxHitPoints);
 			unitString += "\nUnit stats: ";
 			unitString += "\nDamage: " + selectedController.Damage;
 			unitString += "\nAccuracy: " + selectedController.Accuracy;
