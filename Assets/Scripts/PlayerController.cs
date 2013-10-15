@@ -39,12 +39,13 @@ public class PlayerController : MonoBehaviour {
 			selectUnit();
 		}
 		
-		if (Input.GetMouseButtonDown(1)) {
-			if (selectedUnit != null && selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
-				moveUnit();
+		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			if (Input.GetMouseButtonDown(1)) {
+				if (selectedUnit != null && selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
+					moveUnit();
+				}
 			}
-		}
-	
+		}	
 		
 	}
 					
@@ -84,9 +85,12 @@ public class PlayerController : MonoBehaviour {
 			return;
 		}
 		
-		renderSpawnGUIButtons();
+		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			renderSpawnGUIButtons();
+		}
+		
 		renderSelectedUnitGUI();
-		renderGameTime();
+		renderGameDetails();
 	}
 	
 	private void renderSelectedUnitGUI() {
@@ -131,7 +135,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.EndArea();
 	}
 	
-	private void renderGameTime() {
+	private void renderGameDetails() {
 		float time = _gameController.GameTime;	
 		
 		GUILayout.BeginArea(new Rect(5f, 5f, 400f, 30f));
@@ -145,7 +149,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			GUI.color = Color.red;
-			GUILayout.Box("Combat! " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
+			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
 			GUI.color = Color.white;
 		}
 		
