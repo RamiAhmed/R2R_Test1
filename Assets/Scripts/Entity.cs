@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Entity : MonoBehaviour {
 	
@@ -19,7 +20,8 @@ public class Entity : MonoBehaviour {
 	public bool Selected = false,
 				IsDead = false;
 	
-	protected GameController _gameController;
+	protected GameController _gameController = null;
+	protected Entity attackTarget = null;
 	
 	private float lastAttack = 0f;
 	
@@ -34,6 +36,10 @@ public class Entity : MonoBehaviour {
 	protected virtual void FixedUpdate() {}
 	
 	protected virtual void LateUpdate() {}
+	
+	public float GetTotalScore() {
+		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
+	}
 	
 	public bool MoveTowards(Transform target) {
 		if (target == null || !target) {
@@ -109,4 +115,63 @@ public class Entity : MonoBehaviour {
 		}
 		return hitResult;
 	}
+	
+	public bool GetIsUnit(GameObject go) {
+		return go.GetComponent<UnitController>() != null;
+	}
+	
+	public bool GetIsEnemy(GameObject go) {
+		return go.GetComponent<EnemyController>() != null;	
+	}
+	
+	protected Entity GetNearestUnit(List<GameObject> list) {
+		if (list.Count <= 0)
+			return null;
+		
+		GameObject nearest = null;
+		float shortestDistance = PerceptionRange;
+		foreach (GameObject unit in list) {
+			float distance = Vector3.Distance(unit.transform.position, this.transform.position);
+			if (distance < shortestDistance) {
+				nearest = unit;
+				shortestDistance = distance;
+			}
+		}
+		
+		return nearest != null ? nearest.GetComponent<Entity>() : null;
+	}
+	
+	protected Entity GetWeakestUnit(List<GameObject> list) {
+		if (list.Count <= 0)
+			return null;
+		
+		GameObject weakest = null;
+		float weakestScore = list[0].GetComponent<Entity>().GetTotalScore();
+		foreach (GameObject unit in list) {
+			float score = unit.GetComponent<Entity>().GetTotalScore();
+			if (score < weakestScore)	{
+				weakest = unit;
+				weakestScore = score;
+			}
+		}
+		
+		return weakest != null ? weakest.GetComponent<Entity>() : null;
+	}
+	
+	protected Entity GetMostDamagedUnit(List<GameObject> list) {
+		if (list.Count <= 0)
+			return null;
+		
+		GameObject mostDamaged = null;
+		float damage = list[0].GetComponent<Entity>().CurrentHitPoints;
+		foreach (GameObject unit in list) {
+			float hp = unit.GetComponent<Entity>().CurrentHitPoints;
+			if (hp < damage) {
+				mostDamaged = unit;
+				damage = hp;
+			}
+		}
+		
+		return mostDamaged != null ? mostDamaged.GetComponent<Entity>() : null;
+	}		
 }

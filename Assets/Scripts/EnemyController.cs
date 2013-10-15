@@ -14,7 +14,8 @@ public class EnemyController : Enemy {
 	
 	private EnemyState currentEnemyState = EnemyState.SPAWNING;
 	
-	private GameObject counterPlayer;
+	private PlayerController counterPlayer;
+	
 	
 	private Transform endPoint = null;
 	
@@ -34,7 +35,7 @@ public class EnemyController : Enemy {
 				}
 			}
 
-			counterPlayer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0];
+			counterPlayer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>();
 		
 			currentEnemyState = EnemyState.MOVING;
 		}
@@ -43,6 +44,10 @@ public class EnemyController : Enemy {
 	
 	protected override void Update() {
 		base.Update();
+		
+		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
+			return;
+		}
 		
 		if (IsDead) {
 			this.currentEnemyState = EnemyState.DEAD;
@@ -53,6 +58,10 @@ public class EnemyController : Enemy {
 	protected override void FixedUpdate () {
 		base.FixedUpdate();
 		
+		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
+			return;
+		}
+		
 		if (currentEnemyState == EnemyState.MOVING) {
 			
 			if (!MoveTowards(endPoint)) {
@@ -60,26 +69,31 @@ public class EnemyController : Enemy {
 				endPoint = null;
 			}
 			
-			foreach (GameObject unit in counterPlayer.GetComponent<PlayerController>().unitsList) {
-				if (Vector3.Distance(unit.transform.position, this.transform.position) < PerceptionRange) {
-					currentEnemyState = EnemyState.ATTACKING;
-					break;
-				}
+			Entity nearest = GetNearestUnit(counterPlayer.unitsList);
+			if (nearest != null) {
+				attackTarget = nearest;
+				currentEnemyState = EnemyState.ATTACKING;
 			}
 
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
-			foreach (GameObject unit in counterPlayer.GetComponent<PlayerController>().unitsList) {
-				if (Vector3.Distance(unit.transform.position, this.transform.position) < AttackingRange) {
-					Attack(unit.GetComponent<UnitController>());
-					break;
+			if (attackTarget != null) {
+				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+					Attack(attackTarget);	
 				}
 				else {
-					MoveTowards(unit.transform);
-					break;
+					MoveTowards(attackTarget.transform);
 				}
 			}
-
+			else {
+				attackTarget = GetWeakestUnit(counterPlayer.unitsList);
+				if (attackTarget == null) {
+					attackTarget = GetNearestUnit(counterPlayer.unitsList);
+					if (attackTarget == null) {
+						currentEnemyState = EnemyState.MOVING;	
+					}
+				}
+			}
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
 			
@@ -89,10 +103,14 @@ public class EnemyController : Enemy {
 	protected override void LateUpdate() {
 		base.LateUpdate();
 		
+		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
+			return;
+		}
+		
 		if (currentEnemyState == EnemyState.DEAD) {
 			_gameController.enemies.Remove(this.gameObject);
 			Destroy(this.gameObject);	
 		}
 	}
-	
+
 }

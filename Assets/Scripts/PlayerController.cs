@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector]
 	public List<GameObject> unitsList;
 	
-	private GameObject selectedUnit = null;
+	private Entity selectedUnit = null;
 	
 	private int amountUnits = 9;
 	
@@ -30,13 +30,17 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-
+		
+		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
+			return;
+		}		
+		
 		if (Input.GetMouseButtonDown(0)) {			
 			selectUnit();
 		}
 		
 		if (Input.GetMouseButtonDown(1)) {
-			if (selectedUnit != null && selectedUnit.GetComponent<UnitController>() != null) {
+			if (selectedUnit != null && selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
 				moveUnit();
 			}
 		}
@@ -60,15 +64,15 @@ public class PlayerController : MonoBehaviour {
 		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
 		
 		if (selectedUnit != null) {
-			selectedUnit.GetComponent<Entity>().Selected = false;
+			selectedUnit.Selected = false;
 			selectedUnit = null;
 		}
 		
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
 			if (hit.transform.GetComponent<Entity>() != null) {
-				selectedUnit = hit.transform.gameObject;
-				selectedUnit.GetComponent<Entity>().Selected = true;
+				selectedUnit = hit.transform.GetComponent<Entity>();
+				selectedUnit.Selected = true;
 				break;
 			}			
 		}	
@@ -76,13 +80,17 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
+		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
+			return;
+		}
+		
 		renderSpawnGUIButtons();
 		renderSelectedUnitGUI();
 		renderGameTime();
 	}
 	
 	private void renderSelectedUnitGUI() {
-		if (selectedUnit != null && selectedUnit.GetComponent<Entity>().Selected) {
+		if (selectedUnit != null && selectedUnit.Selected) {
 			float width = screenWidth * 0.2f,
 				height = screenHeight * 0.6f;
 			float x = screenWidth - width - 5f,
@@ -91,15 +99,14 @@ public class PlayerController : MonoBehaviour {
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			GUILayout.BeginVertical();
 			
-			Entity selectedController = selectedUnit.GetComponent<Entity>();
-			string unitString = "Selected unit: " + selectedController.Name;
-			unitString += "\nHitpoints: " + Mathf.Round(selectedController.CurrentHitPoints) + " / " + Mathf.Round(selectedController.MaxHitPoints);
-			unitString += "\nDamage: " + selectedController.Damage;
-			unitString += "\nAccuracy: " + selectedController.Accuracy;
-			unitString += "\nEvasion: " + selectedController.Evasion;
-			unitString += "\nArmor: " + selectedController.Armor;
-			unitString += "\nPerception Range: " + selectedController.PerceptionRange;
-			unitString += "\nAttacking Range: " + selectedController.AttackingRange;
+			string unitString = "Selected unit: " + selectedUnit.Name;
+			unitString += "\nHitpoints: " + Mathf.Round(selectedUnit.CurrentHitPoints) + " / " + Mathf.Round(selectedUnit.MaxHitPoints);
+			unitString += "\nDamage: " + selectedUnit.Damage;
+			unitString += "\nAccuracy: " + selectedUnit.Accuracy;
+			unitString += "\nEvasion: " + selectedUnit.Evasion;
+			unitString += "\nArmor: " + selectedUnit.Armor;
+			unitString += "\nPerception Range: " + selectedUnit.PerceptionRange;
+			unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
 			GUILayout.Box(unitString, GUILayout.Height(height), GUILayout.Width(width));
 			
 			GUILayout.EndVertical();
@@ -127,12 +134,22 @@ public class PlayerController : MonoBehaviour {
 	private void renderGameTime() {
 		float time = _gameController.GameTime;	
 		
-		GUILayout.BeginArea(new Rect(5f, 5f, 150f, 25f));
-		//GUILayout.BeginHorizontal();
+		GUILayout.BeginArea(new Rect(5f, 5f, 400f, 30f));
+		GUILayout.BeginHorizontal();
 		
+		GUILayout.Box("Last wave: " + _gameController.WaveCount);
 		GUILayout.Box("Elapsed time: " + Mathf.Round(time).ToString());
 		
-		//GUILayout.EndHorizontal();
+		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			GUI.color = Color.red;
+			GUILayout.Box("Combat! " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
+			GUI.color = Color.white;
+		}
+		
+		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
 	
