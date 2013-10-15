@@ -20,6 +20,11 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public UnitState currentUnitState;
 	
+	[HideInInspector]
+	public Vector3 LastBuildLocation = Vector3.zero;
+	
+	private bool savedLocation = false;
+	
 	
 	// Use this for initialization
 	protected override void Start () {	
@@ -43,6 +48,12 @@ public class UnitController : Unit {
 				currentUnitState = UnitState.BUILT;
 				return;
 			}
+			
+			if (!this.rigidbody.IsSleeping()) {
+				this.rigidbody.isKinematic = true;
+				this.collider.isTrigger = true;
+				this.rigidbody.Sleep();
+			}
 		
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		
@@ -51,6 +62,25 @@ public class UnitController : Unit {
 				float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, hit.point.y, hit.point.z));
 				height += this.transform.collider.bounds.size.y;
 				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+			}
+		}
+		else if (currentUnitState == UnitState.BUILT) {
+			if (this.rigidbody.IsSleeping()) {
+				this.rigidbody.WakeUp();
+				this.rigidbody.isKinematic = false;
+				this.collider.isTrigger = false;
+			}
+			
+			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+				if (!savedLocation) {
+					savedLocation = true;
+					LastBuildLocation = this.transform.position;
+				}
+			}
+			else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+				if (savedLocation) {
+					savedLocation = false;
+				}
 			}
 		}
 	}
@@ -101,8 +131,14 @@ public class UnitController : Unit {
 		}
 		
 		if (currentUnitState == UnitState.DEAD) {
-			playerOwner.unitsList.Remove(this.gameObject);
-			Destroy(this.gameObject);	
+			//if (this.gameObject.renderer.enabled) {
+				playerOwner.unitsList.Remove(this.gameObject);		
+				playerOwner.deadUnitsList.Add(this.gameObject);
+				
+				//this.gameObject.SetActive(false);
+				//this.gameObject.renderer.enabled = false;
+				this.gameObject.SetActive(false);
+			//}
 		}
 	}
 }

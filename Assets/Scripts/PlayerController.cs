@@ -4,11 +4,11 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 	
-	[HideInInspector]
 	public List<GameObject> unitsList;
+	public List<GameObject> deadUnitsList;
 	
 	public int PlayerLives = 30;
-	public int PlayerGold = 20;
+	public int PlayerGold = 30;
 	
 	private Entity selectedUnit = null;
 	
@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour {
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		unitsList = new List<GameObject>();
+		deadUnitsList = new List<GameObject>();
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 	}
@@ -41,6 +42,24 @@ public class PlayerController : MonoBehaviour {
 		if (PlayerLives <= 0) {
 			_gameController.CurrentGameState = GameController.GameState.ENDING;
 			return;
+		}
+		
+		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			Debug.Log("Dead Units: " + deadUnitsList.Count);
+			if (deadUnitsList.Count > 0) {
+				foreach (GameObject go in deadUnitsList) {
+					UnitController unit = go.GetComponent<UnitController>();
+					
+					unitsList.Add(go);
+					unit.SetIsNotDead(true);					
+					unit.transform.position = unit.LastBuildLocation;
+					unit.currentUnitState = UnitController.UnitState.BUILT;
+					
+					//go.renderer.enabled = true;
+					go.SetActive(true);
+				}
+				deadUnitsList.Clear();
+			}
 		}
 		
 		if (Input.GetMouseButtonDown(0)) {			
@@ -80,9 +99,11 @@ public class PlayerController : MonoBehaviour {
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
 			if (hit.transform.GetComponent<Entity>() != null) {
-				selectedUnit = hit.transform.GetComponent<Entity>();
-				selectedUnit.Selected = true;
-				break;
+				if (!hit.transform.GetComponent<Entity>().IsDead) {
+					selectedUnit = hit.transform.GetComponent<Entity>();
+					selectedUnit.Selected = true;
+					break;
+				}
 			}			
 		}	
 		

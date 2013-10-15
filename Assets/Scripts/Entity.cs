@@ -13,8 +13,8 @@ public class Entity : MonoBehaviour {
 				MaxHitPoints = 100f,
 				MovementSpeed = 5f,
 				MaxForce = 10f,
-				PerceptionRange = 25f,
-				AttackingRange = 5f,
+				PerceptionRange = 10f,
+				AttackingRange = 2f,
 				AttacksPerSecond = 1f;
 	
 	public bool Selected = false,
@@ -92,12 +92,27 @@ public class Entity : MonoBehaviour {
 		
 		this.CurrentHitPoints -= damage;
 		if (this.CurrentHitPoints <= 0f) {
-			Debug.Log(this.ToString() + " is dead");
+			//Debug.Log(this.ToString() + " is dead");
 			this.IsDead = true;
 		}
 	}
 	
+	public void SetIsNotDead(bool fullHealth) {
+		this.IsDead = false;
+		if (fullHealth) {
+			this.CurrentHitPoints = this.MaxHitPoints;
+		}
+		else {
+			this.CurrentHitPoints = 1f;
+		}
+	}
+	
 	protected bool Attack(Entity opponent) {
+		if (opponent.IsDead) {
+			attackTarget = null;
+			return false;
+		}
+		
 		bool hitResult = false;
 		float currentTime = Time.time;
 		if (currentTime - lastAttack > AttacksPerSecond) {
