@@ -111,6 +111,7 @@ public class PlayerController : MonoBehaviour {
 			unitString += "\nArmor: " + selectedUnit.Armor;
 			unitString += "\nPerception Range: " + selectedUnit.PerceptionRange;
 			unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
+			unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
 			GUILayout.Box(unitString, GUILayout.Height(height), GUILayout.Width(width));
 			
 			GUILayout.EndVertical();
