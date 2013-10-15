@@ -7,6 +7,9 @@ public class PlayerController : MonoBehaviour {
 	[HideInInspector]
 	public List<GameObject> unitsList;
 	
+	public int PlayerLives = 30;
+	public int PlayerGold = 20;
+	
 	private Entity selectedUnit = null;
 	
 	private int amountUnits = 9;
@@ -34,6 +37,11 @@ public class PlayerController : MonoBehaviour {
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}		
+		
+		if (PlayerLives <= 0) {
+			_gameController.CurrentGameState = GameController.GameState.ENDING;
+			return;
+		}
 		
 		if (Input.GetMouseButtonDown(0)) {			
 			selectUnit();
@@ -81,16 +89,32 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
-			return;
+		if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
+			renderGameOver();
+			//Debug.Log("Game Over");
 		}
-		
-		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			renderSpawnGUIButtons();
+		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
+			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+				renderSpawnGUIButtons();
+			}
+			
+			renderSelectedUnitGUI();
+			renderGameDetails();
 		}
+	}
+	
+	private void renderGameOver() {
+		float width = screenWidth * 0.5f,
+			height = screenHeight * 0.5f;
+		float x = width/2f,
+			y = height/2f;
+		GUILayout.BeginArea(new Rect(x, y, width, height));
 		
-		renderSelectedUnitGUI();
-		renderGameDetails();
+		GUI.color = Color.red;
+		GUILayout.Box("You have lost all lives!\nGAME OVER", GUILayout.Width(width), GUILayout.Height(height));
+		GUI.color = Color.white;
+		
+		GUILayout.EndArea();
 	}
 	
 	private void renderSelectedUnitGUI() {
@@ -139,7 +163,7 @@ public class PlayerController : MonoBehaviour {
 	private void renderGameDetails() {
 		float time = _gameController.GameTime;	
 		
-		GUILayout.BeginArea(new Rect(5f, 5f, 400f, 30f));
+		GUILayout.BeginArea(new Rect(5f, 5f, screenWidth*0.99f, 30f));
 		GUILayout.BeginHorizontal();
 		
 		GUILayout.Box("Last wave: " + _gameController.WaveCount);
@@ -154,6 +178,11 @@ public class PlayerController : MonoBehaviour {
 			GUI.color = Color.white;
 		}
 		
+		GUILayout.FlexibleSpace();
+		
+		GUILayout.Box("Gold: " + PlayerGold);
+		GUILayout.Box("Lives left: " + PlayerLives);
+		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
@@ -167,7 +196,15 @@ public class PlayerController : MonoBehaviour {
 	private void spawnUnit(int index) {
 		//Debug.Log("Spawn: " + index);	
 		GameObject newUnit = Instantiate(Resources.Load("Unit")) as GameObject;
-		newUnit.GetComponent<UnitController>().playerOwner = this;
-		unitsList.Add(newUnit);		
+		int cost = newUnit.GetComponent<Unit>().GoldCost;
+		if (PlayerGold >= cost) {
+			newUnit.GetComponent<UnitController>().playerOwner = this;
+			unitsList.Add(newUnit);		
+			PlayerGold -= cost;
+		}
+		else {
+			Destroy(newUnit);
+			Debug.LogWarning("Not enough gold!");
+		}
 	}
 }

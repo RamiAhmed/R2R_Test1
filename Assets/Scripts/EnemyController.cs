@@ -74,6 +74,11 @@ public class EnemyController : Enemy {
 				attackTarget = nearest;
 				currentEnemyState = EnemyState.ATTACKING;
 			}
+			
+			if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
+				counterPlayer.PlayerLives--;
+				this.currentEnemyState = EnemyState.DEAD;
+			}
 
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
@@ -108,6 +113,9 @@ public class EnemyController : Enemy {
 		}
 		
 		if (currentEnemyState == EnemyState.DEAD) {
+			if (IsDead) {
+				counterPlayer.PlayerGold += this.GoldReward;
+			}
 			_gameController.enemies.Remove(this.gameObject);
 			Destroy(this.gameObject);	
 		}

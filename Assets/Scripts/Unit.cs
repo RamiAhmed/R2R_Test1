@@ -2,7 +2,8 @@
 using System.Collections;
 
 public class Unit : Entity {
-
+	
+	public int GoldCost = 3;
 
 	// Use this for initialization
 	protected override void Start () {
