@@ -23,7 +23,7 @@ public class Healer : UnitController {
 		MaxForce = 14f;
 		
 		PerceptionRange = 25f;
-		AttackingRange = 5f;
+		AttackingRange = 10f;
 		
 		AttacksPerSecond = 1.2f;
 		FleeThreshold = 0.25f;

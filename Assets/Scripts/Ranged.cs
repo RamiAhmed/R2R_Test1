@@ -23,7 +23,7 @@ public class Ranged : UnitController {
 		MaxForce = 12f;
 		
 		PerceptionRange = 20f;
-		AttackingRange = 5f;
+		AttackingRange = 10f;
 		
 		AttacksPerSecond = 1.25f;
 		FleeThreshold = 0.25f;

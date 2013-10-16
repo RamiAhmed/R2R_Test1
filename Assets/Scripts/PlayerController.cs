@@ -8,15 +8,13 @@ public class PlayerController : MonoBehaviour {
 	public List<GameObject> deadUnitsList;
 	
 	public int PlayerLives = 30;
-	public int PlayerGold = 30;
+	public int PlayerGold = 20;
 	
 	public float ShowFeedbackTime = 3f; // show feedback messages for 5 seconds
 	
 	public Faction playerFaction;
 	
 	private Entity selectedUnit = null;
-	
-	//public int amountUnits = 4;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -137,6 +135,7 @@ public class PlayerController : MonoBehaviour {
 		
 	}
 	
+	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
 		if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
 			renderGameOver();
