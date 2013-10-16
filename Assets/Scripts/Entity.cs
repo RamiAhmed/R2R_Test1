@@ -34,6 +34,10 @@ public class Entity : MonoBehaviour {
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		gateRef = GameObject.FindGameObjectWithTag("GateOfLife").GetComponent<GateOfLife>();
+		
+		if (this.rigidbody != null) {
+			this.rigidbody.freezeRotation = true;
+		}
 	}
 	
 	protected virtual void Start() {}

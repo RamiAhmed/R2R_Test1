@@ -14,6 +14,7 @@ public class UnitController : Unit {
 		PLACING,
 		PLACED,
 		ATTACKING,
+		FLEEING,
 		DEAD
 	};
 	
@@ -93,11 +94,30 @@ public class UnitController : Unit {
 					savedLocation = true;
 					LastBuildLocation = this.transform.position;
 				}
+				
+				if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
+					this.currentUnitState = UnitState.FLEEING;
+				}
 			}
 			else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 				if (savedLocation) {
 					savedLocation = false;
 				}
+			}
+		}
+		else if (currentUnitState == UnitState.FLEEING) {
+			if (attackTarget != null) {
+				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+					FleeFrom(attackTarget.transform);
+				}
+				else {
+					this.currentUnitState = UnitState.PLACED;
+					this.FleeThreshold /= 2f;
+				}
+			}
+			else {
+				this.currentUnitState = UnitState.PLACED;
+				this.FleeThreshold /= 2f;
 			}
 		}
 	}

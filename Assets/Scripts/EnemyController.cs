@@ -111,11 +111,18 @@ public class EnemyController : Enemy {
 			}
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
-			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
-				FleeFrom(attackTarget.transform);	
+			if (attackTarget != null) {
+				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+					FleeFrom(attackTarget.transform);	
+				}
+				else {
+					this.currentEnemyState = EnemyState.MOVING;
+					this.FleeThreshold /= 2f;
+				}
 			}
 			else {
 				this.currentEnemyState = EnemyState.MOVING;
+				this.FleeThreshold /= 2f;
 			}
 		}
 	}
