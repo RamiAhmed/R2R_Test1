@@ -56,6 +56,8 @@ public class PlayerController : MonoBehaviour {
 					}
 				}
 			}
+			
+			
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT || _gameController.CurrentPlayState == GameController.PlayState.ARENA) {
 			if (selectedUnit != null) {
@@ -188,7 +190,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.BeginArea(new Rect(x, y, width, height));
 		GUILayout.BeginHorizontal();
 		
-		for (int i = 0; i <= amountUnits; i++) {
+		for (int i = 1; i <= amountUnits; i++) {
 			createSpawnUnitButton(i);	
 		}
 		
@@ -226,15 +228,25 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void createSpawnUnitButton(int index) {
-		if (GUILayout.Button("Spawn Unit " + index.ToString(), GUILayout.Height(40f))) {
+		if (GUILayout.Button("Spawn Unit " + index.ToString(), GUILayout.Height(40f)) || 
+			(Input.GetKeyDown((KeyCode)(48 + index)))) {
 			spawnUnit(index);
 		}
 	}
 	
 	private void spawnUnit(int index) {
+		foreach (GameObject go in unitsList) {
+			if (go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
+				Debug.LogWarning("Already placing unit");
+				return;
+			}
+		}
+		
 		GameObject newUnit = Instantiate(Resources.Load("Unit")) as GameObject;
+		newUnit.GetComponent<Entity>().Name = "Unit " + index;
+		
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
-		if (_gameController.MaxUnitCount >= unitsList.Count) {
+		if (_gameController.MaxUnitCount <= unitsList.Count) {
 			Destroy(newUnit);
 			Debug.LogWarning("You cannot build more units!");
 		}
