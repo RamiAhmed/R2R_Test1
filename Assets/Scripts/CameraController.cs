@@ -3,9 +3,13 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 	
-	private int EdgeThreshold = 25;
-	private int CameraMoveSpeed = 100;
-	private float CameraScrollMultiplier = 2.5f;
+	public int EdgeThreshold = 25,
+				CameraMoveSpeed = 50,
+				MinimumY = 5,
+				MaximumY = 100;
+	public float CameraScrollMultiplier = 2f,
+				CameraRotateMultiplier = 3f;
+	
 	
 	private int screenWidth, screenHeight;
 	private Vector3 homePosition = Vector3.zero;
@@ -31,7 +35,7 @@ public class CameraController : MonoBehaviour {
 		Vector3 cameraVector = Vector3.zero;
 		
 		if (Input.GetMouseButton(1)) {
-			float rotateVelocity = Input.GetAxis("Mouse X") * CameraMoveSpeed * deltaTime;
+			float rotateVelocity = Input.GetAxis("Mouse X") * CameraMoveSpeed * CameraRotateMultiplier * deltaTime;
 			playerObject.transform.Rotate(0, rotateVelocity, 0, Space.World);
 		}
 		
@@ -61,10 +65,14 @@ public class CameraController : MonoBehaviour {
 		}
 	
 		if (Input.GetAxis("Mouse ScrollWheel") < 0) { // back 
-			cameraVelocity = -this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;
+			if (this.transform.position.y < MaximumY) {
+				cameraVelocity = -this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;
+			}
 		}
 		else if (Input.GetAxis("Mouse ScrollWheel") > 0) { // forward
-			cameraVelocity = this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;	 
+			if (this.transform.position.y > MinimumY) {
+				cameraVelocity = this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;	 
+			}
 		}
 		
 		return cameraVelocity;		
