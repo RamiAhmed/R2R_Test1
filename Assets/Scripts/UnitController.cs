@@ -12,7 +12,7 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public enum UnitState {
 		PLACING,
-		BUILT,
+		PLACED,
 		ATTACKING,
 		DEAD
 	};
@@ -45,7 +45,14 @@ public class UnitController : Unit {
 		}		
 		else if (currentUnitState == UnitState.PLACING) {
 			if (Input.GetMouseButtonDown(0)) {
-				currentUnitState = UnitState.BUILT;
+				playerOwner.PlayerGold -= this.GoldCost;
+				currentUnitState = UnitState.PLACED;
+				return;
+			}
+			
+			if (Input.GetMouseButtonDown(1)) {
+				playerOwner.unitsList.Remove(this.gameObject);
+				Destroy(this.gameObject);
 				return;
 			}
 			
@@ -64,7 +71,7 @@ public class UnitController : Unit {
 				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
 			}
 		}
-		else if (currentUnitState == UnitState.BUILT) {
+		else if (currentUnitState == UnitState.PLACED) {
 			if (this.rigidbody.IsSleeping()) {
 				this.rigidbody.WakeUp();
 				this.rigidbody.isKinematic = false;
@@ -92,7 +99,7 @@ public class UnitController : Unit {
 			return;
 		}
 		
-		if (currentUnitState == UnitState.BUILT) {
+		if (currentUnitState == UnitState.PLACED) {
 			if (moveToPosition.sqrMagnitude > 0f) {
 				if (!MoveTowards(moveToPosition)) {
 					moveToPosition = Vector3.zero;
@@ -117,7 +124,7 @@ public class UnitController : Unit {
 			else {
 				attackTarget = GetNearestUnit(_gameController.enemies);
 				if (attackTarget == null) {
-					this.currentUnitState = UnitState.BUILT;
+					this.currentUnitState = UnitState.PLACED;
 				}
 			}
 		}

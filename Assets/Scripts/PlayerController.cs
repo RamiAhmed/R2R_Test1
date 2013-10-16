@@ -45,7 +45,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			Debug.Log("Dead Units: " + deadUnitsList.Count);
+			//Debug.Log("Dead Units: " + deadUnitsList.Count);
 			if (deadUnitsList.Count > 0) {
 				foreach (GameObject go in deadUnitsList) {
 					UnitController unit = go.GetComponent<UnitController>();
@@ -53,9 +53,8 @@ public class PlayerController : MonoBehaviour {
 					unitsList.Add(go);
 					unit.SetIsNotDead(true);					
 					unit.transform.position = unit.LastBuildLocation;
-					unit.currentUnitState = UnitController.UnitState.BUILT;
+					unit.currentUnitState = UnitController.UnitState.PLACED;
 					
-					//go.renderer.enabled = true;
 					go.SetActive(true);
 				}
 				deadUnitsList.Clear();
@@ -221,7 +220,7 @@ public class PlayerController : MonoBehaviour {
 		if (PlayerGold >= cost) {
 			newUnit.GetComponent<UnitController>().playerOwner = this;
 			unitsList.Add(newUnit);		
-			PlayerGold -= cost;
+			//PlayerGold -= cost;
 		}
 		else {
 			Destroy(newUnit);
