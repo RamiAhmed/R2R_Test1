@@ -8,5 +8,24 @@ public class Healer : UnitController {
 		base.Start();
 		
 		Name = "Healer";
+		
+		GoldCost = 8;
+		
+		MaxHitPoints = 125f;
+		CurrentHitPoints = MaxHitPoints;
+		
+		Damage = 15f;
+		Accuracy = 15f;
+		Evasion = 10f;
+		Armor = 3f;
+		
+		MovementSpeed = 7f;
+		MaxForce = 14f;
+		
+		PerceptionRange = 25f;
+		AttackingRange = 5f;
+		
+		AttacksPerSecond = 1.2f;
+		FleeThreshold = 0.25f;
 	}
 }

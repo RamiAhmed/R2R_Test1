@@ -8,6 +8,25 @@ public class Ranged : UnitController {
 		base.Start();
 		
 		Name = "Ranged";
+		
+		GoldCost = 6;
+		
+		MaxHitPoints = 75f;
+		CurrentHitPoints = MaxHitPoints;
+		
+		Damage = 15f;
+		Accuracy = 10f;
+		Evasion = 7f;
+		Armor = 3f;
+		
+		MovementSpeed = 6f;
+		MaxForce = 12f;
+		
+		PerceptionRange = 20f;
+		AttackingRange = 5f;
+		
+		AttacksPerSecond = 1.25f;
+		FleeThreshold = 0.25f;
 	}
 	
 }
