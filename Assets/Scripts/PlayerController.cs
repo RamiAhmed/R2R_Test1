@@ -185,6 +185,7 @@ public class PlayerController : MonoBehaviour {
 			unitString += "\nPerception Range: " + selectedUnit.PerceptionRange;
 			unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
 			unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
+			unitString += "\n\nTotal unit score: " + selectedUnit.GetTotalScore();
 			GUILayout.Box(unitString, GUILayout.Height(height), GUILayout.Width(width));
 			
 			GUILayout.EndVertical();
