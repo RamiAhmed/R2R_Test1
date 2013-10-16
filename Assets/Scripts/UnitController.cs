@@ -23,12 +23,15 @@ public class UnitController : Unit {
 	public Vector3 LastBuildLocation = Vector3.zero;
 	
 	private bool savedLocation = false;
+	private Color originalMaterialColor = Color.white;
+	private bool allowedBuildLocation = false;
 	
 	
 	// Use this for initialization
 	protected override void Start () {	
 		base.Start();
 		currentUnitState = UnitState.PLACING;
+		originalMaterialColor = this.renderer.material.color;
 	}
 	
 	// Update is called once per frame
@@ -44,9 +47,15 @@ public class UnitController : Unit {
 		}		
 		else if (currentUnitState == UnitState.PLACING) {
 			if (Input.GetMouseButtonDown(0)) {
-				playerOwner.PlayerGold -= this.GoldCost;
-				currentUnitState = UnitState.PLACED;
-				return;
+				if (allowedBuildLocation) {
+					playerOwner.PlayerGold -= this.GoldCost;
+					this.renderer.material.color = originalMaterialColor;
+					currentUnitState = UnitState.PLACED;
+					return;
+				}
+				else {
+					Debug.LogWarning("Cannot build at that location");
+				}
 			}
 			
 			if (Input.GetMouseButtonDown(1)) {
@@ -69,6 +78,9 @@ public class UnitController : Unit {
 				height += this.transform.collider.bounds.size.y;
 				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
 			}
+			
+			checkForCollisions();
+			
 		}
 		else if (currentUnitState == UnitState.PLACED) {
 			if (this.rigidbody.IsSleeping()) {
@@ -90,6 +102,40 @@ public class UnitController : Unit {
 			}
 		}
 	}
+	
+	private void checkForCollisions() {
+		bool collisions = false;
+		float radius = (this.collider.bounds.extents.x + this.collider.bounds.extents.y) / 2f;
+		Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, radius);
+		foreach (Collider coll in colliderHits) {
+			
+			if (coll.GetType() != typeof(TerrainCollider) && coll.gameObject != this.gameObject) {
+				Debug.Log("Colliding with: " + coll);
+				toggleRenderMaterial(true);
+				collisions = true;
+				break;
+			}			
+		}	
+		
+		if (!collisions) {
+			toggleRenderMaterial(false);
+		}
+	}
+	
+	private void toggleRenderMaterial(bool bToggle) {
+		if (bToggle) {
+			if (allowedBuildLocation) {
+				this.renderer.material.color = Color.red;	
+				allowedBuildLocation = false;
+			}
+		}
+		else {
+			if (!allowedBuildLocation) {
+				this.renderer.material.color = Color.green;
+				allowedBuildLocation = true;
+			}
+		}
+	}	
 	
 	protected override void FixedUpdate() {
 		base.FixedUpdate();
