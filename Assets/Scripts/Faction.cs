@@ -33,7 +33,7 @@ public class Faction : MonoBehaviour {
 		if (obj != null) {
 			GameObject unit = Instantiate(obj) as GameObject;
 			if (unit != null) {
-				Debug.Log("AddFactionUnit : " + unitName + ", index: " + index);
+				//Debug.Log("AddFactionUnit : " + unitName + ", index: " + index);
 				FactionUnits.Add(unit.GetComponent<Unit>());
 				unit.name = unitName;
 				unit.SetActive(false);
