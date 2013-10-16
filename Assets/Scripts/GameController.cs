@@ -18,6 +18,11 @@ public class GameController : MonoBehaviour {
 	[HideInInspector]
 	public int WaveCount = 0;
 	
+	[HideInInspector]
+	public bool ForceSpawn = false;
+	
+	public int MaxUnitCount = 50;
+	
 	public float MaxBuildTime = 30f;
 	public int WaveSize = 15;
 	
@@ -69,7 +74,8 @@ public class GameController : MonoBehaviour {
 			else if (CurrentPlayState == PlayState.BUILD) {
 				BuildTime += Time.deltaTime;
 				
-				if (BuildTime >= MaxBuildTime) {
+				if (BuildTime >= MaxBuildTime || ForceSpawn) {
+					ForceSpawn = false;
 					WaveCount++;
 					BuildTime = 0f;
 					CurrentPlayState = PlayState.COMBAT;

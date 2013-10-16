@@ -12,7 +12,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private Entity selectedUnit = null;
 	
-	private int amountUnits = 9;
+	private int amountUnits = 4;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -48,19 +48,25 @@ public class PlayerController : MonoBehaviour {
 			if (_gameController.BuildTime <= 0f) {
 				respawnUnits();
 			}
+			
+			if (selectedUnit != null) {
+				if (Input.GetMouseButtonDown(1)) {
+					if (selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
+						moveUnit();
+					}
+				}
+			}
 		}
-		
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT || _gameController.CurrentPlayState == GameController.PlayState.ARENA) {
+			if (selectedUnit != null) {
+				if (selectedUnit.IsDead) {
+					clearSelection();
+				}	
+			}
+		}
 		if (Input.GetMouseButtonDown(0)) {			
 			selectUnit();
 		}
-		
-		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			if (Input.GetMouseButtonDown(1)) {
-				if (selectedUnit != null && selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
-					moveUnit();
-				}
-			}
-		}	
 		
 	}
 	
@@ -93,13 +99,17 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	private void selectUnit() {
-		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
-		
+	private void clearSelection() {
 		if (selectedUnit != null) {
 			selectedUnit.Selected = false;
 			selectedUnit = null;
-		}
+		}		
+	}
+	
+	private void selectUnit() {
+		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
+		
+		clearSelection();
 		
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
@@ -187,16 +197,18 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderGameDetails() {
-		float time = _gameController.GameTime;	
-		
 		GUILayout.BeginArea(new Rect(5f, 5f, screenWidth*0.99f, 30f));
 		GUILayout.BeginHorizontal();
 		
 		GUILayout.Box("Last wave: " + _gameController.WaveCount);
-		GUILayout.Box("Elapsed time: " + Mathf.Round(time).ToString());
+		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount);
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
+			
+			if (GUILayout.Button("Spawn Wave")) {
+				_gameController.ForceSpawn = true;	
+			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			GUI.color = Color.red;
@@ -220,13 +232,15 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void spawnUnit(int index) {
-		//Debug.Log("Spawn: " + index);	
 		GameObject newUnit = Instantiate(Resources.Load("Unit")) as GameObject;
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
-		if (PlayerGold >= cost) {
+		if (_gameController.MaxUnitCount >= unitsList.Count) {
+			Destroy(newUnit);
+			Debug.LogWarning("You cannot build more units!");
+		}
+		else if (PlayerGold >= cost) {
 			newUnit.GetComponent<UnitController>().playerOwner = this;
 			unitsList.Add(newUnit);		
-			//PlayerGold -= cost;
 		}
 		else {
 			Destroy(newUnit);
