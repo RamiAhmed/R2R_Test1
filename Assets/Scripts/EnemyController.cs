@@ -88,6 +88,11 @@ public class EnemyController : Enemy {
 
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
+			if (this.CurrentHitPoints <= this.MaxHitPoints*FleeThreshold) {
+				this.currentEnemyState = EnemyState.FLEEING;
+				return;
+			}
+			
 			if (attackTarget != null) {
 				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
 					Attack(attackTarget);	
@@ -107,7 +112,12 @@ public class EnemyController : Enemy {
 			}
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
-			
+			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+				FleeFrom(attackTarget.transform);	
+			}
+			else {
+				this.currentEnemyState = EnemyState.MOVING;
+			}
 		}
 	}
 	

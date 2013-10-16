@@ -15,7 +15,8 @@ public class Entity : MonoBehaviour {
 				MaxForce = 10f,
 				PerceptionRange = 10f,
 				AttackingRange = 2f,
-				AttacksPerSecond = 1f;
+				AttacksPerSecond = 1f,
+				FleeThreshold = 0.1f; // = 10 % health
 	
 	public bool Selected = false,
 				IsDead = false;
@@ -50,6 +51,29 @@ public class Entity : MonoBehaviour {
 	
 	public float GetTotalScore() {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
+	}
+	
+	public void FleeFrom(Transform target) {
+		if (target == null || !target) {
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTowards method");
+			return;
+		}
+		
+		FleeFrom(target.position);
+	}
+	
+	public void FleeFrom(Vector3 target) {
+		if (target == Vector3.zero || target.sqrMagnitude <= 0f) {
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") to flee from");
+			return;
+		}
+		
+		Vector3 direction = -(target - this.transform.position).normalized * MovementSpeed;
+		
+		Vector3 velocity = Vector3.ClampMagnitude(direction - this.rigidbody.velocity, MaxForce);
+		velocity.y = 0f;
+		
+		this.rigidbody.AddForce(velocity);		
 	}
 	
 	public bool MoveTowards(Transform target) {
