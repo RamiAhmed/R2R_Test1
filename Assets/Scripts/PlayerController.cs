@@ -45,19 +45,8 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			//Debug.Log("Dead Units: " + deadUnitsList.Count);
-			if (deadUnitsList.Count > 0) {
-				foreach (GameObject go in deadUnitsList) {
-					UnitController unit = go.GetComponent<UnitController>();
-					
-					unitsList.Add(go);
-					unit.SetIsNotDead(true);					
-					unit.transform.position = unit.LastBuildLocation;
-					unit.currentUnitState = UnitController.UnitState.PLACED;
-					
-					go.SetActive(true);
-				}
-				deadUnitsList.Clear();
+			if (_gameController.BuildTime <= 0f) {
+				respawnUnits();
 			}
 		}
 		
@@ -73,6 +62,23 @@ public class PlayerController : MonoBehaviour {
 			}
 		}	
 		
+	}
+	
+	private void respawnUnits() {
+		if (deadUnitsList.Count > 0) {
+			Debug.Log("Respawn units");
+			foreach (GameObject go in deadUnitsList) {
+				UnitController unit = go.GetComponent<UnitController>();
+				
+				unitsList.Add(go);
+				unit.SetIsNotDead(true);					
+				unit.transform.position = unit.LastBuildLocation;
+				unit.currentUnitState = UnitController.UnitState.PLACED;
+				
+				go.SetActive(true);
+			}
+			deadUnitsList.Clear();
+		}		
 	}
 					
 	private void moveUnit() {

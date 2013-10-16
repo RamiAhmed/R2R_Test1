@@ -17,7 +17,6 @@ public class UnitController : Unit {
 		DEAD
 	};
 	
-	[HideInInspector]
 	public UnitState currentUnitState;
 	
 	[HideInInspector]
@@ -138,14 +137,26 @@ public class UnitController : Unit {
 		}
 		
 		if (currentUnitState == UnitState.DEAD) {
-			//if (this.gameObject.renderer.enabled) {
-				playerOwner.unitsList.Remove(this.gameObject);		
-				playerOwner.deadUnitsList.Add(this.gameObject);
-				
-				//this.gameObject.SetActive(false);
-				//this.gameObject.renderer.enabled = false;
-				this.gameObject.SetActive(false);
-			//}
+			Debug.Log("Unit dead");
+			playerOwner.unitsList.Remove(this.gameObject);		
+			playerOwner.deadUnitsList.Add(this.gameObject);
+			
+			this.gameObject.SetActive(false);
 		}
+	}
+	
+	protected override void RemoveSelf() {
+		base.RemoveSelf();
+		
+		GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
+		foreach (GameObject point in points) {
+			if (point.transform.name.Contains("End")) {
+				LastBuildLocation = point.transform.position;
+				break;
+			}
+		}
+		LastBuildLocation.x += Random.Range(-1f, 1f);
+		LastBuildLocation.z += Random.Range(-1f, 1f);
+		currentUnitState = UnitState.DEAD;		
 	}
 }

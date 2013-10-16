@@ -24,6 +24,9 @@ public class Entity : MonoBehaviour {
 	protected Entity attackTarget = null;
 	
 	private float lastAttack = 0f;
+	private float killY = -100f;
+	
+	private float totalMoveDistance = 0f;
 	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -35,7 +38,15 @@ public class Entity : MonoBehaviour {
 
 	protected virtual void FixedUpdate() {}
 	
-	protected virtual void LateUpdate() {}
+	protected virtual void LateUpdate() {
+		if (this.transform.position.y <= killY) {
+			RemoveSelf();
+		}
+	}
+	
+	protected virtual void RemoveSelf() {
+		Debug.Log("Remove self");
+	}
 	
 	public float GetTotalScore() {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
@@ -56,12 +67,16 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTowards method");
 			return result;
 		}
+		
+		if (totalMoveDistance == 0f) {
+			totalMoveDistance = Vector3.Distance(this.transform.position, target);
+		}
 			
 		float distance = Vector3.Distance(this.transform.position, target);
 		if (distance > 1f) {
 			this.transform.LookAt(target);
 			
-			Vector3 direction = this.transform.forward * MovementSpeed * distance;
+			Vector3 direction = this.transform.forward * MovementSpeed * ((distance/totalMoveDistance)*10f);
 			Vector3 velocity = Vector3.ClampMagnitude(direction - this.rigidbody.velocity, MaxForce);
 			velocity.y = 0f;
 			
@@ -71,6 +86,7 @@ public class Entity : MonoBehaviour {
 		else {
 			this.rigidbody.velocity = Vector3.zero;
 			//this.rigidbody.angularVelocity = Vector3.zero;
+			totalMoveDistance = 0f;
 		}
 		
 		return result;

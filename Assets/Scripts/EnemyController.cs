@@ -120,5 +120,12 @@ public class EnemyController : Enemy {
 			Destroy(this.gameObject);	
 		}
 	}
+	
+	protected override void RemoveSelf() {
+		base.RemoveSelf();
+		
+		_gameController.enemies.Remove(this.gameObject);
+		Destroy(this.gameObject);
+	}
 
 }
