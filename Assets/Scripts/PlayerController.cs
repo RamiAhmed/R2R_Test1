@@ -10,6 +10,8 @@ public class PlayerController : MonoBehaviour {
 	public int PlayerLives = 30;
 	public int PlayerGold = 30;
 	
+	public float ShowFeedbackTime = 3f; // show feedback messages for 5 seconds
+	
 	private Entity selectedUnit = null;
 	
 	private int amountUnits = 4;
@@ -20,6 +22,8 @@ public class PlayerController : MonoBehaviour {
 	private Camera playerCam;
 	
 	private GameController _gameController;
+	
+	private string feedbackText = "";
 
 	
 	// Use this for initialization
@@ -138,6 +142,7 @@ public class PlayerController : MonoBehaviour {
 			
 			renderSelectedUnitGUI();
 			renderGameDetails();
+			renderFeedbackMessage();
 		}
 	}
 	
@@ -180,24 +185,7 @@ public class PlayerController : MonoBehaviour {
 			GUILayout.EndArea();
 		}		
 	}
-	
-	private void renderSpawnGUIButtons() {
-		float width = screenWidth * 0.9f,
-			height = screenHeight * 0.2f;
-		float x = (screenWidth - width)/2f,
-			y = screenHeight - height;
 		
-		GUILayout.BeginArea(new Rect(x, y, width, height));
-		GUILayout.BeginHorizontal();
-		
-		for (int i = 1; i <= amountUnits; i++) {
-			createSpawnUnitButton(i);	
-		}
-		
-		GUILayout.EndHorizontal();
-		GUILayout.EndArea();
-	}
-	
 	private void renderGameDetails() {
 		GUILayout.BeginArea(new Rect(5f, 5f, screenWidth*0.99f, 30f));
 		GUILayout.BeginHorizontal();
@@ -227,6 +215,23 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.EndArea();
 	}
 	
+	private void renderSpawnGUIButtons() {
+		float width = screenWidth * 0.9f,
+			height = screenHeight * 0.2f;
+		float x = (screenWidth - width)/2f,
+			y = screenHeight - (height/2f);
+		
+		GUILayout.BeginArea(new Rect(x, y, width, height));
+		GUILayout.BeginHorizontal();
+		
+		for (int i = 1; i <= amountUnits; i++) {
+			createSpawnUnitButton(i);	
+		}
+		
+		GUILayout.EndHorizontal();
+		GUILayout.EndArea();
+	}
+	
 	private void createSpawnUnitButton(int index) {
 		if (GUILayout.Button("Spawn Unit " + index.ToString(), GUILayout.Height(40f)) || 
 			(Input.GetKeyDown((KeyCode)(48 + index)))) {
@@ -249,6 +254,7 @@ public class PlayerController : MonoBehaviour {
 		if (_gameController.MaxUnitCount <= unitsList.Count) {
 			Destroy(newUnit);
 			Debug.LogWarning("You cannot build more units!");
+			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}
 		else if (PlayerGold >= cost) {
 			newUnit.GetComponent<UnitController>().playerOwner = this;
@@ -257,6 +263,33 @@ public class PlayerController : MonoBehaviour {
 		else {
 			Destroy(newUnit);
 			Debug.LogWarning("Not enough gold!");
+			DisplayFeedbackMessage("You do not have enough gold.");
 		}
+	}
+	
+	private void renderFeedbackMessage() {
+		if (feedbackText != "") {
+			float width = screenWidth * 0.4f,
+				height = 30f;
+			float x = (screenWidth - width)/2f,
+				y = (screenHeight/2f) - (height/2f);
+			
+			GUILayout.BeginArea(new Rect(x, y, width, height));
+			
+			GUI.color = Color.red;
+			GUILayout.Box(feedbackText, GUILayout.Width(width), GUILayout.Height(height));
+			GUI.color = Color.white;
+			
+			GUILayout.EndArea();			
+		}
+	}
+	
+	public void DisplayFeedbackMessage(string text) {
+		feedbackText = text;
+		Invoke("stopDisplayFeedback", ShowFeedbackTime);
+	}
+	
+	private void stopDisplayFeedback() {
+		feedbackText = "";	
 	}
 }

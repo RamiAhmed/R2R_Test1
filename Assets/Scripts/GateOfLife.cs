@@ -8,7 +8,7 @@ public class GateOfLife : Entity {
 		base.Start();
 		
 		Name = "Gate of Life";
-		MaxHitPoints = 100f;
+		MaxHitPoints = 200f;
 		CurrentHitPoints = MaxHitPoints;
 		Armor = 10f;
 		
@@ -26,7 +26,8 @@ public class GateOfLife : Entity {
 	protected override void Update () {
 		base.Update();
 		if (IsDead) {
-			Destroy(this.gameObject);				
+			Destroy(this.gameObject);	
+			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>().DisplayFeedbackMessage("You have lost your " + this.Name);
 		}
 	}
 }

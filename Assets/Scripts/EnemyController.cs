@@ -16,7 +16,6 @@ public class EnemyController : Enemy {
 	
 	private PlayerController counterPlayer;
 	
-	
 	private Transform endPoint = null;
 	
 	
