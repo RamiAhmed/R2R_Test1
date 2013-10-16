@@ -253,7 +253,7 @@ public class PlayerController : MonoBehaviour {
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
 		if (_gameController.MaxUnitCount <= unitsList.Count) {
 			Destroy(newUnit);
-			Debug.LogWarning("You cannot build more units!");
+			//Debug.LogWarning("You cannot build more units!");
 			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}
 		else if (PlayerGold >= cost) {
@@ -262,7 +262,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else {
 			Destroy(newUnit);
-			Debug.LogWarning("Not enough gold!");
+			//Debug.LogWarning("Not enough gold!");
 			DisplayFeedbackMessage("You do not have enough gold.");
 		}
 	}

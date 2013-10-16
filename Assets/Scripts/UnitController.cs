@@ -104,7 +104,7 @@ public class UnitController : Unit {
 			return true;
 		}
 		else {
-			Debug.LogWarning("Cannot build at that location");
+			//Debug.LogWarning("Cannot build at that location");
 			playerOwner.DisplayFeedbackMessage("You cannot build at that location.");
 			return false;
 		}
