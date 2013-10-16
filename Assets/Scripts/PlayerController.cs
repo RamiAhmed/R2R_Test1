@@ -12,9 +12,11 @@ public class PlayerController : MonoBehaviour {
 	
 	public float ShowFeedbackTime = 3f; // show feedback messages for 5 seconds
 	
+	public Faction playerFaction;
+	
 	private Entity selectedUnit = null;
 	
-	private int amountUnits = 4;
+	//public int amountUnits = 4;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -24,7 +26,11 @@ public class PlayerController : MonoBehaviour {
 	private GameController _gameController;
 	
 	private string feedbackText = "";
-
+	
+	
+	void Awake() {
+		playerFaction = this.gameObject.AddComponent<Faction>();
+	}
 	
 	// Use this for initialization
 	void Start () {
@@ -34,6 +40,7 @@ public class PlayerController : MonoBehaviour {
 		deadUnitsList = new List<GameObject>();
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		
 	}
 	
 	// Update is called once per frame
@@ -154,7 +161,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.BeginArea(new Rect(x, y, width, height));
 		
 		GUI.color = Color.red;
-		GUILayout.Box("You have lost all lives!\nGAME OVER", GUILayout.Width(width), GUILayout.Height(height));
+		GUILayout.Box("You have lost all lives!\nGAME OVER", GUILayout.Width(width));
 		GUI.color = Color.white;
 		
 		GUILayout.EndArea();
@@ -222,19 +229,22 @@ public class PlayerController : MonoBehaviour {
 			y = screenHeight - (height/2f);
 		
 		GUILayout.BeginArea(new Rect(x, y, width, height));
-		GUILayout.BeginHorizontal();
 		
-		for (int i = 1; i <= amountUnits; i++) {
-			createSpawnUnitButton(i);	
+		GUILayout.BeginHorizontal();
+		GUILayout.Space(width*0.1f);
+		
+		for (int i = 1; i <= playerFaction.NumberOfTiers; i++) {
+			createSpawnUnitButton(i-1);	
 		}
 		
+		GUILayout.Space(width*0.1f);
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
 	
 	private void createSpawnUnitButton(int index) {
-		if (GUILayout.Button("Spawn Unit " + index.ToString(), GUILayout.Height(40f)) || 
-			(Input.GetKeyDown((KeyCode)(48 + index)))) {
+		if (GUILayout.Button(index.ToString() + ": " + playerFaction.FactionUnits[index].name, GUILayout.Height(40f)) || 
+			(Input.GetKeyUp((KeyCode)(49 + index)))) {
 			spawnUnit(index);
 		}
 	}
@@ -247,8 +257,8 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		
-		GameObject newUnit = Instantiate(Resources.Load("Unit")) as GameObject;
-		newUnit.GetComponent<Entity>().Name = "Unit " + index;
+		GameObject newUnit = Instantiate(playerFaction.FactionUnits[index].gameObject) as GameObject;
+		newUnit.SetActive(true);
 		
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
 		if (_gameController.MaxUnitCount <= unitsList.Count) {

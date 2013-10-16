@@ -32,6 +32,8 @@ public class UnitController : Unit {
 		base.Start();
 		currentUnitState = UnitState.PLACING;
 		originalMaterialColor = this.renderer.material.color;
+		
+		
 	}
 	
 	// Update is called once per frame
@@ -55,6 +57,10 @@ public class UnitController : Unit {
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
 				return;
+			}
+			
+			if (this.name != this.Name) {
+				this.name = this.Name;
 			}
 			
 			if (!this.rigidbody.IsSleeping()) {
