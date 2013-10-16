@@ -22,6 +22,7 @@ public class Entity : MonoBehaviour {
 	
 	protected GameController _gameController = null;
 	protected Entity attackTarget = null;
+	protected GateOfLife gateRef = null;
 	
 	private float lastAttack = 0f;
 	private float killY = -100f;
@@ -30,6 +31,7 @@ public class Entity : MonoBehaviour {
 	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		gateRef = GameObject.FindGameObjectWithTag("GateOfLife").GetComponent<GateOfLife>();
 	}
 	
 	protected virtual void Start() {}
@@ -44,9 +46,7 @@ public class Entity : MonoBehaviour {
 		}
 	}
 	
-	protected virtual void RemoveSelf() {
-		Debug.Log("Remove self");
-	}
+	protected virtual void RemoveSelf() {}
 	
 	public float GetTotalScore() {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
@@ -153,6 +153,10 @@ public class Entity : MonoBehaviour {
 	
 	public bool GetIsEnemy(GameObject go) {
 		return go.GetComponent<EnemyController>() != null;	
+	}
+	
+	public bool GetIsGate(GameObject go) {
+		return go.GetComponent<GateOfLife>() != null;
 	}
 	
 	protected Entity GetNearestUnit(List<GameObject> list) {

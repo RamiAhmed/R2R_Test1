@@ -47,15 +47,8 @@ public class UnitController : Unit {
 		}		
 		else if (currentUnitState == UnitState.PLACING) {
 			if (Input.GetMouseButtonDown(0)) {
-				if (allowedBuildLocation) {
-					playerOwner.PlayerGold -= this.GoldCost;
-					this.renderer.material.color = originalMaterialColor;
-					currentUnitState = UnitState.PLACED;
+				if (buildUnit())
 					return;
-				}
-				else {
-					Debug.LogWarning("Cannot build at that location");
-				}
 			}
 			
 			if (Input.GetMouseButtonDown(1)) {
@@ -103,14 +96,26 @@ public class UnitController : Unit {
 		}
 	}
 	
+	private bool buildUnit() {
+		if (allowedBuildLocation) {
+			playerOwner.PlayerGold -= this.GoldCost;
+			this.renderer.material.color = originalMaterialColor;
+			currentUnitState = UnitState.PLACED;
+			return true;
+		}
+		else {
+			Debug.LogWarning("Cannot build at that location");
+			return false;
+		}
+	}
+	
 	private void checkForCollisions() {
 		bool collisions = false;
 		float radius = (this.collider.bounds.extents.x + this.collider.bounds.extents.y) / 2f;
 		Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, radius);
-		foreach (Collider coll in colliderHits) {
-			
+		foreach (Collider coll in colliderHits) {			
 			if (coll.GetType() != typeof(TerrainCollider) && coll.gameObject != this.gameObject) {
-				Debug.Log("Colliding with: " + coll);
+				//Debug.Log("Colliding with: " + coll);
 				toggleRenderMaterial(true);
 				collisions = true;
 				break;

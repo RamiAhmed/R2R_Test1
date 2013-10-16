@@ -64,20 +64,26 @@ public class EnemyController : Enemy {
 		
 		if (currentEnemyState == EnemyState.MOVING) {
 			
-			if (!MoveTowards(endPoint)) {
-				Debug.Log(this.ToString() + " reached the end point!");
-				endPoint = null;
-			}
-			
 			Entity nearest = GetNearestUnit(counterPlayer.unitsList);
 			if (nearest != null) {
 				attackTarget = nearest;
 				currentEnemyState = EnemyState.ATTACKING;
+				return;
 			}
+			
+			if (gateRef != null) {
+				if (Vector3.Distance(this.transform.position, gateRef.transform.position) < AttackingRange) {
+					attackTarget = gateRef;
+					currentEnemyState = EnemyState.ATTACKING;
+				}
+			}			
 			
 			if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
 				counterPlayer.PlayerLives--;
 				this.currentEnemyState = EnemyState.DEAD;
+			}
+			else {
+				MoveTowards(endPoint);	
 			}
 
 		}
