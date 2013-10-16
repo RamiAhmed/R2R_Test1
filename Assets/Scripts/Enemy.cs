@@ -12,9 +12,9 @@ public class Enemy : Entity {
 		
 		int wave = _gameController.WaveCount;
 		
-		GoldReward = 1 + wave;
+		GoldReward = Mathf.Clamp(wave, 1, 10);
 		
-		MaxHitPoints = 100f + (wave*10f);
+		MaxHitPoints = 100f + (wave*15f);
 		CurrentHitPoints = MaxHitPoints;
 		
 		Damage = 10f + (wave*1.5f);
