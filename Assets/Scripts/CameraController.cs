@@ -44,8 +44,30 @@ public class CameraController : MonoBehaviour {
 			cameraVector += edgeMove;
 		}
 		
+		Vector3 scrollMove = scrollCameraMove(deltaTime);
+		if (scrollMove != Vector3.zero) {
+			cameraVector += scrollMove;
+		}
+		
 		playerObject.transform.Translate(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"), Space.Self);
 		playerObject.transform.Translate(cameraVector, Space.World);
+	}
+	
+	private Vector3 scrollCameraMove(float deltaTime) {
+		Vector3 cameraVelocity = Vector3.zero;
+		
+		if (Input.GetAxis("Mouse ScrollWheel") < 0) { // back 
+			if (this.transform.position.y < MaximumY) {
+				cameraVelocity = -this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;
+			}
+		}
+		else if (Input.GetAxis("Mouse ScrollWheel") > 0) { // forward
+			if (this.transform.position.y > MinimumY) {
+				cameraVelocity = this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;	 
+			}
+		}		
+		
+		return cameraVelocity;
 	}
 	
 	private Vector3 edgeCameraMove(Vector3 mousePos, float deltaTime) {
@@ -57,22 +79,12 @@ public class CameraController : MonoBehaviour {
 		else if (mousePos.x < EdgeThreshold) {
 			cameraVelocity = -playerObject.transform.right * CameraMoveSpeed * deltaTime;
 		}
+		
 		if (mousePos.y > screenHeight - EdgeThreshold) {
 			cameraVelocity = playerObject.transform.forward * CameraMoveSpeed * deltaTime;
 		}
 		else if (mousePos.y < EdgeThreshold) {
 			cameraVelocity = -playerObject.transform.forward * CameraMoveSpeed * deltaTime;
-		}
-	
-		if (Input.GetAxis("Mouse ScrollWheel") < 0) { // back 
-			if (this.transform.position.y < MaximumY) {
-				cameraVelocity = -this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;
-			}
-		}
-		else if (Input.GetAxis("Mouse ScrollWheel") > 0) { // forward
-			if (this.transform.position.y > MinimumY) {
-				cameraVelocity = this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;	 
-			}
 		}
 		
 		return cameraVelocity;		
