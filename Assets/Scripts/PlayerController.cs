@@ -187,6 +187,14 @@ public class PlayerController : MonoBehaviour {
 			unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
 			unitString += "\nFleeing chance: " + Mathf.RoundToInt(selectedUnit.FleeThreshold*100f) + "%";
 			unitString += "\n\nTotal unit score: " + selectedUnit.GetTotalScore();
+			
+			if (selectedUnit.GetIsEnemy(selectedUnit.gameObject)) {
+				unitString += "\nGold reward: " + selectedUnit.GetComponent<Enemy>().GoldReward;	
+			}
+			else if (selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
+				unitString += "\nGold cost: " + selectedUnit.GetComponent<Unit>().GoldCost;
+			}
+			
 			GUILayout.Box(unitString, GUILayout.Height(height), GUILayout.Width(width));
 			
 			GUILayout.EndVertical();
