@@ -53,7 +53,9 @@ public class GameController : MonoBehaviour {
 			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 			foreach (GameObject point in points) {
 				if (point.transform.name.Contains("End")) {
-					player.transform.position = point.transform.position;
+					Vector3 targetPos = point.transform.position;
+					targetPos.y += 40f;
+					player.transform.position = targetPos;
 					break;
 				}
 			}
