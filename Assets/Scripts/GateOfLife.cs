@@ -20,6 +20,7 @@ public class GateOfLife : Entity {
 		Accuracy = 0f;
 		PerceptionRange = 0f;
 		AttackingRange = 0f;
+		FleeThreshold = 0f;
 	}
 	
 	// Update is called once per frame
