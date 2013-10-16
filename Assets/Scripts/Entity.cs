@@ -23,6 +23,7 @@ public class Entity : MonoBehaviour {
 	
 	protected GameController _gameController = null;
 	protected Entity attackTarget = null;
+	protected Entity lastAttacker = null;
 	protected GateOfLife gateRef = null;
 	
 	private float lastAttack = 0f;
@@ -53,9 +54,28 @@ public class Entity : MonoBehaviour {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
 	}
 	
+	public void GuardOther(Entity target) {
+		if (target == null || !target) {
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
+			return;
+		}	
+		
+		if (target != null) {
+			if (target.lastAttacker != null) {
+				this.attackTarget = target.lastAttacker;
+			}
+			else if (target.attackTarget != null) {
+				this.attackTarget = target.attackTarget;
+			}
+			else {
+				MoveTowards(target.transform);
+			}
+		}
+	}
+	
 	public void FleeFrom(Transform target) {
 		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTowards method");
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
 			return;
 		}
 		
@@ -64,7 +84,7 @@ public class Entity : MonoBehaviour {
 	
 	public void FleeFrom(Vector3 target) {
 		if (target == Vector3.zero || target.sqrMagnitude <= 0f) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") to flee from");
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
 			return;
 		}
 		
@@ -167,6 +187,8 @@ public class Entity : MonoBehaviour {
 			else {
 				Debug.Log(this.Name + " missed " + opponent.Name);	
 			}
+			
+			opponent.lastAttacker = this.gameObject.GetComponent<Entity>();
 		}
 		return hitResult;
 	}
