@@ -104,10 +104,16 @@ public class UnitController : Unit {
 	
 	private bool buildUnit() {
 		if (allowedBuildLocation) {
-			playerOwner.PlayerGold -= this.GoldCost;
-			this.renderer.material.color = originalMaterialColor;
-			currentUnitState = UnitState.PLACED;
-			return true;
+			if (playerOwner.PlayerGold >= this.GoldCost) {
+				playerOwner.PlayerGold -= this.GoldCost;
+				this.renderer.material.color = originalMaterialColor;
+				currentUnitState = UnitState.PLACED;
+				return true;
+			}
+			else {
+				playerOwner.DisplayFeedbackMessage("You do not have enough gold.");
+				return false;
+			}			
 		}
 		else {
 			//Debug.LogWarning("Cannot build at that location");

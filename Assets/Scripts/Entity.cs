@@ -180,6 +180,8 @@ public class Entity : MonoBehaviour {
 		if (currentTime - lastAttack > AttacksPerSecond) {
 			lastAttack = currentTime;
 			
+			this.transform.LookAt(attackTarget.transform.position);
+			
 			if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 				float damage = (this.Damage - opponent.Armor) + fGetD20();
 				opponent.ReceiveDamage(damage);
