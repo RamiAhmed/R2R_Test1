@@ -30,6 +30,7 @@ public class GameController : MonoBehaviour {
 		LOADING,
 		MENU,
 		PLAY,
+		PAUSED,
 		ENDING
 	};
 	
@@ -70,6 +71,10 @@ public class GameController : MonoBehaviour {
 		if (CurrentGameState == GameState.PLAY) {
 			GameTime += Time.deltaTime;
 			
+			if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P)) {
+				CurrentGameState = GameState.PAUSED;					
+			}
+			
 			if (CurrentPlayState == PlayState.NONE) {
 				CurrentPlayState = PlayState.BUILD;	
 			}
@@ -93,6 +98,11 @@ public class GameController : MonoBehaviour {
 					hasSpawnedThisWave = false;
 				}
 			}
+		}
+		else if (CurrentGameState == GameState.PAUSED) {
+			if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P)) {
+				CurrentGameState = GameState.PLAY;					
+			}			
 		}
 	}
 	

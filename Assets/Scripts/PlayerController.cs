@@ -154,6 +154,19 @@ public class PlayerController : MonoBehaviour {
 			renderGameDetails();
 			renderFeedbackMessage();
 		}
+		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
+			float width = screenWidth * 0.2f,
+					height = 30f;
+			float x = (screenWidth/2f) - (width/2f),
+				y = (screenHeight/2f) - (height/2f);
+			
+			GUILayout.BeginArea(new Rect(x, y, width, height));
+			
+			GUILayout.Box("PAUSED");
+			
+			GUILayout.EndArea();
+				
+		}
 	}
 	
 	private void renderGameOver() {
