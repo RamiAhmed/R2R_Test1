@@ -13,6 +13,7 @@ public class UnitController : Unit {
 	public enum UnitState {
 		PLACING,
 		PLACED,
+		MOVING,
 		ATTACKING,
 		FLEEING,
 		DEAD

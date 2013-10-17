@@ -54,13 +54,26 @@ public class Entity : MonoBehaviour {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
 	}
 	
+	public void Heal(Entity target, float healAmount) {
+		if (target == null || !target) {
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in Heal method");
+			return;
+		}	
+		else {
+			if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) ||
+				(GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
+				target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
+			}
+		}
+		
+	}
+	
 	public void GuardOther(Entity target) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
 			return;
 		}	
-		
-		if (target != null) {
+		else {
 			if (target.lastAttacker != null) {
 				this.attackTarget = target.lastAttacker;
 			}
