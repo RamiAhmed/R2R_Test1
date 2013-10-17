@@ -252,7 +252,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void createSpawnUnitButton(int index) {
-		if (GUILayout.Button(index.ToString() + ": " + playerFaction.FactionUnits[index].name, GUILayout.Height(40f)) || 
+		if (GUILayout.Button((index+1).ToString() + ": " + playerFaction.FactionUnits[index].name, GUILayout.Height(40f)) || 
 			(Input.GetKeyUp((KeyCode)(49 + index)))) {
 			spawnUnit(index);
 		}

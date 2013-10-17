@@ -54,7 +54,7 @@ public class GameController : MonoBehaviour {
 			foreach (GameObject point in points) {
 				if (point.transform.name.Contains("End")) {
 					Vector3 targetPos = point.transform.position;
-					targetPos.y += 40f;
+					targetPos.y += 30f;
 					player.transform.position = targetPos;
 					break;
 				}
