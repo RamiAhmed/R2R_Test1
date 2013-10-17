@@ -27,6 +27,7 @@ public class Entity : MonoBehaviour {
 	protected Entity lastAttacker = null;
 	protected GateOfLife gateRef = null;
 	protected bool isMoving = false;
+	protected Color originalMaterialColor = Color.white;
 	
 	private float lastAttack = 0f;
 	private float killY = -100f;
@@ -44,18 +45,25 @@ public class Entity : MonoBehaviour {
 	
 	private float repathRate = 1.5f;
 	private float lastRepath = -1f;
-	
-	
+
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		gateRef = GameObject.FindGameObjectWithTag("GateOfLife").GetComponent<GateOfLife>();
 		seeker = this.GetComponent<Seeker>();
 		controller = this.GetComponent<CharacterController>();
+		originalMaterialColor = this.renderer.material.color;
 	}
 	
 	protected virtual void Start() {}
 	
-	protected virtual void Update() {}
+	protected virtual void Update() {
+		if (this.Selected) {
+			this.renderer.material.color = Color.blue;	
+		}
+		else {
+			this.renderer.material.color = originalMaterialColor;
+		}
+	}
 
 	protected virtual void FixedUpdate() {
 		MoveEntity();
@@ -149,6 +157,8 @@ public class Entity : MonoBehaviour {
 				targetPosition = position;
 				isMoving = true;
 				seeker.StartPath(this.transform.position, targetPosition, OnPathComplete);
+				
+				//Debug.Log("Move to: " + position);
 			}
 		}
 		

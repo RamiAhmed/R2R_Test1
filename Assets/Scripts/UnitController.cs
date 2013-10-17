@@ -24,7 +24,7 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
 	
-	private Color originalMaterialColor = Color.white;
+	//private Color originalMaterialColor = Color.white;
 	private bool allowedBuildLocation = false;
 	
 	
@@ -32,7 +32,7 @@ public class UnitController : Unit {
 	protected override void Start () {	
 		base.Start();
 		currentUnitState = UnitState.PLACING;
-		originalMaterialColor = this.renderer.material.color;
+		//originalMaterialColor = this.renderer.material.color;
 		
 		GameObject greenDot = Instantiate(Resources.Load("GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
