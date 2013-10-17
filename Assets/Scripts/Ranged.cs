@@ -19,8 +19,8 @@ public class Ranged : UnitController {
 		Evasion = 7f;
 		Armor = 3f;
 		
-		MovementSpeed = 6f;
-		MaxForce = 12f;
+		MovementSpeed = 110f;
+	//	MaxForce = 12f;
 		
 		PerceptionRange = 20f;
 		AttackingRange = 10f;

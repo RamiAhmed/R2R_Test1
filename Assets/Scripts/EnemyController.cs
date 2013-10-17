@@ -78,15 +78,19 @@ public class EnemyController : Enemy {
 				if (Vector3.Distance(this.transform.position, gateRef.transform.position) < AttackingRange) {
 					attackTarget = gateRef;
 					currentEnemyState = EnemyState.ATTACKING;
+					return;
 				}
 			}			
 			
 			if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
 				counterPlayer.PlayerLives--;
 				this.currentEnemyState = EnemyState.DEAD;
+				return;
 			}
-			else {
-				MoveTowards(endPoint);	
+			
+			if (!isMoving) {
+				MoveTo(endPoint);	
+			//	Debug.Log("Move enemy");
 			}
 
 		}
@@ -101,7 +105,7 @@ public class EnemyController : Enemy {
 					Attack(attackTarget);	
 				}
 				else {
-					MoveTowards(attackTarget.transform);
+					MoveTo(attackTarget.transform);
 				}
 			}
 			else {

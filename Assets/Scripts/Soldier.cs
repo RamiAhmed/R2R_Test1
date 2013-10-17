@@ -19,8 +19,8 @@ public class Soldier : UnitController {
 		Evasion = 5f;
 		Armor = 3f;
 		
-		MovementSpeed = 5f;
-		MaxForce = 10f;
+		MovementSpeed = 100f;
+	//	MaxForce = 10f;
 		
 		PerceptionRange = 10f;
 		AttackingRange = 2f;

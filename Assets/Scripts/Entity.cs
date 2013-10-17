@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Pathfinding;
 
 public class Entity : MonoBehaviour {
 	
@@ -11,8 +12,8 @@ public class Entity : MonoBehaviour {
 				Armor = 1f,
 				CurrentHitPoints = 100f,
 				MaxHitPoints = 100f,
-				MovementSpeed = 5f,
-				MaxForce = 10f,
+				MovementSpeed = 2f,
+		//		MaxForce = 10f,
 				PerceptionRange = 10f,
 				AttackingRange = 2f,
 				AttacksPerSecond = 1f,
@@ -25,22 +26,40 @@ public class Entity : MonoBehaviour {
 	protected Entity attackTarget = null;
 	protected Entity lastAttacker = null;
 	protected GateOfLife gateRef = null;
+	protected bool isMoving = false;
 	
 	private float lastAttack = 0f;
 	private float killY = -100f;
 	
-	private float totalMoveDistance = 0f;
+	//private float totalMoveDistance = 0f;
+	//private Vector3 _velocity = Vector3.zero;
+	private Vector3 targetPosition = Vector3.zero;
+	
+	private Seeker seeker;
+	private Path path;
+	private CharacterController controller;
+	
+	private int currentWaypoint = 0;
+	private float nextWaypointDistance = 3f;
+	
+	private float repathRate = 1.5f;
+	private float lastRepath = -1f;
+	
 	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		gateRef = GameObject.FindGameObjectWithTag("GateOfLife").GetComponent<GateOfLife>();
+		seeker = this.GetComponent<Seeker>();
+		controller = this.GetComponent<CharacterController>();
 	}
 	
 	protected virtual void Start() {}
 	
 	protected virtual void Update() {}
 
-	protected virtual void FixedUpdate() {}
+	protected virtual void FixedUpdate() {
+		MoveEntity();
+	}
 	
 	protected virtual void LateUpdate() {
 		if (this.transform.position.y <= killY) {
@@ -51,7 +70,7 @@ public class Entity : MonoBehaviour {
 	protected virtual void RemoveSelf() {}
 	
 	public float GetTotalScore() {
-		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + MaxForce + PerceptionRange + AttackingRange);
+		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + PerceptionRange + AttackingRange);
 	}
 	
 	public void Heal(Entity target, float healAmount) {
@@ -82,7 +101,7 @@ public class Entity : MonoBehaviour {
 			}
 			else {
 				if (Vector3.Distance(this.transform.position, target.transform.position) > PerceptionRange) {
-					MoveTowards(target.transform);
+					MoveTo(target.transform);
 				}
 			}
 		}
@@ -102,55 +121,76 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
 			return;
 		}
-		
-		Vector3 direction = -(target - this.transform.position).normalized * MovementSpeed;
-		
-		Vector3 velocity = Vector3.ClampMagnitude(direction - this.rigidbody.velocity, MaxForce);
-		velocity.y = 0f;
-		
-		this.rigidbody.AddForce(velocity);		
+
+		Vector3 direction = (this.transform.position - target).normalized * MovementSpeed;
+		MoveTo(direction);
 	}
 	
-	public bool MoveTowards(Transform target) {
+	public void MoveTo(Transform target) {
 		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTowards method");
-			return false;
-		}
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTo method");
+			return;
+		}	
 		
-		return MoveTowards(target.position);
+		MoveTo(target.position);
 	}
 	
-	public bool MoveTowards(Vector3 target) {
-		bool result = false;
-		if (target == Vector3.zero || target.sqrMagnitude <= 0f) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTowards method");
-			return result;
-		}
-		
-		if (totalMoveDistance == 0f) {
-			totalMoveDistance = Vector3.Distance(this.transform.position, target);
-		}
-			
-		float distance = Vector3.Distance(this.transform.position, target);
-		if (distance > 1f) {
-			this.transform.LookAt(target);
-			
-			Vector3 direction = this.transform.forward * MovementSpeed * ((distance/totalMoveDistance)*10f);
-			Vector3 velocity = Vector3.ClampMagnitude(direction - this.rigidbody.velocity, MaxForce);
-			velocity.y = 0f;
-			
-			this.rigidbody.AddForce(velocity);	
-			this.rigidbody.AddTorque(-this.rigidbody.angularVelocity);
-			result = true;			
+	public void MoveTo(Vector3 position) {
+		if (position == Vector3.zero || position.sqrMagnitude <= 0f) {
+			Debug.LogWarning("Could not find target (" + position.ToString() + ") in MoveTo method");
 		}
 		else {
-			this.transform.LookAt(this.transform.forward);
-			this.rigidbody.velocity = Vector3.zero;
-			//this.rigidbody.angularVelocity = Vector3.zero;
-			totalMoveDistance = 0f;
+			if (Time.time - lastRepath > repathRate) {
+				if (!seeker.IsDone()) {
+					path = null;
+				}
+				
+				lastRepath = Time.time + Random.value * repathRate * 0.5f;
+				targetPosition = position;
+				isMoving = true;
+				seeker.StartPath(this.transform.position, targetPosition, OnPathComplete);
+			}
 		}
 		
-		return result;
+	}
+	
+	private void OnPathComplete(Path p) {
+		p.Claim(this);
+		if (!p.error) {
+			if (path != null) {
+				path.Release(this);
+			}
+			
+			path = p;
+			currentWaypoint = 0;
+		}
+		else {
+			p.Release(this);
+		}
+	}
+	
+	private void MoveEntity() {
+		if (path == null) {
+			return;
+		}
+		
+		List<Vector3> vectorPath = path.vectorPath;
+		
+        if (currentWaypoint >= vectorPath.Count) {
+//            Debug.Log("End of Path reached");
+            isMoving = false;
+			path = null;
+            return;
+        }
+        
+        Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
+        direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
+        controller.SimpleMove(direction);
+        
+		if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
+            currentWaypoint++;
+            return;
+        }
 	}
 	
 	protected int GetD20() {

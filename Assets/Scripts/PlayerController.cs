@@ -107,8 +107,9 @@ public class PlayerController : MonoBehaviour {
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {
 			if (hit.collider.GetType() == typeof(TerrainCollider)) {
-				Vector3 clickedPos = new Vector3(hit.point.x, 0f, hit.point.z);
-				selectedUnit.GetComponent<UnitController>().moveToPosition = clickedPos;					
+				Vector3 clickedPos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
+				//selectedUnit.GetComponent<UnitController>().moveToPosition = clickedPos;			
+				selectedUnit.MoveTo(clickedPos);
 				break;
 			}
 		}
@@ -199,6 +200,7 @@ public class PlayerController : MonoBehaviour {
 			unitString += "\nAccuracy: " + selectedUnit.Accuracy;
 			unitString += "\nEvasion: " + selectedUnit.Evasion;
 			unitString += "\nArmor: " + selectedUnit.Armor;
+			unitString += "\nMovement speed: " + selectedUnit.MovementSpeed;
 			unitString += "\nPerception Range: " + selectedUnit.PerceptionRange;
 			unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
 			unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;

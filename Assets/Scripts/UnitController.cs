@@ -65,13 +65,13 @@ public class UnitController : Unit {
 			if (this.name != this.Name) {
 				this.name = this.Name;
 			}
-			
+			/*
 			if (!this.rigidbody.IsSleeping()) {
 				this.rigidbody.isKinematic = true;
 				this.collider.isTrigger = true;
 				this.rigidbody.Sleep();
 			}
-		
+		*/
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		
 			RaycastHit hit;
@@ -85,11 +85,11 @@ public class UnitController : Unit {
 			
 		}
 		else if (currentUnitState == UnitState.PLACED) {
-			if (this.rigidbody.IsSleeping()) {
+			/*if (this.rigidbody.IsSleeping()) {
 				this.rigidbody.WakeUp();
 				this.rigidbody.isKinematic = false;
 				this.collider.isTrigger = false;
-			}
+			}*/
 			
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 				if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
@@ -184,16 +184,15 @@ public class UnitController : Unit {
 		}
 		
 		if (currentUnitState == UnitState.PLACED) {
-			if (moveToPosition.sqrMagnitude > 0f) {
-				if (!MoveTowards(moveToPosition)) {
-					moveToPosition = Vector3.zero;
+		
+			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
+				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
+				if (nearestEnemy != null) {
+					attackTarget = nearestEnemy;
+					this.currentUnitState = UnitState.ATTACKING;
 				}
-			}				
-
-			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-			if (nearestEnemy != null) {
-				attackTarget = nearestEnemy;
-				this.currentUnitState = UnitState.ATTACKING;
+				
+				//GuardOther(gateRef);
 			}
 		}
 		else if (currentUnitState == UnitState.ATTACKING) {
@@ -202,7 +201,7 @@ public class UnitController : Unit {
 					Attack(attackTarget);
 				}
 				else {
-					MoveTowards(attackTarget.transform);
+					MoveTo(attackTarget.transform);
 				}
 			}
 			else {
@@ -210,6 +209,8 @@ public class UnitController : Unit {
 				if (attackTarget == null) {
 					this.currentUnitState = UnitState.PLACED;
 				}
+				
+				//GuardOther(gateRef);
 			}
 		}
 	}

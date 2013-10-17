@@ -19,8 +19,8 @@ public class Guard : UnitController {
 		Evasion = 10f;
 		Armor = 10f;
 		
-		MovementSpeed = 4f;
-		MaxForce = 8f;
+		MovementSpeed = 75f;
+	//	MaxForce = 8f;
 		
 		PerceptionRange = 12f;
 		AttackingRange = 2f;

@@ -19,8 +19,8 @@ public class Healer : UnitController {
 		Evasion = 10f;
 		Armor = 3f;
 		
-		MovementSpeed = 7f;
-		MaxForce = 14f;
+		MovementSpeed = 120f;
+	//	MaxForce = 14f;
 		
 		PerceptionRange = 25f;
 		AttackingRange = 10f;
