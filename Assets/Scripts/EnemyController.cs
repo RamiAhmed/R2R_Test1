@@ -24,6 +24,9 @@ public class EnemyController : Enemy {
 		base.Start();
 		if (currentEnemyState == EnemyState.SPAWNING) {
 			
+			GameObject redDot = Instantiate(Resources.Load("RedDot")) as GameObject;
+			redDot.transform.parent = this.transform;
+			
 			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 			foreach (GameObject point in points) {
 				if (point.transform.name.Contains("Start")) {
@@ -36,7 +39,8 @@ public class EnemyController : Enemy {
 
 			counterPlayer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>();
 		
-			currentEnemyState = EnemyState.MOVING;
+			currentEnemyState = EnemyState.MOVING;		
+			
 		}
 		
 	}
