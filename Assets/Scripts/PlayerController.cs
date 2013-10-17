@@ -89,13 +89,17 @@ public class PlayerController : MonoBehaviour {
 				
 				unitsList.Add(go);
 				unit.SetIsNotDead(true);					
-				unit.transform.position = unit.LastBuildLocation;
-				unit.currentUnitState = UnitController.UnitState.PLACED;
 				
 				go.SetActive(true);
 			}
 			deadUnitsList.Clear();
-		}		
+		}			
+		
+		foreach (GameObject go in unitsList) {
+			UnitController unit = go.GetComponent<UnitController>();
+			go.transform.position = unit.LastBuildLocation;	
+			unit.currentUnitState = UnitController.UnitState.PLACED;
+		}
 	}
 					
 	private void moveUnit() {

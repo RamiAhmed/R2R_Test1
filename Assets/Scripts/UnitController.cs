@@ -23,7 +23,6 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
 	
-	private bool savedLocation = false;
 	private Color originalMaterialColor = Color.white;
 	private bool allowedBuildLocation = false;
 	
@@ -92,19 +91,12 @@ public class UnitController : Unit {
 			}
 			
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-				if (!savedLocation) {
-					savedLocation = true;
-					LastBuildLocation = this.transform.position;
-				}
-				
 				if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
 					this.currentUnitState = UnitState.FLEEING;
 				}
 			}
 			else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-				if (savedLocation) {
-					savedLocation = false;
-				}
+				saveLocation();
 			}
 		}
 		else if (currentUnitState == UnitState.FLEEING) {
@@ -121,6 +113,12 @@ public class UnitController : Unit {
 				this.currentUnitState = UnitState.PLACED;
 				this.FleeThreshold /= 2f;
 			}
+		}
+	}
+	
+	private void saveLocation() {
+		if (this.transform.position != LastBuildLocation) {
+			LastBuildLocation = this.transform.position;
 		}
 	}
 	

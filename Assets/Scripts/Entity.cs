@@ -124,7 +124,7 @@ public class Entity : MonoBehaviour {
 			
 			Vector3 direction = this.transform.forward * MovementSpeed * ((distance/totalMoveDistance)*10f);
 			Vector3 velocity = Vector3.ClampMagnitude(direction - this.rigidbody.velocity, MaxForce);
-			velocity.y = 1f;
+			velocity.y = 0f;
 			
 			this.rigidbody.AddForce(velocity);	
 			this.rigidbody.AddTorque(-this.rigidbody.angularVelocity);
