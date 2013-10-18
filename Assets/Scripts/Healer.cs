@@ -27,5 +27,7 @@ public class Healer : UnitController {
 		
 		AttacksPerSecond = 1.2f;
 		FleeThreshold = 0.25f;
+		
+		
 	}
 }

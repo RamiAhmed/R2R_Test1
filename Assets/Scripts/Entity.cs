@@ -22,6 +22,8 @@ public class Entity : MonoBehaviour {
 	public bool Selected = false,
 				IsDead = false;
 	
+	public GameObject Bullet;
+	
 	protected GameController _gameController = null;
 	protected Entity attackTarget = null;
 	protected Entity lastAttacker = null;
@@ -72,6 +74,9 @@ public class Entity : MonoBehaviour {
 	protected virtual void LateUpdate() {
 		if (this.transform.position.y <= killY) {
 			RemoveSelf();
+		}
+		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
+			StopMoving();
 		}
 	}
 	
@@ -249,33 +254,45 @@ public class Entity : MonoBehaviour {
 	}
 	
 	protected bool Attack(Entity opponent) {
-		if (opponent.IsDead) {
-			attackTarget = null;
-			return false;
-		}
-		
+		bool hitResult = false;
 		StopMoving();
 		
-		bool hitResult = false;
-		float currentTime = Time.time;
-		if (currentTime - lastAttack > AttacksPerSecond) {
-			lastAttack = currentTime;
-			
-			this.transform.LookAt(attackTarget.transform.position);
-			
-			if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
-				float damage = (this.Damage - opponent.Armor) + fGetD20();
-				opponent.ReceiveDamage(damage);
-				hitResult = true;
-				Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
+		if (opponent.IsDead || opponent == null) {
+			attackTarget = null;	
+		}		
+		else {
+			float currentTime = Time.time;
+			if (currentTime - lastAttack > AttacksPerSecond) {
+				lastAttack = currentTime;
+				
+				this.transform.LookAt(opponent.transform.position);
+				
+				if (Bullet != null && Bullet) {
+					ShootBullet(opponent);
+				}
+				
+				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
+					float damage = (this.Damage - opponent.Armor) + fGetD20();
+					opponent.ReceiveDamage(damage);
+					hitResult = true;
+					Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
+				}
+				else {
+					Debug.Log(this.Name + " missed " + opponent.Name);	
+				}
+				
+				opponent.lastAttacker = this;
 			}
-			else {
-				Debug.Log(this.Name + " missed " + opponent.Name);	
-			}
-			
-			opponent.lastAttacker = this.gameObject.GetComponent<Entity>();
 		}
 		return hitResult;
+	}
+	
+	protected virtual void ShootBullet(Entity opponent) {
+		GameObject newBullet = Instantiate(Bullet) as GameObject;
+		Physics.IgnoreCollision(newBullet.collider, this.transform.collider);
+		Bullet bullet = newBullet.GetComponent<Bullet>();
+		bullet.Target = opponent.transform.position;		
+		bullet.Owner = this.gameObject;
 	}
 	
 	public bool GetIsUnit(GameObject go) {

@@ -14,6 +14,8 @@ public class CameraController : MonoBehaviour {
 	private int screenWidth, screenHeight;
 	private Vector3 homePosition = Vector3.zero;
 	private GameObject playerObject;
+	
+	private GameController _gameController;
 
 	// Use this for initialization
 	void Start () {
@@ -21,36 +23,39 @@ public class CameraController : MonoBehaviour {
 		screenHeight = Screen.height;
 		playerObject = this.transform.parent.gameObject;
 		homePosition = playerObject.transform.position;
+		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyUp(KeyCode.Home)) {
-			playerObject.transform.position = homePosition;			
-			return;
+		if (_gameController.CurrentGameState == GameController.GameState.PLAY) {
+			if (Input.GetKeyUp(KeyCode.Home)) {
+				playerObject.transform.position = homePosition;			
+				return;
+			}
+			
+			Vector3 mousePos = Input.mousePosition;
+			float deltaTime = Time.deltaTime;
+			Vector3 cameraVector = Vector3.zero;
+			
+			if (Input.GetMouseButton(1)) {
+				float rotateVelocity = Input.GetAxis("Mouse X") * CameraMoveSpeed * CameraRotateMultiplier * deltaTime;
+				playerObject.transform.Rotate(0, rotateVelocity, 0, Space.World);
+			}
+			
+			Vector3 edgeMove = edgeCameraMove(mousePos, deltaTime);
+			if (edgeMove != Vector3.zero) {
+				cameraVector += edgeMove;
+			}
+			
+			Vector3 scrollMove = scrollCameraMove(deltaTime);
+			if (scrollMove != Vector3.zero) {
+				cameraVector += scrollMove;
+			}
+			
+			playerObject.transform.Translate(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"), Space.Self);
+			playerObject.transform.Translate(cameraVector, Space.World);
 		}
-		
-		Vector3 mousePos = Input.mousePosition;
-		float deltaTime = Time.deltaTime;
-		Vector3 cameraVector = Vector3.zero;
-		
-		if (Input.GetMouseButton(1)) {
-			float rotateVelocity = Input.GetAxis("Mouse X") * CameraMoveSpeed * CameraRotateMultiplier * deltaTime;
-			playerObject.transform.Rotate(0, rotateVelocity, 0, Space.World);
-		}
-		
-		Vector3 edgeMove = edgeCameraMove(mousePos, deltaTime);
-		if (edgeMove != Vector3.zero) {
-			cameraVector += edgeMove;
-		}
-		
-		Vector3 scrollMove = scrollCameraMove(deltaTime);
-		if (scrollMove != Vector3.zero) {
-			cameraVector += scrollMove;
-		}
-		
-		playerObject.transform.Translate(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"), Space.Self);
-		playerObject.transform.Translate(cameraVector, Space.World);
 	}
 	
 	private Vector3 scrollCameraMove(float deltaTime) {
