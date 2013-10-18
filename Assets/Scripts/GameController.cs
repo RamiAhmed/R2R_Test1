@@ -50,7 +50,7 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		if (CurrentGameState == GameState.LOADING) {
-			GameObject player = Instantiate(Resources.Load("PlayerObject")) as GameObject;
+			GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
 			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 			foreach (GameObject point in points) {
 				if (point.transform.name.Contains("End")) {
@@ -122,7 +122,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	private void SpawnEnemy() {
-		GameObject enemy = Instantiate(Resources.Load("Enemy")) as GameObject;
+		GameObject enemy = Instantiate(Resources.Load("Enemies/Enemy")) as GameObject;
 		enemies.Add(enemy);
 	}
 }

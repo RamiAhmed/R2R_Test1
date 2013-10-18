@@ -77,18 +77,30 @@ public class Entity : MonoBehaviour {
 	
 	protected virtual void RemoveSelf() {}
 	
+	public void Select(List<Entity> list) {
+		if (!this.Selected) {
+			this.Selected = true;
+			list.Add(this);
+		}
+	}
+	
+	public void Deselect(List<Entity> list) {
+		if (this.Selected) {
+			this.Selected = false;
+			list.Remove(this);
+		}
+	}
+	
 	public float GetTotalScore() {
-		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + MovementSpeed + PerceptionRange + AttackingRange);
+		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + (MovementSpeed/10f) + PerceptionRange + AttackingRange);
 	}
 	
 	public void Heal(Entity target, float healAmount) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in Heal method");
-			return;
 		}	
 		else {
-			if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) ||
-				(GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
+			if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) || (GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
 				target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
 			}
 		}
@@ -98,7 +110,6 @@ public class Entity : MonoBehaviour {
 	public void GuardOther(Entity target) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
-			return;
 		}	
 		else {
 			if (target.lastAttacker != null) {
@@ -116,29 +127,29 @@ public class Entity : MonoBehaviour {
 	public void FleeFrom(Transform target) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
-			return;
 		}
-		
-		FleeFrom(target.position);
+		else {
+			FleeFrom(target.position);
+		}
 	}
 	
 	public void FleeFrom(Vector3 target) {
 		if (target == Vector3.zero || target.sqrMagnitude <= 0f) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
-			return;
 		}
-
-		Vector3 direction = (this.transform.position - target).normalized * MovementSpeed;
-		MoveTo(direction);
+		else {
+			Vector3 direction = (this.transform.position - target).normalized * MovementSpeed;
+			MoveTo(direction);
+		}
 	}
 	
 	public void MoveTo(Transform target) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTo method");
-			return;
 		}	
-		
-		MoveTo(target.position);
+		else {
+			MoveTo(target.position);
+		}
 	}
 	
 	public void MoveTo(Vector3 position) {
@@ -165,9 +176,7 @@ public class Entity : MonoBehaviour {
 	private void OnPathComplete(Path p) {
 		p.Claim(this);
 		if (!p.error) {
-			if (path != null) {
-				path.Release(this);
-			}
+			StopMoving();
 			
 			path = p;
 			currentWaypoint = 0;

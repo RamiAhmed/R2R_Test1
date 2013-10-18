@@ -34,7 +34,7 @@ public class UnitController : Unit {
 		currentUnitState = UnitState.PLACING;
 		//originalMaterialColor = this.renderer.material.color;
 		
-		GameObject greenDot = Instantiate(Resources.Load("GreenDot")) as GameObject;
+		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
 		
 	}

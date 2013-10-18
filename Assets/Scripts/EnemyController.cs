@@ -24,7 +24,7 @@ public class EnemyController : Enemy {
 		base.Start();
 		if (currentEnemyState == EnemyState.SPAWNING) {
 			
-			GameObject redDot = Instantiate(Resources.Load("RedDot")) as GameObject;
+			GameObject redDot = Instantiate(Resources.Load("Misc Objects/RedDot")) as GameObject;
 			redDot.transform.parent = this.transform;
 			
 			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
