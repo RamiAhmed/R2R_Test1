@@ -71,37 +71,40 @@ public class EnemyController : Enemy {
 			if (nearest != null) {
 				attackTarget = nearest;
 				currentEnemyState = EnemyState.ATTACKING;
-				return;
 			}
-			
-			if (gateRef != null) {
+			else if (gateRef != null) {
 				if (Vector3.Distance(this.transform.position, gateRef.transform.position) < AttackingRange) {
+					StopMoving();
 					attackTarget = gateRef;
 					currentEnemyState = EnemyState.ATTACKING;
-					return;
+				}
+				else {
+					if (!isMoving)
+						MoveTo(gateRef.transform);
 				}
 			}			
-			
-			if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
-				counterPlayer.PlayerLives--;
-				this.currentEnemyState = EnemyState.DEAD;
-				return;
-			}
-			
-			if (!isMoving) {
-				MoveTo(endPoint);	
-			//	Debug.Log("Move enemy");
+			else {
+				if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
+					counterPlayer.PlayerLives--;
+					this.currentEnemyState = EnemyState.DEAD;
+				}
+				else {
+					if (!isMoving) 
+						MoveTo(endPoint);
+				}
 			}
 
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
-			if (this.CurrentHitPoints <= this.MaxHitPoints*FleeThreshold) {
-				this.currentEnemyState = EnemyState.FLEEING;
-				return;
+			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
+				if ((fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+					this.currentEnemyState = EnemyState.FLEEING;
+				}
 			}
 			
 			if (attackTarget != null) {
 				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+					StopMoving();
 					Attack(attackTarget);	
 				}
 				else {
@@ -109,13 +112,7 @@ public class EnemyController : Enemy {
 				}
 			}
 			else {
-				attackTarget = GetWeakestUnit(counterPlayer.unitsList);
-				if (attackTarget == null) {
-					attackTarget = GetNearestUnit(counterPlayer.unitsList);
-					if (attackTarget == null) {
-						currentEnemyState = EnemyState.MOVING;	
-					}
-				}
+				currentEnemyState = EnemyState.MOVING;	
 			}
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
@@ -124,11 +121,13 @@ public class EnemyController : Enemy {
 					FleeFrom(attackTarget.transform);	
 				}
 				else {
+					StopMoving();
 					this.currentEnemyState = EnemyState.MOVING;
 					this.FleeThreshold /= 2f;
 				}
 			}
 			else {
+				StopMoving();
 				this.currentEnemyState = EnemyState.MOVING;
 				this.FleeThreshold /= 2f;
 			}

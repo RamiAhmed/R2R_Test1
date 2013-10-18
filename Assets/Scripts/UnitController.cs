@@ -42,79 +42,7 @@ public class UnitController : Unit {
 	// Update is called once per frame
 	protected override void Update () {
 		base.Update();
-		
-		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
-			return;
-		}
-		
-		if (IsDead) {
-			this.currentUnitState = UnitState.DEAD;
-		}		
-		else if (currentUnitState == UnitState.PLACING) {
-			if (Input.GetMouseButtonDown(0)) {
-				if (buildUnit())
-					return;
-			}
-			
-			if (Input.GetMouseButtonDown(1)) {
-				playerOwner.unitsList.Remove(this.gameObject);
-				Destroy(this.gameObject);
-				return;
-			}
-			
-			if (this.name != this.Name) {
-				this.name = this.Name;
-			}
-			/*
-			if (!this.rigidbody.IsSleeping()) {
-				this.rigidbody.isKinematic = true;
-				this.collider.isTrigger = true;
-				this.rigidbody.Sleep();
-			}
-		*/
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit)) {
-				float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, hit.point.y, hit.point.z));
-				height += this.transform.collider.bounds.size.y;
-				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
-			}
-			
-			checkForCollisions();
-			
-		}
-		else if (currentUnitState == UnitState.PLACED) {
-			/*if (this.rigidbody.IsSleeping()) {
-				this.rigidbody.WakeUp();
-				this.rigidbody.isKinematic = false;
-				this.collider.isTrigger = false;
-			}*/
-			
-			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-				if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
-					this.currentUnitState = UnitState.FLEEING;
-				}
-			}
-			else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-				saveLocation();
-			}
-		}
-		else if (currentUnitState == UnitState.FLEEING) {
-			if (attackTarget != null) {
-				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
-					FleeFrom(attackTarget.transform);
-				}
-				else {
-					this.currentUnitState = UnitState.PLACED;
-					this.FleeThreshold /= 2f;
-				}
-			}
-			else {
-				this.currentUnitState = UnitState.PLACED;
-				this.FleeThreshold /= 2f;
-			}
-		}
+
 	}
 	
 	private void saveLocation() {
@@ -182,32 +110,95 @@ public class UnitController : Unit {
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}
-		
-		if (currentUnitState == UnitState.PLACED) {
-		
-			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
-
-				PlacedInCombatBehaviour();				
-				//GuardOther(gateRef);
-			}
+		if (IsDead) {
+			this.currentUnitState = UnitState.DEAD;
+		}
+		else if (currentUnitState == UnitState.PLACING) {
+			PlacingBehaviour();
+		}
+		else if (currentUnitState == UnitState.PLACED) {
+			PlacedBehaviour();		
 		}
 		else if (currentUnitState == UnitState.ATTACKING) {
 			AttackingBehaviour();
 		}
+		else if (currentUnitState == UnitState.FLEEING) {
+			FleeingBehaviour();
+		}
 	}
 	
-	protected virtual void PlacedInCombatBehaviour() {
-		Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-		if (nearestEnemy != null) {
-			attackTarget = nearestEnemy;
+	protected virtual void PlacingBehaviour() {
+		if (Input.GetMouseButtonDown(0)) {
+			if (buildUnit())
+				return;
+		}
+		
+		if (Input.GetMouseButtonDown(1)) {
+			playerOwner.unitsList.Remove(this.gameObject);
+			Destroy(this.gameObject);
+			return;
+		}
+		
+		if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			playerOwner.unitsList.Remove(this.gameObject);
+			Destroy(this.gameObject);
+			return;
+		}
+		
+		if (this.name != this.Name) {
+			this.name = this.Name;
+		}
+
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+	
+		RaycastHit hit;
+		if (Physics.Raycast(ray, out hit)) {
+			float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, hit.point.y, hit.point.z));
+			height += this.transform.collider.bounds.size.y;
+			this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+		}
+		
+		checkForCollisions();		
+	}
+	
+	protected virtual void PlacedBehaviour() {
+		if (attackTarget != null) {
 			this.currentUnitState = UnitState.ATTACKING;
-			StopMoving();
-		}		
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
+			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints) {
+				StopMoving();
+				GuardOther(gateRef);
+			}
+			else {
+				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
+				if (nearestEnemy != null) {
+					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange || gateRef == null) {
+						attackTarget = nearestEnemy;
+						this.currentUnitState = UnitState.ATTACKING;
+						StopMoving();
+					}
+				}		
+			}
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			saveLocation();
+		}
 	}
 	
 	protected virtual void AttackingBehaviour() {
+		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
+			currentUnitState = UnitState.PLACED;
+			return;
+		}
+		
 		if (attackTarget != null) {
-			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
+				if ((fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+					this.currentUnitState = UnitState.FLEEING;
+				}
+			}
+			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
 				Attack(attackTarget);
 			}
 			else {
@@ -216,12 +207,27 @@ public class UnitController : Unit {
 		}
 		else {
 			StopMoving();
-			attackTarget = GetNearestUnit(_gameController.enemies);
-			if (attackTarget == null) {
-				this.currentUnitState = UnitState.PLACED;
-			}
 			
-			//GuardOther(gateRef);
+			this.currentUnitState = UnitState.PLACED;
+		}		
+	}
+	
+	protected virtual void FleeingBehaviour() {
+		if (attackTarget != null) {
+			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+				FleeFrom(attackTarget.transform);
+			}
+			else {
+				this.currentUnitState = UnitState.PLACED;
+				this.FleeThreshold /= 2f;
+				attackTarget = null;
+				StopMoving();
+			}
+		}
+		else {
+			StopMoving();
+			this.currentUnitState = UnitState.PLACED;
+			this.FleeThreshold /= 2f;
 		}		
 	}
 	
@@ -233,6 +239,7 @@ public class UnitController : Unit {
 		}
 		
 		if (currentUnitState == UnitState.DEAD) {
+			StopMoving();
 			Debug.Log("Unit dead");
 			playerOwner.unitsList.Remove(this.gameObject);		
 			playerOwner.deadUnitsList.Add(this.gameObject);

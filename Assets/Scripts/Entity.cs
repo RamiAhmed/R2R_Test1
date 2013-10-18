@@ -108,9 +108,7 @@ public class Entity : MonoBehaviour {
 				this.attackTarget = target.attackTarget;
 			}
 			else {
-				if (Vector3.Distance(this.transform.position, target.transform.position) > PerceptionRange) {
-					MoveTo(target.transform);
-				}
+				MoveTo(target.transform);
 			}
 		}
 	}
