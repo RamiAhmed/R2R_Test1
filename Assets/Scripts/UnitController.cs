@@ -118,7 +118,7 @@ public class UnitController : Unit {
 	}
 	
 	private void saveLocation() {
-		if (this.transform.position != LastBuildLocation) {
+		if ((this.transform.position - LastBuildLocation).sqrMagnitude > 0.1f) {
 			LastBuildLocation = this.transform.position;
 		}
 	}
@@ -186,33 +186,43 @@ public class UnitController : Unit {
 		if (currentUnitState == UnitState.PLACED) {
 		
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
-				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-				if (nearestEnemy != null) {
-					attackTarget = nearestEnemy;
-					this.currentUnitState = UnitState.ATTACKING;
-				}
-				
+
+				PlacedInCombatBehaviour();				
 				//GuardOther(gateRef);
 			}
 		}
 		else if (currentUnitState == UnitState.ATTACKING) {
-			if (attackTarget != null) {
-				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
-					Attack(attackTarget);
-				}
-				else {
-					MoveTo(attackTarget.transform);
-				}
+			AttackingBehaviour();
+		}
+	}
+	
+	protected virtual void PlacedInCombatBehaviour() {
+		Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
+		if (nearestEnemy != null) {
+			attackTarget = nearestEnemy;
+			this.currentUnitState = UnitState.ATTACKING;
+			StopMoving();
+		}		
+	}
+	
+	protected virtual void AttackingBehaviour() {
+		if (attackTarget != null) {
+			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+				Attack(attackTarget);
 			}
 			else {
-				attackTarget = GetNearestUnit(_gameController.enemies);
-				if (attackTarget == null) {
-					this.currentUnitState = UnitState.PLACED;
-				}
-				
-				//GuardOther(gateRef);
+				MoveTo(attackTarget.transform);
 			}
 		}
+		else {
+			StopMoving();
+			attackTarget = GetNearestUnit(_gameController.enemies);
+			if (attackTarget == null) {
+				this.currentUnitState = UnitState.PLACED;
+			}
+			
+			//GuardOther(gateRef);
+		}		
 	}
 	
 	protected override void LateUpdate() {

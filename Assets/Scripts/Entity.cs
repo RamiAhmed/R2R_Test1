@@ -150,7 +150,7 @@ public class Entity : MonoBehaviour {
 		else {
 			if (Time.time - lastRepath > repathRate) {
 				if (!seeker.IsDone()) {
-					path = null;
+					StopMoving();
 				}
 				
 				lastRepath = Time.time + Random.value * repathRate * 0.5f;
@@ -188,8 +188,7 @@ public class Entity : MonoBehaviour {
 		
         if (currentWaypoint >= vectorPath.Count) {
 //            Debug.Log("End of Path reached");
-            isMoving = false;
-			path = null;
+            StopMoving();
             return;
         }
         
@@ -201,6 +200,14 @@ public class Entity : MonoBehaviour {
             currentWaypoint++;
             return;
         }
+	}
+	
+	protected void StopMoving() {
+		if (path != null && isMoving) {
+			path.Release(this);
+			path = null;
+			isMoving = false;
+		}
 	}
 	
 	protected int GetD20() {
@@ -239,6 +246,8 @@ public class Entity : MonoBehaviour {
 			attackTarget = null;
 			return false;
 		}
+		
+		StopMoving();
 		
 		bool hitResult = false;
 		float currentTime = Time.time;
