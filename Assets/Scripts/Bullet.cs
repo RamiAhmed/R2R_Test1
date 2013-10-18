@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour {
 	protected float bulletSpeed = 5f;
 	protected float maxForce = 10f;
 		
-	private float initialDistance = 0f;
+//	private float initialDistance = 0f;
 	
 	private GameController _gameController;
 	
@@ -18,7 +18,7 @@ public class Bullet : MonoBehaviour {
 		this.transform.parent = Owner.transform;
 		
 		this.transform.localPosition = new Vector3(0f, 1.1f, 0f);
-		initialDistance = Vector3.Distance(this.transform.position, Target);
+//		initialDistance = Vector3.Distance(this.transform.position, Target);
 		
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 	}

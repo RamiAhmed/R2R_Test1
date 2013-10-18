@@ -45,7 +45,7 @@ public class UnitController : Unit {
 
 	}
 	
-	private void saveLocation() {
+	protected void saveLocation() {
 		if ((this.transform.position - LastBuildLocation).sqrMagnitude > 0.1f) {
 			LastBuildLocation = this.transform.position;
 		}
