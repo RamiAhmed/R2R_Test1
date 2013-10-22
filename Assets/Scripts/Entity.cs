@@ -105,8 +105,14 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in Heal method");
 		}	
 		else {
-			if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) || (GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
-				target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
+			float currentTime = Time.time;
+			if (currentTime - lastAttack > AttacksPerSecond) {
+				lastAttack = currentTime;
+				
+				if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) || (GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
+					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
+					Debug.Log(this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
+				}
 			}
 		}
 		
