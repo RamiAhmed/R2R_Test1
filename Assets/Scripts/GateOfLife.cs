@@ -14,7 +14,7 @@ public class GateOfLife : Entity {
 		
 		MovementSpeed = 0f;
 //		MaxForce = 0f;
-		AttacksPerSecond = 0.5f;
+		AttacksPerSecond = 2f;
 		Damage = 10f;		
 		Evasion = 0f;
 		Accuracy = 5f;
@@ -27,10 +27,60 @@ public class GateOfLife : Entity {
 	protected override void Update () {
 		base.Update();
 		if (IsDead) {
-			PlayerController player = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>();
-			//player.DisplayFeedbackMessage("You have lost your " + this.Name);
-			player.PlayerLives = 0;
-			Destroy(this.gameObject);	
+			PlayerController player = _gameController.players[0].GetComponent<PlayerController>();
+			player.PlayerLives = 0;	
 		}
+		else {
+			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+				if (attackTarget != null) {
+					if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+						Attack(attackTarget);	
+					}
+					else {
+						attackTarget = null;
+					}
+				}
+				else {
+					Entity enemy = GetNearestUnit(_gameController.enemies);
+					if (enemy != null && Vector3.Distance(enemy.transform.position, this.transform.position) < AttackingRange) {
+						attackTarget = enemy;
+					}
+				}
+			}
+		}
+	}
+	
+	protected override bool Attack(Entity opponent) {
+		bool hitResult = false;
+		StopMoving();
+		
+		if (opponent.IsDead || opponent == null) {
+			attackTarget = null;	
+		}		
+		else {
+			float currentTime = Time.time;
+			if (currentTime - lastAttack > AttacksPerSecond) {
+				lastAttack = currentTime;
+				
+				//this.transform.LookAt(opponent.transform.position);
+				
+				if (Bullet != null && Bullet) {
+					ShootBullet(opponent);
+				}
+				
+				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
+					float damage = (this.Damage - opponent.Armor) + fGetD20();
+					opponent.ReceiveDamage(damage);
+					hitResult = true;
+					Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
+				}
+				else {
+					Debug.Log(this.Name + " missed " + opponent.Name);	
+				}
+				
+				opponent.lastAttacker = this;
+			}
+		}
+		return hitResult;
 	}
 }

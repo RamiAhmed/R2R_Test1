@@ -179,7 +179,7 @@ public class UnitController : Unit {
 			else {
 				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 				if (nearestEnemy != null) {
-					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange || gateRef == null) {
+					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
 						attackTarget = nearestEnemy;
 						this.currentUnitState = UnitState.ATTACKING;
 						StopMoving();

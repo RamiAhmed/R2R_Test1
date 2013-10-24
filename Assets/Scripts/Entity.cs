@@ -18,19 +18,22 @@ public class Entity : MonoBehaviour {
 				AttacksPerSecond = 1f,
 				FleeThreshold = 0.1f; // = 10 % health
 	
+	public GameObject Bullet;
+	
+	[HideInInspector]
 	public bool Selected = false,
 				IsDead = false;
-	
-	public GameObject Bullet;
+		
+	[HideInInspector]
+	public Entity lastAttacker = null;
 	
 	protected GameController _gameController = null;
 	protected Entity attackTarget = null;
-	protected Entity lastAttacker = null;
 	protected GateOfLife gateRef = null;
 	protected bool isMoving = false;
 	protected Color originalMaterialColor = Color.white;
+	protected float lastAttack = 0f;
 	
-	private float lastAttack = 0f;
 	private float killY = -100f;
 	
 	private Vector3 targetPosition = Vector3.zero;
@@ -261,7 +264,7 @@ public class Entity : MonoBehaviour {
 		}
 	}
 	
-	protected bool Attack(Entity opponent) {
+	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
 		StopMoving();
 		
