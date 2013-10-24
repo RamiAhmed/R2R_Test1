@@ -14,12 +14,12 @@ public class GateOfLife : Entity {
 		
 		MovementSpeed = 0f;
 //		MaxForce = 0f;
-		AttacksPerSecond = 0f;
-		Damage = 0f;		
+		AttacksPerSecond = 0.5f;
+		Damage = 10f;		
 		Evasion = 0f;
-		Accuracy = 0f;
-		PerceptionRange = 0f;
-		AttackingRange = 0f;
+		Accuracy = 5f;
+		PerceptionRange = 5f;
+		AttackingRange = 5f;
 		FleeThreshold = 0f;
 	}
 	
@@ -27,7 +27,9 @@ public class GateOfLife : Entity {
 	protected override void Update () {
 		base.Update();
 		if (IsDead) {
-			GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>().DisplayFeedbackMessage("You have lost your " + this.Name);
+			PlayerController player = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>();
+			//player.DisplayFeedbackMessage("You have lost your " + this.Name);
+			player.PlayerLives = 0;
 			Destroy(this.gameObject);	
 		}
 	}

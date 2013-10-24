@@ -22,7 +22,7 @@ public class Enemy : Entity {
 		Evasion = 5f + (wave*2f);
 		Armor = 3f + (wave*1.5f);
 		
-		MovementSpeed = 100f + (wave*10f);
+		MovementSpeed = 140f + (wave*10f);
 	//	MaxForce = 10f + (wave-1f);
 		
 		PerceptionRange = 10f + (wave/2f);

@@ -13,7 +13,6 @@ public class Entity : MonoBehaviour {
 				CurrentHitPoints = 100f,
 				MaxHitPoints = 100f,
 				MovementSpeed = 2f,
-		//		MaxForce = 10f,
 				PerceptionRange = 10f,
 				AttackingRange = 2f,
 				AttacksPerSecond = 1f,
@@ -34,8 +33,6 @@ public class Entity : MonoBehaviour {
 	private float lastAttack = 0f;
 	private float killY = -100f;
 	
-	//private float totalMoveDistance = 0f;
-	//private Vector3 _velocity = Vector3.zero;
 	private Vector3 targetPosition = Vector3.zero;
 	
 	private Seeker seeker;
@@ -75,12 +72,14 @@ public class Entity : MonoBehaviour {
 		if (this.transform.position.y <= killY) {
 			RemoveSelf();
 		}
-		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
+		else if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			StopMoving();
 		}
 	}
 	
-	protected virtual void RemoveSelf() {}
+	protected virtual void RemoveSelf() {
+		StopMoving();
+	}
 	
 	public void Select(List<Entity> list) {
 		if (!this.Selected && !this.IsDead) {

@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
 	public List<GameObject> unitsList;
 	public List<GameObject> deadUnitsList;
 	
-	public int PlayerLives = 30;
+	public int PlayerLives = 1;
 	public int PlayerGold = 20;
 	
 	public float ShowFeedbackTime = 3f; // show feedback messages for 5 seconds
@@ -240,7 +240,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.BeginArea(new Rect(x, y, width, height));
 		
 		GUI.color = Color.red;
-		GUILayout.Box("You have lost all lives!\nGAME OVER", GUILayout.Width(width));
+		GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
 		GUI.color = Color.white;
 		
 		GUILayout.EndArea();
@@ -313,7 +313,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		
 		GUILayout.Box("Gold: " + PlayerGold);
-		GUILayout.Box("Lives left: " + PlayerLives);
+		//GUILayout.Box("Lives left: " + PlayerLives);
 		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();

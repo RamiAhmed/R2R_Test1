@@ -14,10 +14,7 @@ public class EnemyController : Enemy {
 	
 	private EnemyState currentEnemyState = EnemyState.SPAWNING;
 	
-	private PlayerController counterPlayer;
-	
-	private Transform endPoint = null;
-	
+	private PlayerController counterPlayer;	
 	
 	// Use this for initialization
 	protected override void Start () {
@@ -31,9 +28,7 @@ public class EnemyController : Enemy {
 			foreach (GameObject point in points) {
 				if (point.transform.name.Contains("Start")) {
 					this.transform.position = point.transform.position;
-				}
-				else if (point.transform.name.Contains("End")) {
-					endPoint = point.transform;	
+					break;
 				}
 			}
 
@@ -79,21 +74,11 @@ public class EnemyController : Enemy {
 					currentEnemyState = EnemyState.ATTACKING;
 				}
 				else {
-					if (!isMoving)
+					if (!isMoving) {
 						MoveTo(gateRef.transform);
-				}
-			}			
-			else {
-				if (Vector3.Distance(this.transform.position, endPoint.position) < AttackingRange) {
-					counterPlayer.PlayerLives--;
-					this.currentEnemyState = EnemyState.DEAD;
-				}
-				else {
-					if (!isMoving) 
-						MoveTo(endPoint);
+					}
 				}
 			}
-
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
