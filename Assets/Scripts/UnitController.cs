@@ -134,37 +134,40 @@ public class UnitController : Unit {
 	protected virtual void HealingBehaviour() {}
 	
 	protected virtual void PlacingBehaviour() {
-		if (Input.GetMouseButtonDown(0)) {
-			if (buildUnit())
+		if (this.playerOwner != null) {
+			if (Input.GetMouseButtonDown(0)) {
+				if (buildUnit())
+					return;
+			}
+			
+			if (Input.GetMouseButtonDown(1)) {
+				playerOwner.unitsList.Remove(this.gameObject);
+				Destroy(this.gameObject);
 				return;
-		}
-		
-		if (Input.GetMouseButtonDown(1)) {
-			playerOwner.unitsList.Remove(this.gameObject);
-			Destroy(this.gameObject);
-			return;
-		}
-		
-		if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-			playerOwner.unitsList.Remove(this.gameObject);
-			Destroy(this.gameObject);
-			return;
-		}
-		
-		if (this.name != this.Name) {
-			this.name = this.Name;
-		}
-
-		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			}
+			
+			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+				playerOwner.unitsList.Remove(this.gameObject);
+				Destroy(this.gameObject);
+				return;
+			}
+			
+			if (this.name != this.Name) {
+				this.name = this.Name;
+			}
 	
-		RaycastHit hit;
-		if (Physics.Raycast(ray, out hit)) {
-			float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
-			height += this.transform.collider.bounds.size.y/2f + 0.1f;
-			this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
-		}
+			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 		
-		checkForCollisions();		
+			RaycastHit hit;
+			if (Physics.Raycast(ray, out hit)) {
+				float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
+				height += this.transform.collider.bounds.size.y/2f + 0.1f;
+				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+			}
+		
+		
+			checkForCollisions();	
+		}
 	}
 	
 	protected virtual void PlacedBehaviour() {
