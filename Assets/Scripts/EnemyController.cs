@@ -96,10 +96,8 @@ public class EnemyController : Enemy {
 
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
-			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
-				if ((fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
-					this.currentEnemyState = EnemyState.FLEEING;
-				}
+			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+				this.currentEnemyState = EnemyState.FLEEING;
 			}
 			
 			if (attackTarget != null) {

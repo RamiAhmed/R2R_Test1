@@ -14,6 +14,7 @@ public class UnitController : Unit {
 		PLACING,
 		PLACED,
 		MOVING,
+		HEALING,
 		ATTACKING,
 		FLEEING,
 		DEAD
@@ -125,7 +126,12 @@ public class UnitController : Unit {
 		else if (currentUnitState == UnitState.FLEEING) {
 			FleeingBehaviour();
 		}
+		else if (currentUnitState == UnitState.HEALING) {
+			HealingBehaviour();
+		}
 	}
+	
+	protected virtual void HealingBehaviour() {}
 	
 	protected virtual void PlacingBehaviour() {
 		if (Input.GetMouseButtonDown(0)) {
@@ -153,8 +159,8 @@ public class UnitController : Unit {
 	
 		RaycastHit hit;
 		if (Physics.Raycast(ray, out hit)) {
-			float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, hit.point.y, hit.point.z));
-			height += this.transform.collider.bounds.size.y;
+			float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
+			height += this.transform.collider.bounds.size.y/2f + 0.1f;
 			this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
 		}
 		
@@ -193,10 +199,8 @@ public class UnitController : Unit {
 		}
 		
 		if (attackTarget != null) {
-			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold) {
-				if ((fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
-					this.currentUnitState = UnitState.FLEEING;
-				}
+			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+				this.currentUnitState = UnitState.FLEEING;
 			}
 			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
 				Attack(attackTarget);

@@ -83,14 +83,14 @@ public class Entity : MonoBehaviour {
 	protected virtual void RemoveSelf() {}
 	
 	public void Select(List<Entity> list) {
-		if (!this.Selected) {
+		if (!this.Selected && !this.IsDead) {
 			this.Selected = true;
 			list.Add(this);
 		}
 	}
 	
 	public void Deselect(List<Entity> list) {
-		if (this.Selected) {
+		if (this.Selected || this.IsDead) {
 			this.Selected = false;
 			list.Remove(this);
 		}
@@ -220,10 +220,13 @@ public class Entity : MonoBehaviour {
         }
 	}
 	
-	protected void StopMoving() {
-		if (path != null && isMoving) {
+	public void StopMoving() {
+		if (path != null) {
 			path.Release(this);
 			path = null;
+		}
+		
+		if (isMoving) {
 			isMoving = false;
 		}
 	}
@@ -347,6 +350,23 @@ public class Entity : MonoBehaviour {
 		return weakest != null ? weakest.GetComponent<Entity>() : null;
 	}
 	
+	protected Entity GetStrongestUnit(List<GameObject> list) {
+		if (list.Count <= 0)
+			return null;
+		
+		GameObject strongest = null;
+		float strongestScore = 0;
+		foreach (GameObject unit in list) {
+			float score = unit.GetComponent<Entity>().GetTotalScore();
+			if (score > strongestScore) {
+				strongest = unit;
+				strongestScore = score;
+			}
+		}
+		
+		return strongest != null ? strongest.GetComponent<Entity>() : null;
+	}
+	
 	protected Entity GetMostDamagedUnit(List<GameObject> list) {
 		if (list.Count <= 0)
 			return null;
@@ -355,7 +375,7 @@ public class Entity : MonoBehaviour {
 		float damage = list[0].GetComponent<Entity>().CurrentHitPoints;
 		foreach (GameObject unit in list) {
 			float hp = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hp < damage) {
+			if (hp < damage && hp > 1f) {
 				mostDamaged = unit;
 				damage = hp;
 			}

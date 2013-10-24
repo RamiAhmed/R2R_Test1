@@ -14,7 +14,6 @@ public class PlayerController : MonoBehaviour {
 	
 	public Faction playerFaction;
 	
-	//private Entity selectedUnit = null;
 	private List<Entity> selectedUnits = null;
 	
 	private float screenWidth = 0f,
@@ -68,24 +67,8 @@ public class PlayerController : MonoBehaviour {
 					moveUnit();
 				}
 			}
-			
-			
 		}
-		/*
-		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT || _gameController.CurrentPlayState == GameController.PlayState.ARENA) {
-			if (selectedUnits.Count > 0) {
-				foreach (Entity selectedUnit in selectedUnits) {
-					if (selectedUnit.IsDead) {
-						clearSelection();
-						break;
-					}	
-				}
-			}
-		}
-		//if (Input.GetMouseButtonDown(0)) {			
-		//	selectUnit();
-		//}
-		*/
+		
 		handleUnitSelection();
 		
 	}
@@ -106,6 +89,7 @@ public class PlayerController : MonoBehaviour {
 		
 		foreach (GameObject go in unitsList) {
 			UnitController unit = go.GetComponent<UnitController>();
+			unit.StopMoving();
 			unit.transform.position = unit.LastBuildLocation;	
 			unit.currentUnitState = UnitController.UnitState.PLACED;
 		}
@@ -167,8 +151,7 @@ public class PlayerController : MonoBehaviour {
 			    backupRect = new Rect(marqueeRect.x - Mathf.Abs(marqueeRect.width), marqueeRect.y - Mathf.Abs(marqueeRect.height), Mathf.Abs(marqueeRect.width), Mathf.Abs(marqueeRect.height));
 			}
 			
-			if ((marqueeRect.width > 0f || backupRect.width > 0f) && (marqueeRect.height > 0f || backupRect.height > 0f)) {
-				
+			if ((marqueeRect.width > 0f || backupRect.width > 0f) && (marqueeRect.height > 0f || backupRect.height > 0f)) {				
 				foreach (GameObject unit in unitsList) {
 				    //Convert the world position of the unit to a screen position and then to a GUI point
 				    Vector3 _screenPos = playerCam.WorldToScreenPoint(unit.transform.position);
@@ -182,9 +165,7 @@ public class PlayerController : MonoBehaviour {
 				    
 					if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
 				        // unit.SendMessage("OnSelected", SendMessageOptions.DontRequireReceiver);
-						if (!ent.IsDead) {
-							ent.Select(selectedUnits);
-						}
+						ent.Select(selectedUnits);
 				    }
 				}
 			}
@@ -196,28 +177,18 @@ public class PlayerController : MonoBehaviour {
 			backupRect.width = 0;
 			backupRect.height = 0;
 			marqueeSize = Vector2.zero;
-			//marqueeOrigin = Vector2.zero;
 		}
 	}
 	
 	private void selectUnit() {
 		Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
 		
-		//clearSelection();
-		
 		RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 		foreach (RaycastHit hit in hits) {			
 			if (hit.transform.GetComponent<Entity>() != null) {
 				Entity selectedUnit = hit.transform.GetComponent<Entity>();
-				if (!selectedUnit.IsDead) {
-					//clearSelection();
-					
-					//selectedUnits.Add(selectedUnit);
-					//selectedUnit.Selected = true;
-					//selectedUnits.Add(selectedUnit);
-					selectedUnit.Select(selectedUnits);
-					break;
-				}
+				selectedUnit.Select(selectedUnits);
+				break;			
 			}			
 		}	
 		
@@ -242,9 +213,9 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
 			float width = screenWidth * 0.2f,
-					height = 30f;
+				  height = 30f;
 			float x = (screenWidth/2f) - (width/2f),
-				y = (screenHeight/2f) - (height/2f);
+				  y = (screenHeight/2f) - (height/2f);
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
@@ -255,12 +226,10 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderMarqueeSelection() {
-		//if (marqueeSize.x > 0f || marqueeSize.y > 0f) {
-			marqueeRect = new Rect(marqueeOrigin.x, marqueeOrigin.y, marqueeSize.x, marqueeSize.y);	
-			GUI.color = new Color(0, 0, 0, .3f);
-			GUI.DrawTexture(marqueeRect, marqueeGraphics);
-			GUI.color = Color.white;
-		//}
+		marqueeRect = new Rect(marqueeOrigin.x, marqueeOrigin.y, marqueeSize.x, marqueeSize.y);	
+		GUI.color = new Color(0, 0, 0, .3f);
+		GUI.DrawTexture(marqueeRect, marqueeGraphics);
+		GUI.color = Color.white;
 	}
 	
 	private void renderGameOver() {

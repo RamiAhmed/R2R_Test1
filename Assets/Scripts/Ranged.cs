@@ -14,9 +14,9 @@ public class Ranged : UnitController {
 		MaxHitPoints = 75f;
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage = 15f;
+		Damage = 12f;
 		Accuracy = 10f;
-		Evasion = 7f;
+		Evasion = 5f;
 		Armor = 3f;
 		
 		MovementSpeed = 110f;

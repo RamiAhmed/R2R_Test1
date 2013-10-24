@@ -14,16 +14,16 @@ public class Guard : UnitController {
 		MaxHitPoints = 150f;
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage = 3f;
-		Accuracy = 5f;
-		Evasion = 10f;
+		Damage = 2f;
+		Accuracy = 4f;
+		Evasion = 6f;
 		Armor = 10f;
 		
 		MovementSpeed = 75f;
 	//	MaxForce = 8f;
 		
 		PerceptionRange = 12f;
-		AttackingRange = 2f;
+		AttackingRange = 2.5f;
 		
 		AttacksPerSecond = 0.9f;
 		FleeThreshold = 0.05f;
