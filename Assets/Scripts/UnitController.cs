@@ -238,6 +238,24 @@ public class UnitController : Unit {
 		}		
 	}
 	
+	public void UpgradeUnit() {
+		Debug.Log("Upgrade Unit");
+	}
+	
+	public void SellUnit() {
+		Debug.Log ("SellUnit");
+		StopMoving();
+		
+		int goldReturned = Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);
+		this.playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.");		
+		
+		this.playerOwner.PlayerGold += goldReturned;
+		this.playerOwner.unitsList.Remove(this.gameObject);		
+		
+		//this.gameObject.SetActive(false);
+		Destroy(this.gameObject);
+	}
+	
 	protected override void LateUpdate() {
 		base.LateUpdate();
 		

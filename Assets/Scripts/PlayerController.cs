@@ -267,10 +267,7 @@ public class PlayerController : MonoBehaviour {
 				unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
 				unitString += "\nFleeing chance: " + Mathf.RoundToInt(selectedUnit.FleeThreshold*100f) + "%";
 				unitString += "\n\nTotal unit score: " + selectedUnit.GetTotalScore();
-				
-				GUILayout.BeginArea(new Rect(x, y, width, height));
-				GUILayout.BeginVertical();			
-				
+
 				if (selectedUnit.GetIsEnemy(selectedUnit.gameObject)) {
 					unitString += "\nGold reward: " + selectedUnit.GetComponent<Enemy>().GoldReward;	
 				}
@@ -282,9 +279,38 @@ public class PlayerController : MonoBehaviour {
 					unitString += "\n\nSelected units: " + selectedUnits.Count;
 				}
 				
-				GUILayout.Box(unitString, GUILayout.Height(height), GUILayout.Width(width));
+				//GUI.Box(new Rect(x, y, width, height), "");
+				
+				GUILayout.BeginArea(new Rect(x, y, width, height));
+				
+				GUILayout.BeginVertical();			
+				
+				GUILayout.Box(unitString, GUILayout.Width(width));
 				
 				GUILayout.EndVertical();
+				
+				//GUILayout.FlexibleSpace();
+				
+				GUILayout.BeginHorizontal();
+				
+				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
+					if (GUILayout.Button("Sell Unit", GUILayout.Height(40f))) {
+						Debug.Log("Sell Button Clicked");
+						Debug.Log("Sell " + selectedUnitController);
+						selectedUnitController.SellUnit();	
+					}
+					
+					if (GUILayout.Button("Upgrade Unit", GUILayout.Height(40f))) {
+						Debug.Log("Upgrade Button Clicked");
+						selectedUnitController.UpgradeUnit();	
+					}
+				}
+				
+				GUILayout.EndHorizontal();
+				
+				//GUILayout.Space(height*0.01f);
+				
 				GUILayout.EndArea();
 			}
 		}		
