@@ -8,7 +8,8 @@ public class Faction : MonoBehaviour {
 	public int NumberOfTiers = 4;
 	
 	// Use this for initialization
-	void Start () {FactionUnits = new List<Unit>(4);
+	void Start () {
+		FactionUnits = new List<Unit>(4);
 		
 		for (int i = 0; i < NumberOfTiers; i++) {
 			addFactionUnit(i);	
