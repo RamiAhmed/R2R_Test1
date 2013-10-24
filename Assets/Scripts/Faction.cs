@@ -7,17 +7,14 @@ public class Faction : MonoBehaviour {
 	public List<Unit> FactionUnits;
 	public int NumberOfTiers = 4;
 	
-	//private PlayerController playerRef;
-
 	// Use this for initialization
-	void Start () {
-		//playerRef = this.gameObject.GetComponent<PlayerController>();
-		
-		FactionUnits = new List<Unit>(4);
+	void Start () {FactionUnits = new List<Unit>(4);
 		
 		for (int i = 0; i < NumberOfTiers; i++) {
 			addFactionUnit(i);	
 		}
+		
+		Invoke("inactivateFactionUnits", 0.1f);
 	}
 	
 	private Unit addFactionUnit(int index) {
@@ -33,10 +30,8 @@ public class Faction : MonoBehaviour {
 		if (obj != null) {
 			GameObject unit = Instantiate(obj) as GameObject;
 			if (unit != null) {
-				//Debug.Log("AddFactionUnit : " + unitName + ", index: " + index);
 				FactionUnits.Add(unit.GetComponent<Unit>());
 				unit.name = unitName;
-				unit.SetActive(false);
 			}
 			else {
 				Debug.LogWarning("unit is null. Could not find " + unitName + " by index " + index);
@@ -47,5 +42,11 @@ public class Faction : MonoBehaviour {
 		}
 		
 		return FactionUnits[index] != null ? FactionUnits[index] : null;
+	}
+	
+	private void inactivateFactionUnits() {
+		foreach (Unit unit in FactionUnits) {
+			unit.gameObject.SetActive(false);
+		}		
 	}
 }

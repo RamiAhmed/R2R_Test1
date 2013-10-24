@@ -337,10 +337,18 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.Space(width*0.1f);
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
+		
+		if (GUI.tooltip != "") {
+			Vector2 pos = Input.mousePosition;
+			GUI.Box(new Rect(pos.x-10f, Screen.height - pos.y - 40f, 100f, 40f), GUI.tooltip);
+		}
 	}
 	
 	private void createSpawnUnitButton(int index) {
-		if (GUILayout.Button((index+1).ToString() + ": " + playerFaction.FactionUnits[index].name, GUILayout.Height(40f)) || 
+		Unit factionUnit = playerFaction.FactionUnits[index];
+		string buttonText = (index+1).ToString() + ": " + factionUnit.Name;
+		string tooltipText = "Gold cost: " + factionUnit.GoldCost + "\nUnit score: " + factionUnit.GetTotalScore();
+		if (GUILayout.Button(new GUIContent(buttonText, tooltipText), GUILayout.Height(40f)) || 
 			(Input.GetKeyUp((KeyCode)(49 + index)))) {
 			spawnUnit(index);
 		}
