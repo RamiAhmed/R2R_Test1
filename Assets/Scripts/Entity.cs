@@ -108,7 +108,7 @@ public class Entity : MonoBehaviour {
 		}	
 		else {
 			float currentTime = Time.time;
-			if (currentTime - lastAttack > AttacksPerSecond) {
+			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 				
 				if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) || (GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
@@ -273,7 +273,7 @@ public class Entity : MonoBehaviour {
 		}		
 		else {
 			float currentTime = Time.time;
-			if (currentTime - lastAttack > AttacksPerSecond) {
+			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 				
 				this.transform.LookAt(opponent.transform.position);

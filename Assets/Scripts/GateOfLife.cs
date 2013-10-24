@@ -14,7 +14,7 @@ public class GateOfLife : Entity {
 		
 		MovementSpeed = 0f;
 //		MaxForce = 0f;
-		AttacksPerSecond = 2f;
+		AttacksPerSecond = 0.5f;
 		Damage = 10f;		
 		Evasion = 0f;
 		Accuracy = 5f;
@@ -59,7 +59,7 @@ public class GateOfLife : Entity {
 		}		
 		else {
 			float currentTime = Time.time;
-			if (currentTime - lastAttack > AttacksPerSecond) {
+			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 				
 				//this.transform.LookAt(opponent.transform.position);
