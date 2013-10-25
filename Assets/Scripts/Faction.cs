@@ -4,20 +4,21 @@ using System.Collections.Generic;
 
 public class Faction : MonoBehaviour {
 	
-	public List<Unit> FactionUnits;
-	public int NumberOfTiers = 4;
+	public List<Unit> FactionUnits = new List<Unit>();
+	//public int NumberOfTiers = 4;
 	
 	// Use this for initialization
 	void Start () {
-		FactionUnits = new List<Unit>(4);
-		
+		//FactionUnits = new List<Unit>(4);
+		/*
 		for (int i = 0; i < NumberOfTiers; i++) {
 			addFactionUnit(i);	
 		}
 		
 		Invoke("inactivateFactionUnits", 0.1f);
+		*/
 	}
-	
+	/*
 	private Unit addFactionUnit(int index) {
 		string unitName = "";
 		switch (index) {
@@ -50,4 +51,5 @@ public class Faction : MonoBehaviour {
 			unit.gameObject.SetActive(false);
 		}		
 	}
+	*/
 }

@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture marqueeGraphics;
 	
-	private List<Entity> selectedUnits = null;
+	public List<Entity> SelectedUnits = null;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -30,20 +30,21 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
-	
+	/*
 	void Awake() {
 		playerFaction = this.gameObject.AddComponent<Faction>();
 	}
-	
+	*/
 	// Use this for initialization
 	void Start () {
+		playerFaction = this.GetComponent<Faction>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		unitsList = new List<GameObject>();
 		deadUnitsList = new List<GameObject>();
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-		selectedUnits = new List<Entity>();
+		SelectedUnits = new List<Entity>();
 	}
 	
 	// Update is called once per frame
@@ -63,7 +64,7 @@ public class PlayerController : MonoBehaviour {
 				respawnUnits();
 			}
 			
-			if (selectedUnits.Count > 0) {
+			if (SelectedUnits.Count > 0) {
 				if (Input.GetMouseButtonDown(1)) {
 					moveUnit();
 				}
@@ -106,15 +107,15 @@ public class PlayerController : MonoBehaviour {
 	}
 					
 	private void moveUnit() {
-		//Debug.Log("MoveUnit. Selected units: " + selectedUnits.Count + ", selectedUnit: " + selectedUnit);
-		if (selectedUnits.Count > 0) {			
+		//Debug.Log("MoveUnit. Selected units: " + SelectedUnits.Count + ", selectedUnit: " + selectedUnit);
+		if (SelectedUnits.Count > 0) {			
 			Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
 			RaycastHit[] hits = Physics.RaycastAll(mouseRay);
 			foreach (RaycastHit hit in hits) {
 				if (hit.collider.GetType() == typeof(TerrainCollider)) {
 					Vector3 clickedPos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
 					
-					foreach (Entity ent in selectedUnits) {
+					foreach (Entity ent in SelectedUnits) {
 						if (!ent.IsDead && ent.GetComponent<UnitController>().playerOwner == this) {
 							ent.MoveTo(clickedPos);
 						}
@@ -128,9 +129,9 @@ public class PlayerController : MonoBehaviour {
 	private void clearSelection() {
 		Debug.Log("Clear selection");
 		
-		if (selectedUnits.Count > 0) {
-			while (selectedUnits.Count > 0) {
-				selectedUnits[0].Deselect(selectedUnits);
+		if (SelectedUnits.Count > 0) {
+			while (SelectedUnits.Count > 0) {
+				SelectedUnits[0].Deselect(SelectedUnits);
 			}
 		}
 	}
@@ -170,12 +171,12 @@ public class PlayerController : MonoBehaviour {
 					Entity ent = unit.GetComponent<Entity>();
 				    if (!marqueeRect.Contains(_screenPoint) || !backupRect.Contains(_screenPoint)) {
 				        // unit.SendMessage("OnUnselected", SendMessageOptions.DontRequireReceiver);
-						ent.Deselect(selectedUnits);
+						ent.Deselect(SelectedUnits);
 				    }
 				    
 					if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
 				        // unit.SendMessage("OnSelected", SendMessageOptions.DontRequireReceiver);
-						ent.Select(selectedUnits);
+						ent.Select(SelectedUnits);
 				    }
 				}
 			}
@@ -201,7 +202,7 @@ public class PlayerController : MonoBehaviour {
 		foreach (RaycastHit hit in hits) {			
 			if (hit.transform.GetComponent<Entity>() != null) {
 				Entity selectedUnit = hit.transform.GetComponent<Entity>();
-				selectedUnit.Select(selectedUnits);
+				selectedUnit.Select(SelectedUnits);
 				break;			
 			}			
 		}	
@@ -261,14 +262,14 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderSelectedUnitGUI() {
-		if (selectedUnits.Count > 0) {			
+		if (SelectedUnits.Count > 0) {			
 			float width = screenWidth * 0.2f,
 				height = screenHeight * 0.7f;
 			float x = screenWidth - width - 5f,
 				y = (screenHeight - height)/4f;
 			
-			Entity selectedUnit = selectedUnits[0];
-			if (selectedUnit != null) {				
+			Entity selectedUnit = SelectedUnits[0];
+			if (selectedUnit != null && !selectedUnit.IsDead) {				
 				string unitString = "Selected unit: " + selectedUnit.Name;
 				unitString += "\nHitpoints: " + Mathf.Round(selectedUnit.CurrentHitPoints) + " / " + Mathf.Round(selectedUnit.MaxHitPoints);
 				unitString += "\nDamage: " + selectedUnit.Damage;
@@ -289,8 +290,8 @@ public class PlayerController : MonoBehaviour {
 					unitString += "\nGold cost: " + selectedUnit.GetComponent<Unit>().GoldCost;
 				}
 				
-				if (selectedUnits.Count > 1) {
-					unitString += "\n\nSelected units: " + selectedUnits.Count;
+				if (SelectedUnits.Count > 1) {
+					unitString += "\n\nSelected units: " + SelectedUnits.Count;
 				}
 				
 				GUILayout.BeginArea(new Rect(x, y, width, height));
@@ -363,7 +364,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.BeginHorizontal();
 		GUILayout.Space(width*0.1f);
 		
-		for (int i = 1; i <= playerFaction.NumberOfTiers; i++) {
+		for (int i = 1; i <= playerFaction.FactionUnits.Count; i++) {
 			createSpawnUnitButton(i-1);	
 		}
 		

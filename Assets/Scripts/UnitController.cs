@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 public class UnitController : Unit {
 	
-	public List<Unit> UpgradesList = new List<Unit>();
-	public int CurrentUpgrade = 0;
+	public Unit UpgradesInto = null;
 	
 	[HideInInspector]
 	public PlayerController playerOwner;
@@ -238,7 +237,7 @@ public class UnitController : Unit {
 	}
 	
 	public bool CanUpgrade() {
-		return CurrentUpgrade+1 <= UpgradesList.Count;	
+		return UpgradesInto != null;
 	}
 	
 	public void UpgradeUnit() {
@@ -246,32 +245,34 @@ public class UnitController : Unit {
 		
 		if (CanUpgrade()) {
 			StopMoving();
-			
-			CurrentUpgrade++;
-			Unit upgradesInto = UpgradesList[CurrentUpgrade-1];
-			
-			if (upgradesInto == null) {
-				Debug.LogWarning("Could not find upgrades into unit for " + this.Name);
-			}			
-			else if (playerOwner.PlayerGold >= upgradesInto.GoldCost) {
-				playerOwner.PlayerGold -= upgradesInto.GoldCost;
+						
+			if (playerOwner.PlayerGold >= UpgradesInto.GoldCost) {
+				playerOwner.PlayerGold -= UpgradesInto.GoldCost;
 		
-				GameObject newUnit = Instantiate(upgradesInto.gameObject) as GameObject;
+				GameObject newUnit = Instantiate(UpgradesInto.gameObject) as GameObject;
 
 				newUnit.transform.position = this.transform.position;
 				playerOwner.unitsList.Add(newUnit);
 				UnitController unitCont = newUnit.GetComponent<UnitController>();
 				unitCont.playerOwner = this.playerOwner;
-				unitCont.currentUnitState = UnitState.PLACED;
+				unitCont.currentUnitState = UnitState.PLACED;				
+				playerOwner.SelectedUnits.Insert(0, unitCont);
 				
-				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + upgradesInto.Name + " for " + upgradesInto.GoldCost + " gold.", Color.green);
-
+				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + UpgradesInto.Name + " for " + UpgradesInto.GoldCost + " gold.", Color.green);
+				
+				if (playerOwner.SelectedUnits.Contains(this)) {
+					playerOwner.SelectedUnits.Remove(this);
+				}
+				
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You cannot afford to upgrade " + this.Name);
 			}
+		}
+		else {
+			Debug.LogWarning("Could not find UpgradesInto for " + this.Name);
 		}
 	}
 	
@@ -284,6 +285,10 @@ public class UnitController : Unit {
 		
 		playerOwner.PlayerGold += goldReturned;
 		playerOwner.unitsList.Remove(this.gameObject);		
+		
+		if (playerOwner.SelectedUnits.Contains(this)) {
+			playerOwner.SelectedUnits.Remove(this);
+		}
 		
 		//this.gameObject.SetActive(false);
 		Destroy(this.gameObject);
