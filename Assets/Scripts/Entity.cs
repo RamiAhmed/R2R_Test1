@@ -45,8 +45,8 @@ public class Entity : MonoBehaviour {
 	private int currentWaypoint = 0;
 	private float nextWaypointDistance = 3f;
 	
-	private float repathRate = 1.5f;
-	private float lastRepath = -1f;
+	private float repathRate = 1.5f,
+				  lastRepath = -1f;
 
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
