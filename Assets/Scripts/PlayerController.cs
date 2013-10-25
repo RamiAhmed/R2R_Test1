@@ -4,15 +4,16 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 	
-	public List<GameObject> unitsList;
-	public List<GameObject> deadUnitsList;
+	public List<GameObject> unitsList, deadUnitsList;
 	
 	public int PlayerLives = 1;
 	public int PlayerGold = 20;
 	
-	public float ShowFeedbackTime = 3f; // show feedback messages for 5 seconds
+	public float ShowFeedbackTime = 3f; // show feedback messages for 3 seconds
 	
 	public Faction playerFaction;
+	
+	public Texture marqueeGraphics;
 	
 	private List<Entity> selectedUnits = null;
 	
@@ -25,10 +26,8 @@ public class PlayerController : MonoBehaviour {
 	
 	private string feedbackText = "";
 	
-	public Texture marqueeGraphics;
 	private Vector2 marqueeOrigin, marqueeSize;
-	private Rect marqueeRect;
-	private Rect backupRect;
+	private Rect marqueeRect, backupRect;
 	
 	void Awake() {
 		playerFaction = this.gameObject.AddComponent<Faction>();
@@ -69,7 +68,12 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		
-		handleUnitSelection();
+		float marginFactor = 0.2f;
+		Vector2 pos = Input.mousePosition;
+		if (pos.x > screenWidth * marginFactor && pos.x < (screenWidth - screenWidth * marginFactor) &&
+			pos.y > screenHeight * marginFactor && pos.y < (screenHeight - screenHeight * marginFactor)) {
+			handleUnitSelection();
+		}
 		
 	}
 	
@@ -130,14 +134,14 @@ public class PlayerController : MonoBehaviour {
 		if (Input.GetMouseButtonDown(0)) {
 			clearSelection();
 			
-			float _invertedY = Screen.height - Input.mousePosition.y;
+			float _invertedY = screenHeight - Input.mousePosition.y;
 			marqueeOrigin = new Vector2(Input.mousePosition.x, _invertedY);
 			
 			selectUnit();
 		}
 		
 		if (Input.GetMouseButton(0)) {
-			float _invertedY = Screen.height - Input.mousePosition.y;
+			float _invertedY = screenHeight - Input.mousePosition.y;
 									
 			marqueeSize = new Vector2(Input.mousePosition.x - marqueeOrigin.x, (marqueeOrigin.y - _invertedY) * -1);
 			//FIX FOR RECT.CONTAINS NOT ACCEPTING NEGATIVE VALUES
@@ -155,7 +159,7 @@ public class PlayerController : MonoBehaviour {
 				foreach (GameObject unit in unitsList) {
 				    //Convert the world position of the unit to a screen position and then to a GUI point
 				    Vector3 _screenPos = playerCam.WorldToScreenPoint(unit.transform.position);
-				    Vector2 _screenPoint = new Vector2(_screenPos.x, Screen.height - _screenPos.y);
+				    Vector2 _screenPoint = new Vector2(_screenPos.x, screenHeight - _screenPos.y);
 				    //Ensure that any units not within the marquee are currently unselected
 					Entity ent = unit.GetComponent<Entity>();
 				    if (!marqueeRect.Contains(_screenPoint) || !backupRect.Contains(_screenPoint)) {
@@ -279,8 +283,6 @@ public class PlayerController : MonoBehaviour {
 					unitString += "\n\nSelected units: " + selectedUnits.Count;
 				}
 				
-				//GUI.Box(new Rect(x, y, width, height), "");
-				
 				GUILayout.BeginArea(new Rect(x, y, width, height));
 				
 				GUILayout.BeginVertical();			
@@ -289,27 +291,20 @@ public class PlayerController : MonoBehaviour {
 				
 				GUILayout.EndVertical();
 				
-				//GUILayout.FlexibleSpace();
-				
 				GUILayout.BeginHorizontal();
 				
 				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
-					if (GUILayout.Button("Sell Unit", GUILayout.Height(40f))) {
-						Debug.Log("Sell Button Clicked");
-						Debug.Log("Sell " + selectedUnitController);
+					if (GUILayout.Button(new GUIContent("Sell Unit"), GUILayout.Height(40f))) {
 						selectedUnitController.SellUnit();	
 					}
 					
-					if (GUILayout.Button("Upgrade Unit", GUILayout.Height(40f))) {
-						Debug.Log("Upgrade Button Clicked");
+					if (GUILayout.Button(new GUIContent("Upgrade Unit"), GUILayout.Height(40f))) {
 						selectedUnitController.UpgradeUnit();	
 					}
 				}
 				
 				GUILayout.EndHorizontal();
-				
-				//GUILayout.Space(height*0.01f);
 				
 				GUILayout.EndArea();
 			}
@@ -326,7 +321,7 @@ public class PlayerController : MonoBehaviour {
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
 			
-			if (GUILayout.Button("Spawn Wave")) {
+			if (GUILayout.Button(new GUIContent("Spawn Wave"))) {
 				_gameController.ForceSpawn = true;	
 			}
 		}
@@ -366,7 +361,7 @@ public class PlayerController : MonoBehaviour {
 		
 		if (GUI.tooltip != "") {
 			Vector2 pos = Input.mousePosition;
-			GUI.Box(new Rect(pos.x-10f, Screen.height - pos.y - 40f, 100f, 40f), GUI.tooltip);
+			GUI.Box(new Rect(pos.x-10f, screenHeight - pos.y - 40f, 100f, 40f), GUI.tooltip);
 		}
 	}
 	
@@ -417,9 +412,9 @@ public class PlayerController : MonoBehaviour {
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
-			GUI.color = Color.red;
+			//GUI.color = Color.red;
 			GUILayout.Box(feedbackText, GUILayout.Width(width), GUILayout.Height(height));
-			GUI.color = Color.white;
+			//GUI.color = Color.white;
 			
 			GUILayout.EndArea();			
 		}

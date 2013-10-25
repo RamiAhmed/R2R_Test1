@@ -71,7 +71,7 @@ public class GameController : MonoBehaviour {
 		if (CurrentGameState == GameState.PLAY) {
 			GameTime += Time.deltaTime;
 			
-			if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P)) {
+			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				CurrentGameState = GameState.PAUSED;					
 			}
 			
@@ -100,7 +100,7 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		else if (CurrentGameState == GameState.PAUSED) {
-			if (Input.GetKeyDown(KeyCode.Pause) || Input.GetKeyDown(KeyCode.P)) {
+			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				CurrentGameState = GameState.PLAY;					
 			}			
 		}
