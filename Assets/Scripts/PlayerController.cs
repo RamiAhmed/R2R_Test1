@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour {
 	private Vector2 marqueeOrigin, marqueeSize;
 	private Rect marqueeRect, backupRect;
 	
+	private Color feedbackColor = Color.white;
+	
 	void Awake() {
 		playerFaction = this.gameObject.AddComponent<Faction>();
 	}
@@ -412,17 +414,21 @@ public class PlayerController : MonoBehaviour {
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
-			//GUI.color = Color.red;
+			GUI.color = feedbackColor;
 			GUILayout.Box(feedbackText, GUILayout.Width(width), GUILayout.Height(height));
-			//GUI.color = Color.white;
 			
 			GUILayout.EndArea();			
 		}
 	}
 	
 	public void DisplayFeedbackMessage(string text) {
+		DisplayFeedbackMessage(text, Color.red);
+	}
+	
+	public void DisplayFeedbackMessage(string text, Color color) {
 		feedbackText = text;
 		Invoke("stopDisplayFeedback", ShowFeedbackTime);
+		feedbackColor = color;
 	}
 	
 	private void stopDisplayFeedback() {

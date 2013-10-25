@@ -247,7 +247,7 @@ public class UnitController : Unit {
 		StopMoving();
 		
 		int goldReturned = Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);
-		this.playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.");		
+		this.playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);		
 		
 		this.playerOwner.PlayerGold += goldReturned;
 		this.playerOwner.unitsList.Remove(this.gameObject);		
