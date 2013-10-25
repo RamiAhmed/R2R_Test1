@@ -84,10 +84,12 @@ public class Entity : MonoBehaviour {
 		StopMoving();
 	}
 	
-	public void Select(List<Entity> list) {
+	public virtual void Select(List<Entity> list) {
 		if (!this.Selected && !this.IsDead) {
 			this.Selected = true;
-			list.Add(this);
+			if (!list.Contains(this)) {
+				list.Add(this);
+			}
 		}
 	}
 	

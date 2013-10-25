@@ -260,7 +260,7 @@ public class PlayerController : MonoBehaviour {
 			
 			Entity selectedUnit = SelectedUnits[0];
 			if (selectedUnit != null && !selectedUnit.IsDead) {				
-				string unitString = "Selected unit: " + selectedUnit.Name;
+				string unitString = selectedUnit.Name + "\n";
 				unitString += "\nHitpoints: " + Mathf.Round(selectedUnit.CurrentHitPoints) + " / " + Mathf.Round(selectedUnit.MaxHitPoints);
 				unitString += "\nDamage: " + selectedUnit.Damage;
 				unitString += "\nAccuracy: " + selectedUnit.Accuracy;
@@ -271,8 +271,8 @@ public class PlayerController : MonoBehaviour {
 				unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
 				unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
 				unitString += "\nFleeing chance: " + Mathf.RoundToInt(selectedUnit.FleeThreshold*100f) + "%";
-				unitString += "\n\nTotal unit score: " + selectedUnit.GetTotalScore();
-
+				
+				unitString += "\n";
 				if (selectedUnit.GetIsEnemy(selectedUnit.gameObject)) {
 					unitString += "\nGold reward: " + selectedUnit.GetComponent<Enemy>().GoldReward;	
 				}
@@ -280,9 +280,12 @@ public class PlayerController : MonoBehaviour {
 					unitString += "\nGold cost: " + selectedUnit.GetComponent<Unit>().GoldCost;
 				}
 				
+				unitString += "\nTotal unit score: " + selectedUnit.GetTotalScore();
+				
 				if (SelectedUnits.Count > 1) {
 					unitString += "\n\nSelected units: " + SelectedUnits.Count;
-				}
+				}	
+
 				
 				GUILayout.BeginArea(new Rect(x, y, width, height));
 				
@@ -296,12 +299,12 @@ public class PlayerController : MonoBehaviour {
 				
 				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
-					if (GUILayout.Button(new GUIContent("Sell Unit"), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
+					if (GUILayout.Button(new GUIContent("Sell"), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
 						selectedUnitController.SellUnit();	
 					}
 					
 					if (selectedUnitController.CanUpgrade()) {
-						if (GUILayout.Button(new GUIContent("Upgrade Unit"), GUILayout.Height(40f))) {
+						if (GUILayout.Button(new GUIContent("Upgrade"), GUILayout.Height(40f))) {
 							selectedUnitController.UpgradeUnit();	
 						}
 					}
@@ -406,7 +409,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private void renderFeedbackMessage() {
 		if (feedbackText != "") {
-			float width = screenWidth * 0.4f,
+			float width = screenWidth * 0.5f,
 				height = 30f;
 			float x = (screenWidth - width)/2f,
 				y = (screenHeight/2f) - (height/2f);

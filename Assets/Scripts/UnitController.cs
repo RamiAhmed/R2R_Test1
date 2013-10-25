@@ -14,7 +14,6 @@ public class UnitController : Unit {
 	public enum UnitState {
 		PLACING,
 		PLACED,
-		MOVING,
 		HEALING,
 		ATTACKING,
 		FLEEING,
@@ -286,6 +285,12 @@ public class UnitController : Unit {
 		Deselect(playerOwner.SelectedUnits);
 		
 		Destroy(this.gameObject);
+	}
+	
+	public override void Select(List<Entity> list) {
+		if (this.currentUnitState != UnitState.DEAD && this.currentUnitState != UnitState.PLACING) {
+			base.Select(list);
+		}
 	}
 	
 	protected override void LateUpdate() {
