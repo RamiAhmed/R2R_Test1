@@ -259,9 +259,7 @@ public class UnitController : Unit {
 				
 				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + UpgradesInto.Name + " for " + UpgradesInto.GoldCost + " gold.", Color.green);
 				
-				if (playerOwner.SelectedUnits.Contains(this)) {
-					playerOwner.SelectedUnits.Remove(this);
-				}
+				Deselect(playerOwner.SelectedUnits);
 				
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
@@ -285,9 +283,7 @@ public class UnitController : Unit {
 		playerOwner.PlayerGold += goldReturned;
 		playerOwner.unitsList.Remove(this.gameObject);		
 		
-		if (playerOwner.SelectedUnits.Contains(this)) {
-			playerOwner.SelectedUnits.Remove(this);
-		}
+		Deselect(playerOwner.SelectedUnits);
 		
 		Destroy(this.gameObject);
 	}
@@ -302,6 +298,7 @@ public class UnitController : Unit {
 		if (currentUnitState == UnitState.DEAD) {
 			StopMoving();
 			Debug.Log("Unit dead");
+			Deselect(playerOwner.SelectedUnits);
 			playerOwner.unitsList.Remove(this.gameObject);		
 			playerOwner.deadUnitsList.Add(this.gameObject);
 			
@@ -322,5 +319,6 @@ public class UnitController : Unit {
 		LastBuildLocation.x += Random.Range(-1f, 1f);
 		LastBuildLocation.z += Random.Range(-1f, 1f);
 		currentUnitState = UnitState.DEAD;		
+		Deselect(playerOwner.SelectedUnits);
 	}
 }
