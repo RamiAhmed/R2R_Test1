@@ -94,7 +94,9 @@ public class Entity : MonoBehaviour {
 	public void Deselect(List<Entity> list) {
 		if (this.Selected || this.IsDead) {
 			this.Selected = false;
-			list.Remove(this);
+			if (list.Contains(this)) {
+				list.Remove(this);
+			}
 		}
 	}
 	

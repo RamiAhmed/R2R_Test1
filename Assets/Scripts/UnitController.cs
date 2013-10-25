@@ -255,11 +255,11 @@ public class UnitController : Unit {
 				UnitController unitCont = newUnit.GetComponent<UnitController>();
 				unitCont.playerOwner = this.playerOwner;
 				unitCont.currentUnitState = UnitState.PLACED;				
-				playerOwner.SelectedUnits.Insert(0, unitCont);
+				unitCont.Select(playerOwner.SelectedUnits);
 				
 				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + UpgradesInto.Name + " for " + UpgradesInto.GoldCost + " gold.", Color.green);
 				
-				Deselect(playerOwner.SelectedUnits);
+				this.Deselect(playerOwner.SelectedUnits);
 				
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
