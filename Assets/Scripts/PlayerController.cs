@@ -30,11 +30,7 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
-	/*
-	void Awake() {
-		playerFaction = this.gameObject.AddComponent<Faction>();
-	}
-	*/
+
 	// Use this for initialization
 	void Start () {
 		playerFaction = this.GetComponent<Faction>();
@@ -107,7 +103,6 @@ public class PlayerController : MonoBehaviour {
 	}
 					
 	private void moveUnit() {
-		//Debug.Log("MoveUnit. Selected units: " + SelectedUnits.Count + ", selectedUnit: " + selectedUnit);
 		if (SelectedUnits.Count > 0) {			
 			Ray mouseRay = playerCam.ScreenPointToRay(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
 			RaycastHit[] hits = Physics.RaycastAll(mouseRay);
@@ -126,9 +121,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	private void clearSelection() {
-		Debug.Log("Clear selection");
-		
+	private void clearSelection() {		
 		if (SelectedUnits.Count > 0) {
 			while (SelectedUnits.Count > 0) {
 				SelectedUnits[0].Deselect(SelectedUnits);
@@ -170,12 +163,10 @@ public class PlayerController : MonoBehaviour {
 				    //Ensure that any units not within the marquee are currently unselected
 					Entity ent = unit.GetComponent<Entity>();
 				    if (!marqueeRect.Contains(_screenPoint) || !backupRect.Contains(_screenPoint)) {
-				        // unit.SendMessage("OnUnselected", SendMessageOptions.DontRequireReceiver);
 						ent.Deselect(SelectedUnits);
 				    }
 				    
 					if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
-				        // unit.SendMessage("OnSelected", SendMessageOptions.DontRequireReceiver);
 						ent.Select(SelectedUnits);
 				    }
 				}
@@ -213,7 +204,6 @@ public class PlayerController : MonoBehaviour {
 	void OnGUI() {
 		if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
 			renderGameOver();
-			//Debug.Log("Game Over");
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
@@ -402,7 +392,6 @@ public class PlayerController : MonoBehaviour {
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
 		if (_gameController.MaxUnitCount <= unitsList.Count) {
 			Destroy(newUnit);
-			//Debug.LogWarning("You cannot build more units!");
 			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}
 		else if (PlayerGold >= cost) {
@@ -411,7 +400,6 @@ public class PlayerController : MonoBehaviour {
 		}
 		else {
 			Destroy(newUnit);
-			//Debug.LogWarning("Not enough gold!");
 			DisplayFeedbackMessage("You do not have enough gold.");
 		}
 	}

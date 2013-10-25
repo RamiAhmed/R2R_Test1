@@ -64,7 +64,6 @@ public class UnitController : Unit {
 			}			
 		}
 		else {
-			//Debug.LogWarning("Cannot build at that location");
 			playerOwner.DisplayFeedbackMessage("You cannot build at that location.");
 			return false;
 		}
@@ -290,7 +289,6 @@ public class UnitController : Unit {
 			playerOwner.SelectedUnits.Remove(this);
 		}
 		
-		//this.gameObject.SetActive(false);
 		Destroy(this.gameObject);
 	}
 	

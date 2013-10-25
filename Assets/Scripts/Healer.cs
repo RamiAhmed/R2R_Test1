@@ -5,31 +5,6 @@ public class Healer : UnitController {
 	
 	public float HealThreshold = 0.75f;
 	private Entity healTarget = null;
-
-	// Use this for initialization
-	protected override void Start () {
-		base.Start();
-		/*
-		Name = "Healer";
-		
-		GoldCost = 8;
-		
-		MaxHitPoints = 125f;
-		CurrentHitPoints = MaxHitPoints;
-		
-		Damage = 10f;
-		Accuracy = 15f;
-		Evasion = 10f;
-		Armor = 3f;
-		
-		MovementSpeed = 120f;
-		
-		PerceptionRange = 25f;
-		AttackingRange = 10f;
-		
-		AttacksPerSecond = 0.75f;
-		FleeThreshold = 0.25f;	*/
-	}
 	
 	protected override void HealingBehaviour() {
 		if (healTarget != null && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
