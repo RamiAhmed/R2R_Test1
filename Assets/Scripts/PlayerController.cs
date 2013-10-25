@@ -70,11 +70,15 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		
-		float marginFactor = 0.2f;
+		float xMarginFactor = 0.2f,
+			  yMarginFactor = 0.1f;
 		Vector2 pos = Input.mousePosition;
-		if (pos.x > screenWidth * marginFactor && pos.x < (screenWidth - screenWidth * marginFactor) &&
-			pos.y > screenHeight * marginFactor && pos.y < (screenHeight - screenHeight * marginFactor)) {
+		if (pos.x > screenWidth * xMarginFactor && pos.x < (screenWidth - screenWidth * xMarginFactor) &&
+			pos.y > screenHeight * yMarginFactor && pos.y < (screenHeight - screenHeight * yMarginFactor)) {
 			handleUnitSelection();
+		}
+		else {
+			clearMarqueeRect();
 		}
 		
 	}
@@ -178,12 +182,16 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		if (Input.GetMouseButtonUp(0)) {
-			marqueeRect.width = 0;
-			marqueeRect.height = 0;
-			backupRect.width = 0;
-			backupRect.height = 0;
-			marqueeSize = Vector2.zero;
+			clearMarqueeRect();
 		}
+	}
+	
+	private void clearMarqueeRect() {
+		marqueeRect.width = 0;
+		marqueeRect.height = 0;
+		backupRect.width = 0;
+		backupRect.height = 0;
+		marqueeSize = Vector2.zero;		
 	}
 	
 	private void selectUnit() {
@@ -255,7 +263,7 @@ public class PlayerController : MonoBehaviour {
 	private void renderSelectedUnitGUI() {
 		if (selectedUnits.Count > 0) {			
 			float width = screenWidth * 0.2f,
-				height = screenHeight * 0.6f;
+				height = screenHeight * 0.7f;
 			float x = screenWidth - width - 5f,
 				y = (screenHeight - height)/4f;
 			

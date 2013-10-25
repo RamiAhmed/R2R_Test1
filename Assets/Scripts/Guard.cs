@@ -6,7 +6,7 @@ public class Guard : UnitController {
 	// Use this for initialization
 	protected override void Start () {
 		base.Start();
-		
+		/*
 		Name = "Guard";
 		
 		GoldCost = 4;
@@ -26,6 +26,6 @@ public class Guard : UnitController {
 		AttackingRange = 2.5f;
 		
 		AttacksPerSecond = 0.9f;
-		FleeThreshold = 0.05f;
+		FleeThreshold = 0.05f;*/
 	}
 }

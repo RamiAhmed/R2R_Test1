@@ -240,10 +240,11 @@ public class UnitController : Unit {
 	
 	public void UpgradeUnit() {
 		Debug.Log("Upgrade Unit");
+		StopMoving();
 	}
 	
 	public void SellUnit() {
-		Debug.Log ("SellUnit");
+		Debug.Log("SellUnit");
 		StopMoving();
 		
 		int goldReturned = Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);

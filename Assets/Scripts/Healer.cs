@@ -9,7 +9,7 @@ public class Healer : UnitController {
 	// Use this for initialization
 	protected override void Start () {
 		base.Start();
-		
+		/*
 		Name = "Healer";
 		
 		GoldCost = 8;
@@ -28,7 +28,7 @@ public class Healer : UnitController {
 		AttackingRange = 10f;
 		
 		AttacksPerSecond = 0.75f;
-		FleeThreshold = 0.25f;	
+		FleeThreshold = 0.25f;	*/
 	}
 	
 	protected override void HealingBehaviour() {
