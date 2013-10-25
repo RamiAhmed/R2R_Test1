@@ -305,12 +305,14 @@ public class PlayerController : MonoBehaviour {
 				
 				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
-					if (GUILayout.Button(new GUIContent("Sell Unit"), GUILayout.Height(40f))) {
+					if (GUILayout.Button(new GUIContent("Sell Unit"), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
 						selectedUnitController.SellUnit();	
 					}
 					
-					if (GUILayout.Button(new GUIContent("Upgrade Unit"), GUILayout.Height(40f))) {
-						selectedUnitController.UpgradeUnit();	
+					if (selectedUnitController.CanUpgrade()) {
+						if (GUILayout.Button(new GUIContent("Upgrade Unit"), GUILayout.Height(40f))) {
+							selectedUnitController.UpgradeUnit();	
+						}
 					}
 				}
 				

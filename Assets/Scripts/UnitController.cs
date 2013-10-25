@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using System.Collections.Generic;
 public class UnitController : Unit {
+	
+	public List<Unit> UpgradesList = new List<Unit>();
+	public int CurrentUpgrade = 0;
 	
 	[HideInInspector]
 	public PlayerController playerOwner;
@@ -9,7 +12,6 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public Vector3 moveToPosition = Vector3.zero;
 	
-	[HideInInspector]
 	public enum UnitState {
 		PLACING,
 		PLACED,
@@ -20,20 +22,17 @@ public class UnitController : Unit {
 		DEAD
 	};
 	
-	public UnitState currentUnitState;
+	public UnitState currentUnitState = UnitState.PLACING;
 	
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
 	
-	//private Color originalMaterialColor = Color.white;
 	private bool allowedBuildLocation = false;
 	
 	
 	// Use this for initialization
 	protected override void Start () {	
 		base.Start();
-		currentUnitState = UnitState.PLACING;
-		//originalMaterialColor = this.renderer.material.color;
 		
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
@@ -238,9 +237,42 @@ public class UnitController : Unit {
 		}		
 	}
 	
+	public bool CanUpgrade() {
+		return CurrentUpgrade+1 <= UpgradesList.Count;	
+	}
+	
 	public void UpgradeUnit() {
-		Debug.Log("Upgrade Unit");
-		StopMoving();
+		Debug.Log("Upgrade Unit");		
+		
+		if (CanUpgrade()) {
+			StopMoving();
+			
+			CurrentUpgrade++;
+			Unit upgradesInto = UpgradesList[CurrentUpgrade-1];
+			
+			if (upgradesInto == null) {
+				Debug.LogWarning("Could not find upgrades into unit for " + this.Name);
+			}			
+			else if (playerOwner.PlayerGold >= upgradesInto.GoldCost) {
+				playerOwner.PlayerGold -= upgradesInto.GoldCost;
+		
+				GameObject newUnit = Instantiate(upgradesInto.gameObject) as GameObject;
+
+				newUnit.transform.position = this.transform.position;
+				playerOwner.unitsList.Add(newUnit);
+				UnitController unitCont = newUnit.GetComponent<UnitController>();
+				unitCont.playerOwner = this.playerOwner;
+				unitCont.currentUnitState = UnitState.PLACED;
+				
+				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + upgradesInto.Name + " for " + upgradesInto.GoldCost + " gold.", Color.green);
+
+				playerOwner.unitsList.Remove(this.gameObject);
+				Destroy(this.gameObject);
+			}
+			else {
+				playerOwner.DisplayFeedbackMessage("You cannot afford to upgrade " + this.Name);
+			}
+		}
 	}
 	
 	public void SellUnit() {
@@ -248,10 +280,10 @@ public class UnitController : Unit {
 		StopMoving();
 		
 		int goldReturned = Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);
-		this.playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);		
+		playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);		
 		
-		this.playerOwner.PlayerGold += goldReturned;
-		this.playerOwner.unitsList.Remove(this.gameObject);		
+		playerOwner.PlayerGold += goldReturned;
+		playerOwner.unitsList.Remove(this.gameObject);		
 		
 		//this.gameObject.SetActive(false);
 		Destroy(this.gameObject);
