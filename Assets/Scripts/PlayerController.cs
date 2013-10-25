@@ -285,7 +285,6 @@ public class PlayerController : MonoBehaviour {
 				if (SelectedUnits.Count > 1) {
 					unitString += "\n\nSelected units: " + SelectedUnits.Count;
 				}	
-
 				
 				GUILayout.BeginArea(new Rect(x, y, width, height));
 				
