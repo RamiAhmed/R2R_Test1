@@ -115,7 +115,7 @@ public class Entity : MonoBehaviour {
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 				
-				if ((GetIsUnit(this.gameObject) && GetIsUnit(target.gameObject)) || (GetIsEnemy(this.gameObject) && GetIsEnemy(target.gameObject))) {
+				if ((this.GetIsUnit() && target.GetIsUnit()) || (this.GetIsEnemy() && target.GetIsEnemy())) {
 					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
 					Debug.Log(this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
 				}
@@ -310,16 +310,16 @@ public class Entity : MonoBehaviour {
 		bullet.Owner = this.gameObject;
 	}
 	
-	public bool GetIsUnit(GameObject go) {
-		return go.GetComponent<UnitController>() != null;
+	public bool GetIsUnit() {
+		return this.transform.GetComponent<UnitController>() != null;
 	}
 	
-	public bool GetIsEnemy(GameObject go) {
-		return go.GetComponent<EnemyController>() != null;	
+	public bool GetIsEnemy() {
+		return this.transform.GetComponent<EnemyController>() != null;	
 	}
 	
-	public bool GetIsGate(GameObject go) {
-		return go.GetComponent<GateOfLife>() != null;
+	public bool GetIsGate() {
+		return this.transform.GetComponent<GateOfLife>() != null;
 	}
 	
 	protected Entity GetNearestUnit(List<GameObject> list) {

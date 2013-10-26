@@ -272,10 +272,10 @@ public class PlayerController : MonoBehaviour {
 				unitString += "\nFleeing chance: " + Mathf.RoundToInt(selectedUnit.FleeThreshold*100f) + "%";
 				
 				unitString += "\n";
-				if (selectedUnit.GetIsEnemy(selectedUnit.gameObject)) {
+				if (selectedUnit.GetIsEnemy()) {
 					unitString += "\nGold reward: " + selectedUnit.GetComponent<Enemy>().GoldReward;	
 				}
-				else if (selectedUnit.GetIsUnit(selectedUnit.gameObject)) {
+				else if (selectedUnit.GetIsUnit()) {
 					unitString += "\nGold cost: " + selectedUnit.GetComponent<Unit>().GoldCost;
 				}
 				
@@ -295,7 +295,7 @@ public class PlayerController : MonoBehaviour {
 				
 				GUILayout.BeginHorizontal();
 				
-				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+				if (selectedUnit.GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
 					
 					string sellGUITip = "Sell " + selectedUnit.Name + " for " + selectedUnitController.GetSellAmount() + " gold.";
