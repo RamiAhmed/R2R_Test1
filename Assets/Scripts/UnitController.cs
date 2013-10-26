@@ -272,11 +272,15 @@ public class UnitController : Unit {
 		}
 	}
 	
+	public int GetSellAmount() {
+		return Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);	
+	}
+	
 	public void SellUnit() {
 		Debug.Log("SellUnit");
 		StopMoving();
 		
-		int goldReturned = Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);
+		int goldReturned = GetSellAmount();
 		playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);		
 		
 		playerOwner.PlayerGold += goldReturned;

@@ -246,7 +246,6 @@ public class PlayerController : MonoBehaviour {
 		
 		GUI.color = Color.red;
 		GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
-		GUI.color = Color.white;
 		
 		GUILayout.EndArea();
 	}
@@ -298,20 +297,30 @@ public class PlayerController : MonoBehaviour {
 				
 				if (selectedUnit.GetIsUnit(selectedUnit.gameObject) && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
-					if (GUILayout.Button(new GUIContent("Sell"), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
+					
+					string sellGUITip = "Sell " + selectedUnit.Name + " for " + selectedUnitController.GetSellAmount() + " gold.";
+					if (GUILayout.Button(new GUIContent("Sell", sellGUITip), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
 						selectedUnitController.SellUnit();	
 					}
 					
 					if (selectedUnitController.CanUpgrade()) {
-						if (GUILayout.Button(new GUIContent("Upgrade"), GUILayout.Height(40f))) {
+						string upgradeGUITip = "Upgrade " + selectedUnit.Name + " into\n " + selectedUnitController.UpgradesInto.Name + " for " + selectedUnitController.UpgradesInto.GoldCost + " gold.";
+						if (GUILayout.Button(new GUIContent("Upgrade", upgradeGUITip), GUILayout.Height(40f))) {
 							selectedUnitController.UpgradeUnit();	
 						}
 					}
+					
 				}
 				
 				GUILayout.EndHorizontal();
 				
 				GUILayout.EndArea();
+				
+				if (GUI.tooltip != "") {
+					Vector2 pos = Input.mousePosition;
+					float tipWidth = 200f, tipHeight = 50f;
+					GUI.Box(new Rect(pos.x-tipWidth, screenHeight - pos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
+				}
 			}
 		}		
 	}
@@ -333,7 +342,6 @@ public class PlayerController : MonoBehaviour {
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			GUI.color = Color.red;
 			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
-			GUI.color = Color.white;
 		}
 		
 		GUILayout.FlexibleSpace();
