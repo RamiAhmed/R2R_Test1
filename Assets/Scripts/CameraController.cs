@@ -61,12 +61,12 @@ public class CameraController : MonoBehaviour {
 	private Vector3 scrollCameraMove(float deltaTime) {
 		Vector3 cameraVelocity = Vector3.zero;
 		
-		if (Input.GetAxis("Mouse ScrollWheel") < 0) { // back 
+		if (Input.GetAxis("Mouse ScrollWheel") < 0 || Input.GetKey(KeyCode.PageDown)) { // back 
 			if (this.transform.position.y < MaximumY) {
 				cameraVelocity = -this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;
 			}
 		}
-		else if (Input.GetAxis("Mouse ScrollWheel") > 0) { // forward
+		else if (Input.GetAxis("Mouse ScrollWheel") > 0 || Input.GetKey(KeyCode.PageUp)) { // forward
 			if (this.transform.position.y > MinimumY) {
 				cameraVelocity = this.transform.forward * CameraScrollMultiplier * CameraMoveSpeed * deltaTime;	 
 			}
