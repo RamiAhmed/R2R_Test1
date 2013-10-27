@@ -46,23 +46,23 @@ public class GameController : MonoBehaviour {
 	
 	private bool hasSpawnedThisWave = false;
 	
+	private GameObject miniMapCam;
+	
 	// Use this for initialization
 	void Start () {
-		if (CurrentGameState == GameState.LOADING) {
-			GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
-			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
-			foreach (GameObject point in points) {
-				if (point.transform.name.Contains("End")) {
-					Vector3 targetPos = point.transform.position;
-					targetPos.y += 30f;
-					player.transform.position = targetPos;
-					break;
-				}
+		GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
+		GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
+		foreach (GameObject point in points) {
+			if (point.transform.name.Contains("End")) {
+				Vector3 targetPos = point.transform.position;
+				targetPos.y += 30f;
+				player.transform.position = targetPos;
+				break;
 			}
-			players.Add(player);
-			
-			//CurrentGameState = GameState.PLAY;
 		}
+		players.Add(player);
+	
+		miniMapCam = GameObject.FindGameObjectWithTag("MiniMapCam");
 	}
 	
 	// Update is called once per frame
@@ -88,6 +88,10 @@ public class GameController : MonoBehaviour {
 		if (CurrentGameState == GameState.PLAY) {
 			GameTime += Time.deltaTime;
 			
+			if (!miniMapCam.activeSelf) {
+				miniMapCam.SetActive(true);
+			}
+			
 			if (CurrentPlayState == PlayState.BUILD) {
 				BuildTime += Time.deltaTime;
 				
@@ -111,6 +115,11 @@ public class GameController : MonoBehaviour {
 		}
 		else if (CurrentGameState == GameState.ENDING) {
 			Application.Quit();	
+		}
+		else {
+			if (miniMapCam.activeSelf) {
+				miniMapCam.SetActive(false);
+			}
 		}
 	}
 	
