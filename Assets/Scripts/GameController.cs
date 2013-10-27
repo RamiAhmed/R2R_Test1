@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour {
 			}
 			players.Add(player);
 			
-			CurrentGameState = GameState.PLAY;
+			//CurrentGameState = GameState.PLAY;
 		}
 	}
 	
@@ -103,6 +103,9 @@ public class GameController : MonoBehaviour {
 			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				CurrentGameState = GameState.PLAY;					
 			}			
+		}
+		else if (CurrentGameState == GameState.ENDING) {
+			Application.Quit();	
 		}
 	}
 	
