@@ -36,13 +36,18 @@ public class MenuController : MonoBehaviour {
 			
 			float elementHeight = 40f;
 			
+			string playText = "Play Game";
+			if (_gameController.GameTime > 0f) {
+				playText = "Resume Game";
+			}
+			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
 			GUILayout.BeginVertical();
 			
 			GUILayout.Box(new GUIContent("Right to Rule - Prototype 1"), GUILayout.Height(elementHeight));
 			
-			if (GUILayout.Button(new GUIContent("Play Game", "Click to start playing the game"), GUILayout.Height(elementHeight))) {
+			if (GUILayout.Button(new GUIContent(playText, "Click to start playing the game"), GUILayout.Height(elementHeight))) {
 				_gameController.CurrentGameState = GameController.GameState.PLAY;
 				_gameController.CurrentPlayState = GameController.PlayState.BUILD;
 			}
