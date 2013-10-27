@@ -116,7 +116,7 @@ public class Entity : MonoBehaviour {
 				lastAttack = currentTime;
 				
 				if ((this.GetIsUnit() && target.GetIsUnit()) || (this.GetIsEnemy() && target.GetIsEnemy())) {
-					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > MaxHitPoints ? MaxHitPoints : target.CurrentHitPoints + healAmount;
+					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > target.MaxHitPoints ? target.MaxHitPoints : target.CurrentHitPoints + healAmount;
 					Debug.Log(this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
 				}
 			}
