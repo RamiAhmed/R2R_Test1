@@ -39,7 +39,6 @@ public class GameController : MonoBehaviour {
 	public enum PlayState {
 		BUILD,
 		COMBAT,
-		ARENA,
 		NONE
 	};
 	
@@ -68,17 +67,28 @@ public class GameController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
+			if (CurrentGameState == GameState.PAUSED) {
+				CurrentGameState = GameState.PLAY;
+			}
+			else if (CurrentGameState == GameState.PLAY) {
+				CurrentGameState = GameState.PAUSED;					
+			}
+		}
+		
+		if (Input.GetKeyUp(KeyCode.Escape)) {
+			if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.PAUSED) {
+				CurrentGameState = GameState.MENU;	
+			}
+			else if (CurrentGameState == GameState.MENU && GameTime > 0f) {
+				CurrentGameState = GameState.PLAY;
+			}					
+		}
+		
 		if (CurrentGameState == GameState.PLAY) {
 			GameTime += Time.deltaTime;
 			
-			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
-				CurrentGameState = GameState.PAUSED;					
-			}
-			
-			if (CurrentPlayState == PlayState.NONE) {
-				CurrentPlayState = PlayState.BUILD;	
-			}
-			else if (CurrentPlayState == PlayState.BUILD) {
+			if (CurrentPlayState == PlayState.BUILD) {
 				BuildTime += Time.deltaTime;
 				
 				if (BuildTime >= MaxBuildTime || ForceSpawn) {
@@ -98,11 +108,6 @@ public class GameController : MonoBehaviour {
 					hasSpawnedThisWave = false;
 				}
 			}
-		}
-		else if (CurrentGameState == GameState.PAUSED) {
-			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
-				CurrentGameState = GameState.PLAY;					
-			}			
 		}
 		else if (CurrentGameState == GameState.ENDING) {
 			Application.Quit();	
