@@ -211,7 +211,6 @@ public class Entity : MonoBehaviour {
 		List<Vector3> vectorPath = path.vectorPath;
 		
         if (currentWaypoint >= vectorPath.Count) {
-//            Debug.Log("End of Path reached");
             StopMoving();
             return;
         }
@@ -258,6 +257,10 @@ public class Entity : MonoBehaviour {
 		}
 	}
 	
+	public void SetIsNotDead() {
+		SetIsNotDead(true);	
+	}
+	
 	public void SetIsNotDead(bool fullHealth) {
 		this.IsDead = false;
 		if (fullHealth) {
@@ -282,7 +285,7 @@ public class Entity : MonoBehaviour {
 				
 				this.transform.LookAt(opponent.transform.position);
 				
-				if (Bullet != null && Bullet) {
+				if (Bullet != null) {
 					ShootBullet(opponent);
 				}
 				
@@ -373,17 +376,35 @@ public class Entity : MonoBehaviour {
 		return strongest != null ? strongest.GetComponent<Entity>() : null;
 	}
 	
+	protected Entity GetLeastDamagedUnit(List <GameObject> list) {
+		if (list.Count <= 0) {
+			return null;
+		}
+		
+		GameObject leastDamaged = null;
+		float damage = 100;
+		foreach (GameObject unit in list) {
+			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
+			if (hpDiff < damage || hpDiff <= 0f) {
+				leastDamaged = unit;
+				damage = hpDiff;
+			}
+		}
+		
+		return leastDamaged != null ? leastDamaged.GetComponent<Entity>() : null; 
+	}
+	
 	protected Entity GetMostDamagedUnit(List<GameObject> list) {
 		if (list.Count <= 0)
 			return null;
 		
 		GameObject mostDamaged = null;
-		float damage = list[0].GetComponent<Entity>().CurrentHitPoints;
+		float damage = 0;
 		foreach (GameObject unit in list) {
-			float hp = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hp < damage && hp > 1f) {
+			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
+			if (hpDiff > damage && hp > 1f) {
 				mostDamaged = unit;
-				damage = hp;
+				damage = hpDiff;
 			}
 		}
 		

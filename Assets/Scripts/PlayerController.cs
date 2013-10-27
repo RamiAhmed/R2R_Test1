@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour {
 				UnitController unit = go.GetComponent<UnitController>();
 				
 				unitsList.Add(go);
-				unit.SetIsNotDead(true);					
+				unit.SetIsNotDead();					
 				
 				go.SetActive(true);
 			}
