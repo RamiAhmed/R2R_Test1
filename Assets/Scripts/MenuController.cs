@@ -46,7 +46,7 @@ public class MenuController : MonoBehaviour {
 				_gameController.CurrentGameState = GameController.GameState.PLAY;
 			}
 			
-			if (GUILayout.Button(new GUIContent("Quit Game", "Click to exit the game"), GUILayout.Height(elementHeight))) {
+			if (GUILayout.Button(new GUIContent("Quit Game", "Click to exit and close the game"), GUILayout.Height(elementHeight))) {
 				_gameController.CurrentGameState = GameController.GameState.ENDING;
 			}
 			
