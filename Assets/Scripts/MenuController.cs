@@ -52,7 +52,7 @@ public class MenuController : MonoBehaviour {
 			
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button(new GUIContent("A game by Alpha Stage Studios - www.alphastagestudios.com"))) {
+			if (GUILayout.Button(new GUIContent("A game by Alpha Stage Studios - www.alphastagestudios.com"), GUILayout.Height(elementHeight/2f))) {
 				Application.OpenURL("www.alphastagestudios.com");	
 			}
 			
