@@ -42,23 +42,31 @@ public class MenuController : MonoBehaviour {
 			
 			GUILayout.Box(new GUIContent("Right to Rule - Prototype 1"), GUILayout.Height(elementHeight));
 			
-			if (GUILayout.Button(new GUIContent("Play Game"), GUILayout.Height(elementHeight))) {
+			if (GUILayout.Button(new GUIContent("Play Game", "Click to start playing the game"), GUILayout.Height(elementHeight))) {
 				_gameController.CurrentGameState = GameController.GameState.PLAY;
 			}
 			
-			if (GUILayout.Button(new GUIContent("Quit Game"), GUILayout.Height(elementHeight))) {
+			if (GUILayout.Button(new GUIContent("Quit Game", "Click to exit the game"), GUILayout.Height(elementHeight))) {
 				_gameController.CurrentGameState = GameController.GameState.ENDING;
 			}
 			
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button(new GUIContent("A game by Alpha Stage Studios - www.alphastagestudios.com"), GUILayout.Height(elementHeight/2f))) {
+			if (GUILayout.Button(new GUIContent("A Tower Defense game by Alpha Stage Studios - www.alphastagestudios.com", "Click to open up the\n website in default browser."), GUILayout.Height(elementHeight/2f))) {
 				Application.OpenURL("www.alphastagestudios.com");	
 			}
 			
 			GUILayout.EndVertical();
 			
 			GUILayout.EndArea();
+			
+			if (GUI.tooltip != "") {
+				Vector2 mousePos = Input.mousePosition;
+				float tipWidth = 200f, 
+					  tipHeight = 50f;
+				
+				GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), new GUIContent(GUI.tooltip));
+			}
 		}
 	}
 }
