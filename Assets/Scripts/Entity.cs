@@ -402,7 +402,7 @@ public class Entity : MonoBehaviour {
 		float damage = 0;
 		foreach (GameObject unit in list) {
 			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff > damage && hp > 1f) {
+			if (hpDiff > damage && hpDiff > 1f) {
 				mostDamaged = unit;
 				damage = hpDiff;
 			}
