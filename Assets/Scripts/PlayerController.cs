@@ -342,6 +342,7 @@ public class PlayerController : MonoBehaviour {
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			GUI.color = Color.red;
 			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
+			GUI.color = Color.white;
 		}
 		
 		GUILayout.FlexibleSpace();
