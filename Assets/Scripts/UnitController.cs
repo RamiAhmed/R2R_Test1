@@ -22,6 +22,41 @@ public class UnitController : Unit {
 	
 	public UnitState currentUnitState = UnitState.PLACING;
 	
+	// TACTICS' ENUMS
+	public enum TacticsMentality {
+		Offensive,
+		Defensive
+	};
+	
+	public TacticsMentality currentMentality = TacticsMentality.Offensive;
+	
+	public enum TacticsGuarding {
+		None,
+		Gate,
+		Strongest,
+		Weakest
+	};
+	
+	public TacticsGuarding currentGuarding = TacticsGuarding.None;
+	
+	public enum TacticsTargetSelection {
+		Nearest,
+		Strongest,
+		Weakest,
+		MostDamaged,
+		LeastDamaged
+	};
+	
+	public TacticsTargetSelection currentTargetSelection = TacticsTargetSelection.Nearest;
+	
+	public enum TacticsRange {
+		Ranged,
+		Melee
+	};
+	
+	public TacticsRange currentRange = TacticsRange.Melee;
+	//
+	
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
 	
@@ -166,24 +201,61 @@ public class UnitController : Unit {
 		}
 	}
 	
+	// In placed behaviour units search for targets
 	protected virtual void PlacedBehaviour() {
-		if (attackTarget != null) {
-			this.currentUnitState = UnitState.ATTACKING;
-		}
-		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
-			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints) {
-				StopMoving();
+		if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
+			if (attackTarget != null) {
+				this.currentUnitState = UnitState.ATTACKING;
+				return;
+			}
+			
+			if (currentGuarding == TacticsGuarding.Gate) {
+				//StopMoving();
 				GuardOther(gateRef);
 			}
-			else {
-				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-				if (nearestEnemy != null) {
-					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
-						attackTarget = nearestEnemy;
-						this.currentUnitState = UnitState.ATTACKING;
-						StopMoving();
+			else {				
+				if (currentGuarding == TacticsGuarding.None) {
+					// Target selection
+					Entity targetEnemy = null;
+					if (currentTargetSelection == TacticsTargetSelection.LeastDamaged) {
+						targetEnemy = GetLeastDamagedUnit(_gameController.enemies);
 					}
-				}		
+					else if (currentTargetSelection == TacticsTargetSelection.MostDamaged)  {
+						targetEnemy = GetMostDamagedUnit(_gameController.enemies);
+					}
+					else if (currentTargetSelection == TacticsTargetSelection.Strongest) {
+						targetEnemy = GetStrongestUnit(_gameController.enemies);
+					}
+					else if (currentTargetSelection == TacticsTargetSelection.Weakest) {
+						targetEnemy = GetWeakestUnit(_gameController.enemies);
+					}
+					
+					if (targetEnemy == null) {
+						targetEnemy = GetNearestUnit(_gameController.enemies);
+					}
+					
+					if (targetEnemy != null) {
+						if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < PerceptionRange) {
+							StopMoving();
+							attackTarget = targetEnemy;
+							this.currentUnitState = UnitState.ATTACKING;
+						}
+					}				
+				}
+				else {
+					Entity guardingUnit = null;
+					if (currentGuarding == TacticsGuarding.Strongest) {
+						guardingUnit = GetStrongestUnit(playerOwner.unitsList);
+					}
+					else if (currentGuarding == TacticsGuarding.Weakest) {
+						guardingUnit = GetWeakestUnit(playerOwner.unitsList);
+					}
+					
+					if (guardingUnit != null) {
+						StopMoving();
+						GuardOther(guardingUnit);
+					}
+				}
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
@@ -198,14 +270,35 @@ public class UnitController : Unit {
 		}
 		
 		if (attackTarget != null) {
+			float distance = Vector3.Distance(attackTarget.transform.position, this.transform.position);
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 				this.currentUnitState = UnitState.FLEEING;
 			}
-			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
-				Attack(attackTarget);
+			else if (distance < AttackingRange) {
+				if (currentRange == TacticsRange.Ranged) {
+					if (distance < meleeDistance) {
+						this.currentUnitState = UnitState.FLEEING;
+					}
+					else {
+						Attack(attackTarget);
+					}
+				}
+				else if (currentRange == TacticsRange.Melee) {
+					if (distance > meleeDistance) {
+						MoveTo(attackTarget.transform);
+					}
+					else {
+						Attack(attackTarget);
+					}
+				}
 			}
-			else {
-				MoveTo(attackTarget.transform);
+			else if (distance < PerceptionRange) {
+				if (currentMentality == TacticsMentality.Offensive) {
+					MoveTo(attackTarget.transform);
+				}
+				else if (GetIsMelee() && distance < meleeDistance) {
+					MoveTo(attackTarget.transform);
+				}
 			}
 		}
 		else {

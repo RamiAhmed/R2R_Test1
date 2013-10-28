@@ -34,6 +34,9 @@ public class Entity : MonoBehaviour {
 	protected Color originalMaterialColor = Color.white;
 	protected float lastAttack = 0f;
 	
+	protected float meleeDistance = 5f;
+//	protected float rangedDistance = AttackingRange > meleeDistance ? AttackingRange : meleeDistance;
+	
 	private float killY = -100f;
 	
 	private Vector3 targetPosition = Vector3.zero;
@@ -82,6 +85,10 @@ public class Entity : MonoBehaviour {
 	
 	protected virtual void RemoveSelf() {
 		StopMoving();
+	}
+	
+	protected bool GetIsMelee() {
+		return AttackingRange <= meleeDistance;
 	}
 	
 	public virtual void Select(List<Entity> list) {
@@ -200,6 +207,7 @@ public class Entity : MonoBehaviour {
 		}
 		else {
 			p.Release(this);
+			isMoving = false;
 		}
 	}
 	
