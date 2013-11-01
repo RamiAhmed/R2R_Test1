@@ -49,7 +49,7 @@ public class GateOfLife : Entity {
 			}
 		}
 	}
-	
+	/*
 	protected override bool Attack(Entity opponent) {
 		bool hitResult = false;
 		StopMoving();
@@ -83,4 +83,5 @@ public class GateOfLife : Entity {
 		}
 		return hitResult;
 	}
+	*/
 }

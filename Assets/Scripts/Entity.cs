@@ -99,7 +99,7 @@ public class Entity : MonoBehaviour {
 		}
 	}
 
-	public void Deselect(List<Entity> list) {
+	public virtual void Deselect(List<Entity> list) {
 		if (this.Selected || this.IsDead) {
 			this.Selected = false;
 			if (list.Contains(this)) {
@@ -290,7 +290,7 @@ public class Entity : MonoBehaviour {
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 
-				this.transform.LookAt(opponent.transform.position);
+				//this.transform.LookAt(opponent.transform.position);
 
 				if (Bullet != null) {
 					ShootBullet(opponent);

@@ -26,7 +26,9 @@ public class UnitController : Unit {
 	public Vector3 LastBuildLocation = Vector3.zero;
 
 	private bool allowedBuildLocation = false;
-
+	private GameObject attackingCircle = null,
+					   perceptionCircle = null;
+	private float PI = Mathf.PI;
 
 	// Use this for initialization
 	protected override void Start () {
@@ -34,7 +36,8 @@ public class UnitController : Unit {
 
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
-
+		
+		setupRenderCircle(0.25f);
 	}
 
 	// Update is called once per frame
@@ -163,6 +166,9 @@ public class UnitController : Unit {
 
 
 			checkForCollisions();
+			
+			drawAttackingRange();
+			drawPerceptionRange();
 		}
 	}
 
@@ -185,6 +191,8 @@ public class UnitController : Unit {
 					}
 				}
 			}
+			
+			disableRenderCircle();
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			saveLocation();
@@ -231,6 +239,44 @@ public class UnitController : Unit {
 			StopMoving();
 			this.currentUnitState = UnitState.PLACED;
 			this.FleeThreshold /= 2f;
+		}
+	}
+	
+	private void setupRenderCircle(float width) {
+		attackingCircle = Instantiate(Resources.Load("Misc Objects/Circles/AttackingCircle")) as GameObject;
+		attackingCircle.transform.parent = this.transform;
+		attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
+		attackingCircle.renderer.enabled = false;
+		
+		perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
+		perceptionCircle.transform.parent = this.transform;
+		perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
+		perceptionCircle.renderer.enabled = false;
+	}
+	
+	protected void drawAttackingRange() {
+		if (!attackingCircle.renderer.enabled) {
+			attackingCircle.renderer.enabled = true;
+		}	
+	}
+	
+	protected void drawPerceptionRange() {
+		if (!perceptionCircle.renderer.enabled) {
+			perceptionCircle.renderer.enabled = true;
+		}	
+	}
+	
+	protected void disableRenderCircle() {
+		if (attackingCircle != null) {
+			if (attackingCircle.renderer.enabled) {
+				attackingCircle.renderer.enabled = false;
+			}
+		}
+		
+		if (perceptionCircle != null) {
+			if (perceptionCircle.renderer.enabled) {
+				perceptionCircle.renderer.enabled = false;
+			}
 		}
 	}
 
@@ -294,9 +340,20 @@ public class UnitController : Unit {
 	public override void Select(List<Entity> list) {
 		if (this.currentUnitState != UnitState.DEAD && this.currentUnitState != UnitState.PLACING) {
 			base.Select(list);
+			
+			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD &&
+				_gameController.CurrentGameState == GameController.GameState.PLAY) {
+				drawAttackingRange();
+				drawPerceptionRange();
+			}
 		}
 	}
-
+	
+	public override void Deselect(List<Entity> list) {
+		base.Deselect(list);
+		disableRenderCircle();	
+	}
+	
 	protected override void LateUpdate() {
 		base.LateUpdate();
 

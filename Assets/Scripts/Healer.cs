@@ -48,6 +48,8 @@ public class Healer : UnitController {
 						}
 					}		
 				}
+				
+				disableRenderCircle();
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
