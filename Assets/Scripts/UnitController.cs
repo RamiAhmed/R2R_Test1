@@ -2,15 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 public class UnitController : Unit {
-	
+
 	public Unit UpgradesInto = null;
-	
+
 	[HideInInspector]
 	public PlayerController playerOwner;
 
 	[HideInInspector]
 	public Vector3 moveToPosition = Vector3.zero;
-	
+
 	public enum UnitState {
 		PLACING,
 		PLACED,
@@ -19,71 +19,36 @@ public class UnitController : Unit {
 		FLEEING,
 		DEAD
 	};
-	
+
 	public UnitState currentUnitState = UnitState.PLACING;
-	
-	// TACTICS' ENUMS
-	public enum TacticsMentality {
-		Offensive,
-		Defensive
-	};
-	
-	public TacticsMentality currentMentality = TacticsMentality.Offensive;
-	
-	public enum TacticsGuarding {
-		None,
-		Gate,
-		Strongest,
-		Weakest
-	};
-	
-	public TacticsGuarding currentGuarding = TacticsGuarding.None;
-	
-	public enum TacticsTargetSelection {
-		Nearest,
-		Strongest,
-		Weakest,
-		MostDamaged,
-		LeastDamaged
-	};
-	
-	public TacticsTargetSelection currentTargetSelection = TacticsTargetSelection.Nearest;
-	
-	public enum TacticsRange {
-		Ranged,
-		Melee
-	};
-	
-	public TacticsRange currentRange = TacticsRange.Melee;
-	//
-	
+
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
-	
+
 	private bool allowedBuildLocation = false;
-	
-	
+
+
 	// Use this for initialization
-	protected override void Start () {	
+	protected override void Start () {
 		base.Start();
-		
+
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
-		
+
 	}
-	
+
 	// Update is called once per frame
 	protected override void Update () {
 		base.Update();
 
 	}
-	
+
 	protected void saveLocation() {
 		if ((this.transform.position - LastBuildLocation).sqrMagnitude > 0.1f) {
 			LastBuildLocation = this.transform.position;
 		}
 	}
-	
+
 	private bool buildUnit() {
 		if (allowedBuildLocation) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
@@ -95,36 +60,36 @@ public class UnitController : Unit {
 			else {
 				playerOwner.DisplayFeedbackMessage("You do not have enough gold.");
 				return false;
-			}			
+			}
 		}
 		else {
 			playerOwner.DisplayFeedbackMessage("You cannot build at that location.");
 			return false;
 		}
 	}
-	
+
 	private void checkForCollisions() {
 		bool collisions = false;
 		float radius = (this.collider.bounds.extents.x + this.collider.bounds.extents.y) / 2f;
 		Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, radius);
-		foreach (Collider coll in colliderHits) {			
+		foreach (Collider coll in colliderHits) {
 			if (coll.GetType() != typeof(TerrainCollider) && coll.gameObject != this.gameObject) {
 				//Debug.Log("Colliding with: " + coll);
 				toggleRenderMaterial(true);
 				collisions = true;
 				break;
-			}			
-		}	
-		
+			}
+		}
+
 		if (!collisions) {
 			toggleRenderMaterial(false);
 		}
 	}
-	
+
 	private void toggleRenderMaterial(bool bToggle) {
 		if (bToggle) {
 			if (allowedBuildLocation) {
-				this.renderer.material.color = Color.red;	
+				this.renderer.material.color = Color.red;
 				allowedBuildLocation = false;
 			}
 		}
@@ -134,11 +99,11 @@ public class UnitController : Unit {
 				allowedBuildLocation = true;
 			}
 		}
-	}	
-	
+	}
+
 	protected override void FixedUpdate() {
 		base.FixedUpdate();
-		
+
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}
@@ -149,7 +114,7 @@ public class UnitController : Unit {
 			PlacingBehaviour();
 		}
 		else if (currentUnitState == UnitState.PLACED) {
-			PlacedBehaviour();		
+			PlacedBehaviour();
 		}
 		else if (currentUnitState == UnitState.ATTACKING) {
 			AttackingBehaviour();
@@ -161,99 +126,62 @@ public class UnitController : Unit {
 			HealingBehaviour();
 		}
 	}
-	
+
 	protected virtual void HealingBehaviour() {}
-	
+
 	protected virtual void PlacingBehaviour() {
 		if (this.playerOwner != null) {
 			if (Input.GetMouseButtonDown(0)) {
 				if (buildUnit())
 					return;
 			}
-			
+
 			if (Input.GetMouseButtonDown(1)) {
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
 				return;
 			}
-			
+
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
 				return;
 			}
-			
+
 			if (this.name != this.Name) {
 				this.name = this.Name;
 			}
-	
+
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-		
+
 			RaycastHit hit;
 			if (Physics.Raycast(ray, out hit)) {
 				float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
 				height += this.transform.collider.bounds.size.y/2f + 0.1f;
 				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
 			}
-		
-		
-			checkForCollisions();	
+
+
+			checkForCollisions();
 		}
 	}
-	
-	// In placed behaviour units search for targets
+
 	protected virtual void PlacedBehaviour() {
-		if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {	
-			if (attackTarget != null) {
-				this.currentUnitState = UnitState.ATTACKING;
-				return;
-			}
-			
-			if (currentGuarding == TacticsGuarding.Gate) {
-				//StopMoving();
+		if (attackTarget != null) {
+			this.currentUnitState = UnitState.ATTACKING;
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints) {
+				StopMoving();
 				GuardOther(gateRef);
 			}
-			else {				
-				if (currentGuarding == TacticsGuarding.None) {
-					// Target selection
-					Entity targetEnemy = null;
-					if (currentTargetSelection == TacticsTargetSelection.LeastDamaged) {
-						targetEnemy = GetLeastDamagedUnit(_gameController.enemies);
-					}
-					else if (currentTargetSelection == TacticsTargetSelection.MostDamaged)  {
-						targetEnemy = GetMostDamagedUnit(_gameController.enemies);
-					}
-					else if (currentTargetSelection == TacticsTargetSelection.Strongest) {
-						targetEnemy = GetStrongestUnit(_gameController.enemies);
-					}
-					else if (currentTargetSelection == TacticsTargetSelection.Weakest) {
-						targetEnemy = GetWeakestUnit(_gameController.enemies);
-					}
-					
-					if (targetEnemy == null) {
-						targetEnemy = GetNearestUnit(_gameController.enemies);
-					}
-					
-					if (targetEnemy != null) {
-						if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < PerceptionRange) {
-							StopMoving();
-							attackTarget = targetEnemy;
-							this.currentUnitState = UnitState.ATTACKING;
-						}
-					}				
-				}
-				else {
-					Entity guardingUnit = null;
-					if (currentGuarding == TacticsGuarding.Strongest) {
-						guardingUnit = GetStrongestUnit(playerOwner.unitsList);
-					}
-					else if (currentGuarding == TacticsGuarding.Weakest) {
-						guardingUnit = GetWeakestUnit(playerOwner.unitsList);
-					}
-					
-					if (guardingUnit != null) {
+			else {
+				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
+				if (nearestEnemy != null) {
+					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
+						attackTarget = nearestEnemy;
+						this.currentUnitState = UnitState.ATTACKING;
 						StopMoving();
-						GuardOther(guardingUnit);
 					}
 				}
 			}
@@ -262,52 +190,31 @@ public class UnitController : Unit {
 			saveLocation();
 		}
 	}
-	
+
 	protected virtual void AttackingBehaviour() {
 		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
 			currentUnitState = UnitState.PLACED;
 			return;
 		}
-		
+
 		if (attackTarget != null) {
-			float distance = Vector3.Distance(attackTarget.transform.position, this.transform.position);
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 				this.currentUnitState = UnitState.FLEEING;
 			}
-			else if (distance < AttackingRange) {
-				if (currentRange == TacticsRange.Ranged) {
-					if (distance < meleeDistance) {
-						this.currentUnitState = UnitState.FLEEING;
-					}
-					else {
-						Attack(attackTarget);
-					}
-				}
-				else if (currentRange == TacticsRange.Melee) {
-					if (distance > meleeDistance) {
-						MoveTo(attackTarget.transform);
-					}
-					else {
-						Attack(attackTarget);
-					}
-				}
+			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+				Attack(attackTarget);
 			}
-			else if (distance < PerceptionRange) {
-				if (currentMentality == TacticsMentality.Offensive) {
-					MoveTo(attackTarget.transform);
-				}
-				else if (GetIsMelee() && distance < meleeDistance) {
-					MoveTo(attackTarget.transform);
-				}
+			else {
+				MoveTo(attackTarget.transform);
 			}
 		}
 		else {
 			StopMoving();
-			
+
 			this.currentUnitState = UnitState.PLACED;
-		}		
+		}
 	}
-	
+
 	protected virtual void FleeingBehaviour() {
 		if (attackTarget != null) {
 			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
@@ -324,35 +231,35 @@ public class UnitController : Unit {
 			StopMoving();
 			this.currentUnitState = UnitState.PLACED;
 			this.FleeThreshold /= 2f;
-		}		
+		}
 	}
-	
+
 	public bool CanUpgrade() {
 		return UpgradesInto != null;
 	}
-	
+
 	public void UpgradeUnit() {
-		Debug.Log("Upgrade Unit");		
-		
+		Debug.Log("Upgrade Unit");
+
 		if (CanUpgrade()) {
 			StopMoving();
-						
+
 			if (playerOwner.PlayerGold >= UpgradesInto.GoldCost) {
 				playerOwner.PlayerGold -= UpgradesInto.GoldCost;
-		
+
 				GameObject newUnit = Instantiate(UpgradesInto.gameObject) as GameObject;
 
 				newUnit.transform.position = this.transform.position;
 				playerOwner.unitsList.Add(newUnit);
 				UnitController unitCont = newUnit.GetComponent<UnitController>();
 				unitCont.playerOwner = this.playerOwner;
-				unitCont.currentUnitState = UnitState.PLACED;				
+				unitCont.currentUnitState = UnitState.PLACED;
 				unitCont.Select(playerOwner.SelectedUnits);
-				
+
 				playerOwner.DisplayFeedbackMessage("You have upgraded " + this.Name + " into " + UpgradesInto.Name + " for " + UpgradesInto.GoldCost + " gold.", Color.green);
-				
+
 				this.Deselect(playerOwner.SelectedUnits);
-				
+
 				playerOwner.unitsList.Remove(this.gameObject);
 				Destroy(this.gameObject);
 			}
@@ -364,53 +271,53 @@ public class UnitController : Unit {
 			Debug.LogWarning("Could not find UpgradesInto for " + this.Name);
 		}
 	}
-	
+
 	public int GetSellAmount() {
-		return Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);	
+		return Mathf.RoundToInt(this.GoldCost * SellGoldPercentage);
 	}
-	
+
 	public void SellUnit() {
 		Debug.Log("SellUnit");
 		StopMoving();
-		
+
 		int goldReturned = GetSellAmount();
-		playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);		
-		
+		playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);
+
 		playerOwner.PlayerGold += goldReturned;
-		playerOwner.unitsList.Remove(this.gameObject);		
-		
+		playerOwner.unitsList.Remove(this.gameObject);
+
 		Deselect(playerOwner.SelectedUnits);
-		
+
 		Destroy(this.gameObject);
 	}
-	
+
 	public override void Select(List<Entity> list) {
 		if (this.currentUnitState != UnitState.DEAD && this.currentUnitState != UnitState.PLACING) {
 			base.Select(list);
 		}
 	}
-	
+
 	protected override void LateUpdate() {
 		base.LateUpdate();
-		
+
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}
-		
+
 		if (currentUnitState == UnitState.DEAD) {
 			StopMoving();
 			Debug.Log("Unit dead");
 			Deselect(playerOwner.SelectedUnits);
-			playerOwner.unitsList.Remove(this.gameObject);		
+			playerOwner.unitsList.Remove(this.gameObject);
 			playerOwner.deadUnitsList.Add(this.gameObject);
-			
+
 			this.gameObject.SetActive(false);
 		}
 	}
-	
+
 	protected override void RemoveSelf() {
 		base.RemoveSelf();
-		
+
 		GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 		foreach (GameObject point in points) {
 			if (point.transform.name.Contains("End")) {
@@ -420,7 +327,7 @@ public class UnitController : Unit {
 		}
 		LastBuildLocation.x += Random.Range(-1f, 1f);
 		LastBuildLocation.z += Random.Range(-1f, 1f);
-		currentUnitState = UnitState.DEAD;		
+		currentUnitState = UnitState.DEAD;
 		Deselect(playerOwner.SelectedUnits);
 	}
 }
