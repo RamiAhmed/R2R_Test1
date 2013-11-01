@@ -17,6 +17,8 @@ public class PlayerController : MonoBehaviour {
 	
 	public List<Entity> SelectedUnits = null;
 	
+	public Texture2D swordHUD, bootHUD, shieldHUD;
+	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
 	
@@ -30,7 +32,7 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
-
+	
 	// Use this for initialization
 	void Start () {
 		playerFaction = this.GetComponent<Faction>();
@@ -207,11 +209,14 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-				renderSpawnGUIButtons();
+				//renderSpawnGUIButtons();
+				createSpawnShortcuts();
 			}
 			
-			renderSelectedUnitGUI();
-			renderGameDetails();
+			//renderSelectedUnitGUI();
+			//renderGameDetails();
+			renderTopHUD();
+			renderBottomHUD();
 			renderFeedbackMessage();
 			
 			renderMarqueeSelection();
@@ -248,6 +253,138 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
 		
 		GUILayout.EndArea();
+	}
+	
+	private void renderTopHUD() {
+		float width = screenWidth * 0.99f,
+			height = screenHeight * 0.10f;
+		float x = 1f,
+			y = 2f;
+		
+		GUILayout.BeginArea(new Rect(x, y, width, height));		
+		GUILayout.BeginHorizontal();
+		
+		if (GUILayout.Button("Main Menu")) {
+			_gameController.CurrentGameState = GameController.GameState.MENU;
+		}
+		
+		GUILayout.FlexibleSpace();
+		
+		GUILayout.Box("Last wave: " + _gameController.WaveCount);
+		
+		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
+			
+			if (GUILayout.Button(new GUIContent("Spawn Wave"))) {
+				_gameController.ForceSpawn = true;	
+			}
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			GUI.color = Color.red;
+			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
+			GUI.color = Color.white;
+		}
+		
+		GUILayout.FlexibleSpace();
+		
+		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount);
+		
+		GUILayout.Box("Gold: " + PlayerGold);		
+		
+		GUILayout.EndHorizontal();
+		GUILayout.EndArea();
+	}
+	
+	private void renderBottomHUD() {
+		float width = (screenWidth * (1f - 0.13f)) - 0.01f ,
+			height = screenHeight * 0.2f;
+		float x = screenWidth - width,
+			y = screenHeight - height;
+		
+		float elementWidth = width * (1f/3f),
+			elementHeight = height;
+		
+		GUILayout.BeginArea(new Rect(x, y, width, height));
+		GUILayout.BeginHorizontal();
+		
+		// Unit stats / details
+		if (SelectedUnits.Count > 0) {
+			Entity selectedUnit = SelectedUnits[0];
+			
+			string swordTip = "Damage: " + selectedUnit.Damage + "\n";
+			swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
+			swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
+			GUILayout.Box(new GUIContent(swordHUD, swordTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight));
+			
+			GUILayout.BeginVertical();
+			
+			string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
+			shieldTip += "Evasion: " + selectedUnit.Evasion;
+			GUILayout.Box(new GUIContent(shieldHUD, shieldTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f));
+			
+			string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed;
+			GUILayout.Box(new GUIContent(bootHUD, bootTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f));
+			
+			GUILayout.EndVertical();
+		}
+		else {
+			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));
+		}
+		
+		// Tactics interface
+		
+		if (false) {
+			
+		}
+		else {
+			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));				
+		}
+		
+		// Spawn unit grid
+		if (playerFaction.FactionUnits.Count > 0) {
+			
+			GUILayout.BeginVertical();
+			
+			GUIContent btn0 = new GUIContent(playerFaction.FactionUnits[0].Name, "Gold Cost: " + playerFaction.FactionUnits[0].GoldCost);
+			if (GUILayout.Button(btn0, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
+				spawnUnit(0);	
+			}
+			
+			GUIContent btn2 = new GUIContent(playerFaction.FactionUnits[2].Name, "Gold Cost: " + playerFaction.FactionUnits[2].GoldCost);
+			if (GUILayout.Button(btn2, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
+				spawnUnit(2);	
+			}
+			
+			GUILayout.EndVertical();
+			
+			GUILayout.BeginVertical();
+			
+			GUIContent btn1 = new GUIContent(playerFaction.FactionUnits[1].Name, "Gold Cost: " + playerFaction.FactionUnits[1].GoldCost);
+			if (GUILayout.Button(btn1, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
+				spawnUnit(1);	
+			}
+			
+			GUIContent btn3 = new GUIContent(playerFaction.FactionUnits[3].Name, "Gold Cost: " + playerFaction.FactionUnits[3].GoldCost);
+			if (GUILayout.Button(btn3, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
+				spawnUnit(3);	
+			}
+			
+			GUILayout.EndVertical();			
+			
+		}
+		else {
+			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));
+		}
+		
+		GUILayout.EndHorizontal();
+		GUILayout.EndArea();
+		
+		if (GUI.tooltip != "") {
+			Vector2 mousePos = Input.mousePosition;
+			float tipWidth = 200f,
+				tipHeight = 60f;
+			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
+		}
 	}
 	
 	private void renderSelectedUnitGUI() {
@@ -352,6 +489,14 @@ public class PlayerController : MonoBehaviour {
 		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
+	}
+	
+	private void createSpawnShortcuts() {
+		for (int i = 0; i < playerFaction.FactionUnits.Count; i++) {
+			if (Input.GetKeyUp((KeyCode)(49 + i))) {
+				spawnUnit(i);	
+			}
+		}
 	}
 	
 	private void renderSpawnGUIButtons() {
