@@ -306,7 +306,9 @@ public class Entity : MonoBehaviour {
 					Debug.Log(this.Name + " missed " + opponent.Name);
 				}
 
-				opponent.lastAttacker = this;
+				if (opponent.lastAttacker == null) {
+					opponent.lastAttacker = this;
+				}
 			}
 		}
 		return hitResult;
