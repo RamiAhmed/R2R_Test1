@@ -28,7 +28,6 @@ public class UnitController : Unit {
 	private bool allowedBuildLocation = false;
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
-	private float PI = Mathf.PI;
 
 	// Use this for initialization
 	protected override void Start () {
