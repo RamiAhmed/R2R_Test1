@@ -314,16 +314,16 @@ public class PlayerController : MonoBehaviour {
 			string swordTip = "Damage: " + selectedUnit.Damage + "\n";
 			swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
 			swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
-			GUILayout.Box(new GUIContent(swordHUD, swordTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight));
+			GUILayout.Box(new GUIContent(swordHUD, swordTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f));
 			
 			GUILayout.BeginVertical();
 			
 			string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
 			shieldTip += "Evasion: " + selectedUnit.Evasion;
-			GUILayout.Box(new GUIContent(shieldHUD, shieldTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f));
+			GUILayout.Box(new GUIContent(shieldHUD, shieldTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f/2f));
 			
 			string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed;
-			GUILayout.Box(new GUIContent(bootHUD, bootTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f));
+			GUILayout.Box(new GUIContent(bootHUD, bootTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f/2f));
 			
 			GUILayout.EndVertical();
 		}
@@ -345,29 +345,17 @@ public class PlayerController : MonoBehaviour {
 			
 			GUILayout.BeginVertical();
 			
-			GUIContent btn0 = new GUIContent(playerFaction.FactionUnits[0].Name, "Gold Cost: " + playerFaction.FactionUnits[0].GoldCost);
-			if (GUILayout.Button(btn0, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
-				spawnUnit(0);	
-			}
+			createSpawnButton(0, elementWidth, elementHeight);
 			
-			GUIContent btn2 = new GUIContent(playerFaction.FactionUnits[2].Name, "Gold Cost: " + playerFaction.FactionUnits[2].GoldCost);
-			if (GUILayout.Button(btn2, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
-				spawnUnit(2);	
-			}
+			createSpawnButton(2, elementWidth, elementHeight);
 			
 			GUILayout.EndVertical();
 			
 			GUILayout.BeginVertical();
 			
-			GUIContent btn1 = new GUIContent(playerFaction.FactionUnits[1].Name, "Gold Cost: " + playerFaction.FactionUnits[1].GoldCost);
-			if (GUILayout.Button(btn1, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
-				spawnUnit(1);	
-			}
+			createSpawnButton(1, elementWidth, elementHeight);
 			
-			GUIContent btn3 = new GUIContent(playerFaction.FactionUnits[3].Name, "Gold Cost: " + playerFaction.FactionUnits[3].GoldCost);
-			if (GUILayout.Button(btn3, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
-				spawnUnit(3);	
-			}
+			createSpawnButton(3, elementWidth, elementHeight);
 			
 			GUILayout.EndVertical();			
 			
@@ -385,6 +373,16 @@ public class PlayerController : MonoBehaviour {
 				tipHeight = 60f;
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}
+	}
+	
+	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
+		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
+		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 
+		tip += "Unit Score: " + unit.GetTotalScore();
+		GUIContent btn = new GUIContent((index+1) + " : " + unit.Name, tip);
+		if (GUILayout.Button(btn, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
+			spawnUnit(index);	
+		} 
 	}
 	
 	private void renderSelectedUnitGUI() {
