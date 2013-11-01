@@ -7,7 +7,7 @@ public class Bullet : MonoBehaviour {
 	
 	public GameObject Owner = null;
 	
-	protected float bulletSpeed = 5f;
+	public float BulletSpeed = 5f;
 	protected float maxForce = 10f;
 		
 //	private float initialDistance = 0f;
@@ -28,7 +28,7 @@ public class Bullet : MonoBehaviour {
 			this.transform.LookAt(Target);
 			
 			float currentDistance = Vector3.Distance(this.transform.position, Target);
-			Vector3 direction = this.transform.forward * bulletSpeed * Time.fixedDeltaTime * currentDistance;
+			Vector3 direction = this.transform.forward * BulletSpeed * Time.fixedDeltaTime * currentDistance;
 			Vector3 velocity = Vector3.ClampMagnitude(direction, maxForce);
 			this.transform.Translate(velocity, Space.World);
 		}

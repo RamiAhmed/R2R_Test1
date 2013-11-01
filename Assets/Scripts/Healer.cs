@@ -23,6 +23,10 @@ public class Healer : UnitController {
 	}
 	
 	protected override void PlacedBehaviour() {
+		if (!Selected) {
+			disableRenderCircle();
+		}
+		
 		if (attackTarget != null) {
 			this.currentUnitState = UnitState.ATTACKING;
 		}
@@ -46,10 +50,8 @@ public class Healer : UnitController {
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
-					}		
+					}	
 				}
-				
-				disableRenderCircle();
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {

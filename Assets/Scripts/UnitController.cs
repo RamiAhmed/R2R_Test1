@@ -172,6 +172,10 @@ public class UnitController : Unit {
 	}
 
 	protected virtual void PlacedBehaviour() {
+		if (!Selected) {
+			disableRenderCircle();
+		}
+		
 		if (attackTarget != null) {
 			this.currentUnitState = UnitState.ATTACKING;
 		}
@@ -189,9 +193,8 @@ public class UnitController : Unit {
 						StopMoving();
 					}
 				}
-			}
+			}	
 			
-			disableRenderCircle();
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			saveLocation();

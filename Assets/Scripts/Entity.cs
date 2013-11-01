@@ -316,7 +316,9 @@ public class Entity : MonoBehaviour {
 
 	protected virtual void ShootBullet(Entity opponent) {
 		GameObject newBullet = Instantiate(Bullet) as GameObject;
-		Physics.IgnoreCollision(newBullet.collider, this.transform.collider);
+		if (newBullet.collider != null) {
+			Physics.IgnoreCollision(newBullet.collider, this.transform.collider);
+		}
 		Bullet bullet = newBullet.GetComponent<Bullet>();
 		bullet.Target = opponent.transform.position;
 		bullet.Owner = this.gameObject;
