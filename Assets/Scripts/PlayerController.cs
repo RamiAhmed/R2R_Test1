@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public List<Entity> SelectedUnits = null;
 	
-	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD;
+	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -500,26 +500,41 @@ public class PlayerController : MonoBehaviour {
 		Vector2 center = new Vector2(screenWidth/2f, screenHeight/2f);
 		float radius = 180f;
 		Rect rect = new Rect(0f, 0f, 130f, 25f);
+		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
+		
+		if (selectingTactic || selectingTarget || selectingCondition) {
+			GUI.depth = 1;
+			float bgRectSizeFactor = 3.1f;
+			GUI.Label(new Rect(center.x-(radius*(bgRectSizeFactor/2f)), center.y-(radius*(bgRectSizeFactor/2f)), radius*bgRectSizeFactor, radius*bgRectSizeFactor), TacticsCircleHUD);
+			GUI.depth = 0;
+			
+			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel") || Input.GetKeyDown(KeyCode.Escape)) {
+				if (selectingTactic)
+					selectingTactic = false;	
+				
+				if (selectingTarget)
+					selectingTarget = false;
+				
+				if (selectingCondition)
+					selectingCondition = false;	
+			}	
+		}
 		
 		if (selectingTactic) {
-			System.Array arr = System.Enum.GetValues(typeof(UnitController.Tactics));
-			
+			System.Array arr = System.Enum.GetValues(typeof(UnitController.Tactics));	
+
 			int count = arr.Length;
-			float angleStep = Mathf.PI * 2.0f / count;
-			
-			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
-				selectingTactic = false;	
-			}
+			float angleStep = Mathf.PI * 2.0f / count;		
 			
 			for (int i = 0; i < count; i++) {
 				UnitController.Tactics tactic = (UnitController.Tactics) i;
-				string tacticName = SelectedUnits[0].GetComponent<UnitController>().GetTacticsName(tactic);
+				string tacticName = selectedUnit.GetTacticsName(tactic);
 				
 				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
 				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
 				
 				if (GUI.Button(rect, tacticName)) {
-					SelectedUnits[0].GetComponent<UnitController>().currentTactic = tactic;
+					selectedUnit.currentTactic = tactic;
 					selectingTactic = false;
 				}
 			}
@@ -530,19 +545,15 @@ public class PlayerController : MonoBehaviour {
 			int count = arr.Length;
 			float angleStep = Mathf.PI * 2.0f / count; 
 			
-			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
-				selectingTarget = false;	
-			}
-			
 			for (int i = 0; i < count; i++) {
 				UnitController.Target target = (UnitController.Target) i;
-				string targetName = SelectedUnits[0].GetComponent<UnitController>().GetTargetName(target);
+				string targetName = selectedUnit.GetTargetName(target);
 				
 				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
 				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
 				
 				if (GUI.Button(rect, targetName)) {
-					SelectedUnits[0].GetComponent<UnitController>().currentTarget = target;
+					selectedUnit.currentTarget = target;
 					selectingTarget = false;
 				}
 			}
@@ -552,20 +563,15 @@ public class PlayerController : MonoBehaviour {
 			
 			int count = arr.Length;
 			float angleStep = Mathf.PI * 2.0f / count; 
-			
-			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
-				selectingCondition = false;	
-			}
-			
 			for (int i = 0; i < count; i++) {
 				UnitController.Condition condition = (UnitController.Condition) i;
-				string conditionName = SelectedUnits[0].GetComponent<UnitController>().GetConditionName(condition);
+				string conditionName = selectedUnit.GetConditionName(condition);
 				
-				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
-				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
+				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - (rect.width/2f);
+				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - (rect.height/2f);
 				
 				if (GUI.Button(rect, conditionName)) {
-					SelectedUnits[0].GetComponent<UnitController>().currentCondition = condition;
+					selectedUnit.currentCondition = condition;
 					selectingTarget = false;
 				}
 			}				
