@@ -95,7 +95,9 @@ public class GameController : MonoBehaviour {
 			if (CurrentPlayState == PlayState.BUILD) {
 				BuildTime += Time.deltaTime;
 				
-				if (BuildTime >= MaxBuildTime || ForceSpawn) {
+				float maxTime = WaveCount <= 0 ? MaxBuildTime * 2f : MaxBuildTime;
+				
+				if (BuildTime >= maxTime || ForceSpawn) {
 					ForceSpawn = false;
 					WaveCount++;
 					BuildTime = 0f;

@@ -300,7 +300,8 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.Box("Last wave: " + _gameController.WaveCount);
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
+			float maxBuildTime = _gameController.WaveCount <= 0f ? _gameController.MaxBuildTime * 2f : _gameController.MaxBuildTime;
+			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime));	
 			
 			if (GUILayout.Button(new GUIContent("Spawn Wave"))) {
 				_gameController.ForceSpawn = true;	
