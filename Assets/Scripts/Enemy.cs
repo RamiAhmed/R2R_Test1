@@ -7,28 +7,27 @@ public class Enemy : Entity {
 
 	// Use this for initialization
 	protected override void Start () {
-		Name = "Enemy";
 		Debug.Log ("Enemy created");
 		
 		int wave = _gameController.WaveCount;
 		
 		GoldReward = Mathf.Clamp(wave, 1, 10);
 		
-		MaxHitPoints = 100f + (wave*15f);
+		MaxHitPoints = 100f + (wave*20f);
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage = 10f + (wave*1.5f);
-		Accuracy = 5f + (wave*2f);
-		Evasion = 5f + (wave*2f);
-		Armor = 3f + (wave*1.5f);
+		Damage = 10f + (wave*2f);
+		Accuracy = 5f + (wave*3f);
+		Evasion = 5f + (wave*3f);
+		Armor = 3f + (wave*2f);
 		
-		MovementSpeed = 140f + (wave*10f);
+		MovementSpeed = 140f + (wave*20f);
 	//	MaxForce = 10f + (wave-1f);
 		
-		PerceptionRange = 10f + (wave/2f);
-		AttackingRange = 2f + (wave/10f);
+		PerceptionRange = 10f + (wave/1.5f);
+		AttackingRange = 2f + (wave/5f);
 		
-		AttacksPerSecond = 1f + (wave/10f);
+		AttacksPerSecond = 1f + (wave/5f);
 		FleeThreshold = 0.1f - (wave/100f);
 	}
 }

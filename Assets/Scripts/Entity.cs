@@ -21,16 +21,18 @@ public class Entity : MonoBehaviour {
 	public Texture2D ProfilePicture = null;
 
 	public GameObject Bullet = null;
-
+	
+	public int attackCount = 0, killCount = 0, attackedCount = 0;
+	
 	[HideInInspector]
 	public bool Selected = false,
 				IsDead = false;
 
 	[HideInInspector]
-	public Entity lastAttacker = null;
-
-	protected GameController _gameController = null;
-	protected Entity attackTarget = null;
+	public Entity lastAttacker = null,
+				attackTarget = null;
+	
+	protected GameController _gameController = null;	
 	protected GateOfLife gateRef = null;
 	protected bool isMoving = false;
 	protected Color originalMaterialColor = Color.white;
@@ -297,6 +299,7 @@ public class Entity : MonoBehaviour {
 
 		if (opponent.IsDead || opponent == null) {
 			attackTarget = null;
+			this.killCount += 1;
 		}
 		else {
 			float currentTime = Time.time;
@@ -318,6 +321,9 @@ public class Entity : MonoBehaviour {
 				else {
 					Debug.Log(this.Name + " missed " + opponent.Name);
 				}
+				
+				this.attackCount += 1;
+				opponent.attackedCount += 1;
 
 				if (opponent.lastAttacker == null) {
 					opponent.lastAttacker = this;
@@ -357,7 +363,7 @@ public class Entity : MonoBehaviour {
 		float shortestDistance = PerceptionRange;
 		foreach (GameObject unit in list) {
 			float distance = Vector3.Distance(unit.transform.position, this.transform.position);
-			if (distance < shortestDistance) {
+			if (distance < shortestDistance && unit != this.gameObject) {
 				nearest = unit;
 				shortestDistance = distance;
 			}
@@ -374,7 +380,7 @@ public class Entity : MonoBehaviour {
 		float weakestScore = list[0].GetComponent<Entity>().GetTotalScore();
 		foreach (GameObject unit in list) {
 			float score = unit.GetComponent<Entity>().GetTotalScore();
-			if (score < weakestScore)	{
+			if (score < weakestScore && unit != this.gameObject)	{
 				weakest = unit;
 				weakestScore = score;
 			}
@@ -391,7 +397,7 @@ public class Entity : MonoBehaviour {
 		float strongestScore = 0;
 		foreach (GameObject unit in list) {
 			float score = unit.GetComponent<Entity>().GetTotalScore();
-			if (score > strongestScore) {
+			if (score > strongestScore && unit != this.gameObject) {
 				strongest = unit;
 				strongestScore = score;
 			}
@@ -409,7 +415,7 @@ public class Entity : MonoBehaviour {
 		float damage = 100;
 		foreach (GameObject unit in list) {
 			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff < damage || hpDiff <= 0f) {
+			if (hpDiff < damage || hpDiff <= 0f && unit != this.gameObject) {
 				leastDamaged = unit;
 				damage = hpDiff;
 			}
@@ -426,7 +432,7 @@ public class Entity : MonoBehaviour {
 		float damage = 0;
 		foreach (GameObject unit in list) {
 			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff > damage && hpDiff >= 0f) {
+			if (hpDiff > damage && hpDiff >= 0f && unit != this.gameObject) {
 				mostDamaged = unit;
 				damage = hpDiff;
 			}

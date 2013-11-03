@@ -270,7 +270,6 @@ public class UnitController : Unit {
 				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
 			}
 
-
 			checkForCollisions();
 			
 			drawAttackingRange();
@@ -300,18 +299,16 @@ public class UnitController : Unit {
 					FollowOther(followUnit);
 				}
 				else {
-					//Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-					Entity nearestEnemy = GetTacticalTarget(_gameController.enemies);
-					if (nearestEnemy != null) {
-						if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
-							attackTarget = nearestEnemy;
+					Entity targetEnemy = GetTacticalTarget(_gameController.enemies);
+					if (targetEnemy != null) {
+						if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < PerceptionRange) {
+							attackTarget = targetEnemy;
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
 					}
 				}
-			}	
-			
+			}				
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			saveLocation();
@@ -320,22 +317,31 @@ public class UnitController : Unit {
 
 	protected virtual void AttackingBehaviour() {
 		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
+			StopMoving();
 			currentUnitState = UnitState.PLACED;
-			return;
+			attackTarget = null;
+			lastAttacker = null;
 		}
-
-		if (attackTarget != null) {
+		else if (attackTarget != null) {
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+				// Flee by chance
 				this.currentUnitState = UnitState.FLEEING;
 			}
-			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+			else if (currentTactic == Tactics.Flee && GetIsCurrentConditionTrue()) {
+				// Flee by choice
+				this.currentUnitState = UnitState.FLEEING;
+			}
+			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) <= AttackingRange) {
+				// Attack
 				Attack(attackTarget);
 			}
-			else {
+			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) > AttackingRange) {
 				if (currentTactic == Tactics.HoldTheLine) {
 					if (lastAttacker != null) {
 						MoveTo(lastAttacker.transform);
-						attackTarget = lastAttacker;
+						if (attackTarget != lastAttacker) {
+							attackTarget = lastAttacker;
+						}
 					}
 				}
 				else {

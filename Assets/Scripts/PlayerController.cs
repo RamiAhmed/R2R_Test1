@@ -5,6 +5,9 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour {
 	
 	public List<GameObject> unitsList, deadUnitsList;
+	public List<Entity> SelectedUnits = null;
+	
+	public bool isDebugging = false;
 	
 	public int PlayerLives = 1;
 	public int PlayerGold = 20;
@@ -13,9 +16,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public Faction playerFaction;
 	
-	public Texture marqueeGraphics;
-	
-	public List<Entity> SelectedUnits = null;
+	public Texture marqueeGraphics;	
 	
 	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD;
 	
@@ -40,7 +41,7 @@ public class PlayerController : MonoBehaviour {
 	 
 	// Use this for initialization
 	void Start () {
-		playerFaction = this.GetComponent<Faction>();
+		//playerFaction = this.GetComponent<Faction>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		unitsList = new List<GameObject>();
@@ -219,6 +220,34 @@ public class PlayerController : MonoBehaviour {
 			
 			renderFeedbackMessage();			
 			renderMarqueeSelection();
+			
+			if (isDebugging) {
+				if (SelectedUnits.Count > 0) {
+					if (SelectedUnits[0].GetIsUnit()) {
+						UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
+						
+						string debugLabel = "Selected: " + selectedUnit.Class + ": " + selectedUnit.Name;
+						if (selectedUnit.lastAttacker != null) {
+							debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.gameObject;
+						}
+						else {
+							debugLabel += "\nLast attacker: None";
+						}
+						if (selectedUnit.attackTarget != null) {
+							debugLabel += "\nAttack target: " + selectedUnit.attackTarget.gameObject;
+						}
+						else {
+							debugLabel += "\nAttack target: None"; 
+						}
+						debugLabel += "\nAttack count: " + selectedUnit.attackCount;
+						debugLabel += "\nKill count: " + selectedUnit.killCount;
+						debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
+						float x = 10f, y = 50f, width = 200f, height = 300f;
+						GUI.Label(new Rect(x, y, width, height), debugLabel);
+					}
+				}
+				
+			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
 			float width = screenWidth * 0.2f,
@@ -331,9 +360,9 @@ public class PlayerController : MonoBehaviour {
 			}
 			
 			// Health bar
-			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
+			float hpWidth = (elementWidth*0.75f) * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
 			GUI.BeginGroup(new Rect(elementWidth/4f, unitButtonsHeight, hpWidth, healthBarHeight));
-				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints + " / " + selectedUnit.MaxHitPoints;
+				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F2") + " / " + selectedUnit.MaxHitPoints;
 				GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD, hpTip));			
 			GUI.EndGroup();
 			
