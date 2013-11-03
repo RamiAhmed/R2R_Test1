@@ -18,8 +18,9 @@ public class Entity : MonoBehaviour {
 				AttackingRange = 2f,
 				AttacksPerSecond = 1f,
 				FleeThreshold = 0.1f; // = 10 % health
+	public Texture2D ProfilePicture = null;
 
-	public GameObject Bullet;
+	public GameObject Bullet = null;
 
 	[HideInInspector]
 	public bool Selected = false,
