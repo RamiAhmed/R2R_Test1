@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private Color feedbackColor = Color.white;
 	
+
 	// Use this for initialization
 	void Start () {
 		playerFaction = this.GetComponent<Faction>();
@@ -388,7 +389,8 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTacticsName(selectedUnitController.currentTactic));
+						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
+						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString);
 					}
 			
 				GUI.EndGroup();
@@ -473,7 +475,7 @@ public class PlayerController : MonoBehaviour {
 			spawnUnit(index);
 		}
 	}
-	
+	/*
 	private void renderSelectedUnitGUI() {
 		if (SelectedUnits.Count > 0) {			
 			float width = screenWidth * 0.2f,
@@ -577,7 +579,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
-	
+	*/
 	private void createSpawnShortcuts() {
 		for (int i = 0; i < playerFaction.FactionUnits.Count; i++) {
 			if (Input.GetKeyUp((KeyCode)(49 + i))) {
@@ -585,7 +587,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 	}
-	
+	/*
 	private void renderSpawnGUIButtons() {
 		float width = screenWidth * 0.9f,
 			height = screenHeight * 0.2f;
@@ -610,7 +612,7 @@ public class PlayerController : MonoBehaviour {
 			GUI.Box(new Rect(pos.x-10f, screenHeight - pos.y - 40f, 100f, 40f), GUI.tooltip);
 		}
 	}
-	
+	*/
 	private void createSpawnUnitButton(int index) {
 		Unit factionUnit = playerFaction.FactionUnits[index];
 		string buttonText = (index+1).ToString() + ": " + factionUnit.Name;

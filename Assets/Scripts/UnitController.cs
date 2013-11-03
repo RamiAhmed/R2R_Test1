@@ -93,6 +93,23 @@ public class UnitController : Unit {
 		return name;
 	}
 	
+	public Entity GetTacticalTarget(List<GameObject> list) {
+		Entity obj = null;	
+		switch (currentTarget) {
+			case Target.Strongest: obj = GetStrongestUnit(list); break;
+			case Target.Weakest: obj = GetWeakestUnit(list); break;
+			case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
+			case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
+			case Target.Select: obj = null; break; // Not implemented yet
+		}
+		
+		if (obj == null) {
+			obj = GetNearestUnit(list);
+		}
+		
+		return obj;
+	}
+	
 	public string GetConditionName(Condition condition) {
 		string name = "";
 		switch (condition) {
@@ -104,6 +121,18 @@ public class UnitController : Unit {
 		}
 		return name;
 	}
+	
+	public bool GetIsCurrentConditionTrue() {
+		bool result = false;	
+		switch (currentCondition) {
+			case Condition.Always: result = true; break;
+			case Condition.HP_75: result = this.CurrentHitPoints / this.MaxHitPoints > 0.75f; break;
+			case Condition.HP_50: result = this.CurrentHitPoints / this.MaxHitPoints > 0.50f; break;
+			case Condition.HP_25: result = this.CurrentHitPoints / this.MaxHitPoints > 0.25f; break;
+			case Condition.HP_less: result = this.CurrentHitPoints / this.MaxHitPoints <= 0.25f; break;
+		}
+		return result;
+	}
 
 	// Use this for initialization
 	protected override void Start () {
@@ -112,7 +141,7 @@ public class UnitController : Unit {
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
 		
-		setupRenderCircle(0.25f);
+		setupRenderCircle(0.15f);
 	}
 
 	// Update is called once per frame
@@ -333,15 +362,19 @@ public class UnitController : Unit {
 	}
 	
 	protected void drawAttackingRange() {
-		if (!attackingCircle.renderer.enabled) {
-			attackingCircle.renderer.enabled = true;
-		}	
+		if (attackingCircle != null) {
+			if (!attackingCircle.renderer.enabled) {
+				attackingCircle.renderer.enabled = true;
+			}	
+		}
 	}
 	
 	protected void drawPerceptionRange() {
-		if (!perceptionCircle.renderer.enabled) {
-			perceptionCircle.renderer.enabled = true;
-		}	
+		if (perceptionCircle != null) {
+			if (!perceptionCircle.renderer.enabled) {
+				perceptionCircle.renderer.enabled = true;
+			}	
+		}
 	}
 	
 	protected void disableRenderCircle() {
@@ -389,6 +422,7 @@ public class UnitController : Unit {
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You cannot afford to upgrade " + this.Name);
+				Debug.Log("You cannot afford to upgrade " + this.Name);
 			}
 		}
 		else {
