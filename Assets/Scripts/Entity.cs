@@ -327,15 +327,15 @@ public class Entity : MonoBehaviour {
 	}
 
 	public bool GetIsUnit() {
-		return this.transform.GetComponent<UnitController>() != null;
+		return this != null && this.transform.GetComponent<UnitController>() != null;
 	}
 
 	public bool GetIsEnemy() {
-		return this.transform.GetComponent<EnemyController>() != null;
+		return this != null && this.transform.GetComponent<EnemyController>() != null;
 	}
 
 	public bool GetIsGate() {
-		return this.transform.GetComponent<GateOfLife>() != null;
+		return this != null && this.transform.GetComponent<GateOfLife>() != null;
 	}
 
 	protected Entity GetNearestUnit(List<GameObject> list) {

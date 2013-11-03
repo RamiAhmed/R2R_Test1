@@ -33,7 +33,12 @@ public class PlayerController : MonoBehaviour {
 	
 	private Color feedbackColor = Color.white;
 	
-
+	/*
+	// Tactics ComboBox
+	private GUIContent[] tacticsBoxList;
+	private ComboBox tacticsComboBox;
+	private GUIStyle tacticsStyle = new GUIStyle();
+	 */
 	// Use this for initialization
 	void Start () {
 		playerFaction = this.GetComponent<Faction>();
@@ -311,19 +316,21 @@ public class PlayerController : MonoBehaviour {
 		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); // Unit details
 		if (SelectedUnits.Count > 0) {
 			Entity selectedUnit = SelectedUnits[0];
-			UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
-			
-			if (selectedUnitController != null) { // Sell & Upgrade buttons if unit
-				string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount();
-				if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Sell", sellTip))) {
-					selectedUnitController.SellUnit();	
-				}
+			if (selectedUnit.GetIsUnit()) {
+				UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
 				
-				if (selectedUnitController.CanUpgrade()) {
-					string upgradeTip = "Upgrade Cost: " + selectedUnitController.UpgradesInto.GoldCost; 
-					upgradeTip += "\n Upgraded Unit Score: " + selectedUnitController.UpgradesInto.GetTotalScore();
-					if (GUI.Button(new Rect(elementWidth/2f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Upgrade", upgradeTip))) {
-						selectedUnitController.UpgradeUnit();	
+				if (selectedUnitController != null) { // Sell & Upgrade buttons if unit
+					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount();
+					if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Sell", sellTip))) {
+						selectedUnitController.SellUnit();	
+					}
+					
+					if (selectedUnitController.CanUpgrade()) {
+						string upgradeTip = "Upgrade Cost: " + selectedUnitController.UpgradesInto.GoldCost; 
+						upgradeTip += "\n Upgraded Unit Score: " + selectedUnitController.UpgradesInto.GetTotalScore();
+						if (GUI.Button(new Rect(elementWidth/2f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Upgrade", upgradeTip))) {
+							selectedUnitController.UpgradeUnit();	
+						}
 					}
 				}
 			}
@@ -389,8 +396,15 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
+						/*if (tacticsComboBox == null) {
+							setupTacticsHUD(columnWidth, rowHeight);
+						}*/
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
 						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString);
+						/*int selectedTactic = tacticsComboBox.Show();
+						if (selectedTactic != (int)selectedUnitController.currentTactic) {
+							selectedUnitController.currentTactic = (UnitController.Tactics)selectedTactic;
+						}*/
 					}
 			
 				GUI.EndGroup();
@@ -464,7 +478,32 @@ public class PlayerController : MonoBehaviour {
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}
 	}
-	
+	/*
+	private void setupTacticsHUD(float columnWidth, float rowHeight) {
+		UnitController unit = playerFaction.FactionUnits[0].GetComponent<UnitController>();
+		tacticsBoxList = new GUIContent[9] {
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Attack)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Backstab)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Charge)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Flank)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Flee)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Follow)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Guard)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Heal)),
+			new GUIContent(unit.GetTacticsName(UnitController.Tactics.HoldTheLine))
+		};
+		
+		tacticsStyle.normal.textColor = Color.white;
+		tacticsStyle.onHover.background = 
+			tacticsStyle.hover.background = new Texture2D(2, 2);
+		tacticsStyle.padding.left = 
+			tacticsStyle.padding.right = 
+				tacticsStyle.padding.top = 
+				tacticsStyle.padding.bottom = 4;
+		
+		tacticsComboBox = new ComboBox(new Rect(0f, 0f, columnWidth, rowHeight), tacticsBoxList[0], tacticsBoxList, tacticsStyle); 
+	}
+	*/
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
 		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
 		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 

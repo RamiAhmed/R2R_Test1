@@ -32,14 +32,15 @@ public class UnitController : Unit {
 	// Tactical AI System
 	public enum Tactics {
 		Attack,
-		Guard,
-		Heal,
-		Follow,
-		Flank,
 		Backstab,
 		Charge,
-		HoldTheLine,
-		Flee
+		Flank,
+		Flee,
+		Follow,
+		Guard,
+		Heal,	
+		HoldTheLine
+		
 	};
 	
 	public Tactics currentTactic = Tactics.Attack;

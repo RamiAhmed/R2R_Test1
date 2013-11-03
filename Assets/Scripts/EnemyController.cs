@@ -128,6 +128,7 @@ public class EnemyController : Enemy {
 			if (IsDead) {
 				counterPlayer.PlayerGold += this.GoldReward;
 			}
+			Deselect(counterPlayer.SelectedUnits);
 			_gameController.enemies.Remove(this.gameObject);
 			Destroy(this.gameObject);	
 		}
