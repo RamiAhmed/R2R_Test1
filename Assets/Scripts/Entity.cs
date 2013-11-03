@@ -140,9 +140,20 @@ public class Entity : MonoBehaviour {
 			if (target.lastAttacker != null) {
 				this.attackTarget = target.lastAttacker;
 			}
-			//else if (target.attackTarget != null) {
-			//	this.attackTarget = target.attackTarget;
-			//}
+			else {
+				MoveTo(target.transform);
+			}
+		}
+	}
+	
+	public void FollowOther(Entity target) {
+		if (target == null) {
+			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FollowOther method");	
+		}
+		else {
+			if (target.attackTarget != null) {
+				this.attackTarget = target.attackTarget;	
+			}
 			else {
 				MoveTo(target.transform);
 			}
@@ -415,7 +426,7 @@ public class Entity : MonoBehaviour {
 		float damage = 0;
 		foreach (GameObject unit in list) {
 			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff > damage && hpDiff > 1f) {
+			if (hpDiff > damage && hpDiff >= 0f) {
 				mostDamaged = unit;
 				damage = hpDiff;
 			}

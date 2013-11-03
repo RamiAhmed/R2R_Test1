@@ -288,16 +288,26 @@ public class UnitController : Unit {
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints) {
-				StopMoving();
 				GuardOther(gateRef);
 			}
 			else {
-				Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
-				if (nearestEnemy != null) {
-					if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
-						attackTarget = nearestEnemy;
-						this.currentUnitState = UnitState.ATTACKING;
-						StopMoving();
+				if (currentTactic == Tactics.Guard) {
+					Entity guardedUnit = GetTacticalTarget(playerOwner.unitsList);
+					GuardOther(guardedUnit);
+				}
+				else if (currentTactic == Tactics.Follow) {
+					Entity followUnit = GetTacticalTarget(playerOwner.unitsList);
+					FollowOther(followUnit);
+				}
+				else {
+					//Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
+					Entity nearestEnemy = GetTacticalTarget(_gameController.enemies);
+					if (nearestEnemy != null) {
+						if (Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < PerceptionRange) {
+							attackTarget = nearestEnemy;
+							this.currentUnitState = UnitState.ATTACKING;
+							StopMoving();
+						}
 					}
 				}
 			}	
@@ -322,7 +332,15 @@ public class UnitController : Unit {
 				Attack(attackTarget);
 			}
 			else {
-				MoveTo(attackTarget.transform);
+				if (currentTactic == Tactics.HoldTheLine) {
+					if (lastAttacker != null) {
+						MoveTo(lastAttacker.transform);
+						attackTarget = lastAttacker;
+					}
+				}
+				else {
+					MoveTo(attackTarget.transform);
+				}
 			}
 		}
 		else {
