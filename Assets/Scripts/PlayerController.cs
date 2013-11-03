@@ -32,6 +32,11 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
+	
+	// Tactical AI system
+	private bool selectingTactic = false, 
+				 selectingTarget = false, 
+				 selectingCondition = false;
 	 
 	// Use this for initialization
 	void Start () {
@@ -70,7 +75,8 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		float yMarginFactor = 0.25f;
-		if (Input.mousePosition.y > screenHeight * yMarginFactor) {
+		if (Input.mousePosition.y > screenHeight * yMarginFactor && 
+			(!selectingTactic && !selectingTarget && !selectingCondition)) {
 			handleUnitSelection();
 		}
 		else {
@@ -387,7 +393,13 @@ public class PlayerController : MonoBehaviour {
 					if (selectedUnitController != null) {
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString)) {
-							
+							selectingTactic = true;
+					
+							if (selectingTarget) 
+								selectingTarget = false;
+					
+							if (selectingCondition)
+								selectingCondition = false;
 						}
 					}
 			
@@ -402,7 +414,13 @@ public class PlayerController : MonoBehaviour {
 			
 					if (selectedUnitController != null) {
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget))) {
+							selectingTarget = true;
 					
+							if (selectingTactic) 
+								selectingTactic = false;
+					
+							if (selectingCondition)
+								selectingCondition = false;
 						}
 					}
 			
@@ -418,7 +436,13 @@ public class PlayerController : MonoBehaviour {
 			
 					if (selectedUnitController != null) {
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition))) {
+							selectingCondition = true;
 					
+							if (selectingTactic) 
+								selectingTactic = false;
+					
+							if (selectingTarget) 
+								selectingTarget = false;
 						}
 					}
 				GUI.EndGroup();
@@ -465,6 +489,83 @@ public class PlayerController : MonoBehaviour {
 			float tipWidth = 200f, tipHeight = 60f;
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}
+		
+		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {
+			Vector2 center = new Vector2(screenWidth/2f, screenHeight/2f);
+			float radius = 180f;
+			Rect rect = new Rect(0f, 0f, 130f, 25f);
+			
+			if (selectingTactic) {
+				System.Array arr = System.Enum.GetValues(typeof(UnitController.Tactics));
+				
+				int count = arr.Length;
+				float angleStep = Mathf.PI * 2.0f / count;
+				
+				if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
+					selectingTactic = false;	
+				}
+				
+				for (int i = 0; i < count; i++) {
+					UnitController.Tactics tactic = (UnitController.Tactics) i;
+					string tacticName = SelectedUnits[0].GetComponent<UnitController>().GetTacticsName(tactic);
+					
+					rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
+					rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
+					
+					if (GUI.Button(rect, tacticName)) {
+						SelectedUnits[0].GetComponent<UnitController>().currentTactic = tactic;
+						selectingTactic = false;
+					}
+				}
+			}
+			else if (selectingTarget) {
+				System.Array arr = System.Enum.GetValues(typeof(UnitController.Target));
+				
+				int count = arr.Length;
+				float angleStep = Mathf.PI * 2.0f / count; 
+				
+				if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
+					selectingTarget = false;	
+				}
+				
+				for (int i = 0; i < count; i++) {
+					UnitController.Target target = (UnitController.Target) i;
+					string targetName = SelectedUnits[0].GetComponent<UnitController>().GetTargetName(target);
+					
+					rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
+					rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
+					
+					if (GUI.Button(rect, targetName)) {
+						SelectedUnits[0].GetComponent<UnitController>().currentTarget = target;
+						selectingTarget = false;
+					}
+				}
+			}
+			else if (selectingCondition) {
+				System.Array arr = System.Enum.GetValues(typeof(UnitController.Condition));
+				
+				int count = arr.Length;
+				float angleStep = Mathf.PI * 2.0f / count; 
+				
+				if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel")) {
+					selectingCondition = false;	
+				}
+				
+				for (int i = 0; i < count; i++) {
+					UnitController.Condition condition = (UnitController.Condition) i;
+					string conditionName = SelectedUnits[0].GetComponent<UnitController>().GetConditionName(condition);
+					
+					rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
+					rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
+					
+					if (GUI.Button(rect, conditionName)) {
+						SelectedUnits[0].GetComponent<UnitController>().currentCondition = condition;
+						selectingTarget = false;
+					}
+				}				
+			}
+		}
+		
 	}
 	
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {

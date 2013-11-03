@@ -70,6 +70,7 @@ public class UnitController : Unit {
 		string name = "";
 		switch (tactic) {
 			case Tactics.Attack: name = "Attack"; break;
+			case Tactics.Charge: name = "Charge"; break;
 			case Tactics.Guard: name = "Guard"; break;
 			case Tactics.Heal: name = "Heal"; break;
 			case Tactics.Follow: name = "Follow"; break;
