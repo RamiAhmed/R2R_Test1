@@ -48,7 +48,7 @@ public class PlayerController : MonoBehaviour {
 		deadUnitsList = new List<GameObject>();
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-		SelectedUnits = new List<Entity>();
+		SelectedUnits = new List<Entity>();		
 	}
 	
 	// Update is called once per frame
@@ -245,8 +245,7 @@ public class PlayerController : MonoBehaviour {
 						float x = 10f, y = 50f, width = 200f, height = 300f;
 						GUI.Label(new Rect(x, y, width, height), debugLabel);
 					}
-				}
-				
+				}				
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
@@ -360,13 +359,13 @@ public class PlayerController : MonoBehaviour {
 			}
 			
 			// Health bar
-			float hpWidth = (elementWidth*0.75f) * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
-			GUI.BeginGroup(new Rect(elementWidth/4f, unitButtonsHeight, hpWidth, healthBarHeight));
-				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F2") + " / " + selectedUnit.MaxHitPoints;
+			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
+			GUI.BeginGroup(new Rect(0f, unitButtonsHeight, hpWidth, healthBarHeight));
+				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
 				GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD, hpTip));			
 			GUI.EndGroup();
 			
-			GUI.Label(new Rect(elementWidth/4f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
+			GUI.Label(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
 			
 			
 			// Class: Name
@@ -424,7 +423,8 @@ public class PlayerController : MonoBehaviour {
 			
 					if (selectedUnitController != null) {
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString)) {
+						string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(tacticsString, tacticsTip))) {
 							selectingTactic = true;
 					
 							if (selectingTarget) 
@@ -445,7 +445,9 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget))) {
+						string targetString = selectedUnitController.GetTargetName(selectedUnitController.currentTarget);
+						string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(targetString, targetTip))) {
 							selectingTarget = true;
 					
 							if (selectingTactic) 
@@ -467,7 +469,9 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition))) {
+						string conditionString = selectedUnitController.GetConditionName(selectedUnitController.currentCondition);
+						string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(conditionString, conditionTip))) {
 							selectingCondition = true;
 					
 							if (selectingTactic) 
@@ -516,16 +520,16 @@ public class PlayerController : MonoBehaviour {
 		
 		GUI.EndGroup(); // End Bottom HUD
 		
-		if (GUI.tooltip != "") {
-			Vector2 mousePos = Input.mousePosition;
-			float tipWidth = 200f, tipHeight = 60f;
-			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
-		}
-		
 		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {
 			renderTacticsInterface();
 		}
 		
+		if (GUI.tooltip != "") {
+			GUI.skin.box.wordWrap = true;
+			Vector2 mousePos = Input.mousePosition;
+			float tipWidth = 250f, tipHeight = 60f;
+			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
+		}		
 	}
 	
 	private void renderTacticsInterface() {
