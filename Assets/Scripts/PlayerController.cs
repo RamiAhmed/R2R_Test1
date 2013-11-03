@@ -110,7 +110,7 @@ public class PlayerController : MonoBehaviour {
 					Vector3 clickedPos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
 					
 					foreach (Entity ent in SelectedUnits) {
-						if (!ent.IsDead && ent.GetComponent<UnitController>().playerOwner == this) {
+						if (!ent.IsDead && ent.GetIsUnit() && ent.GetComponent<UnitController>().playerOwner == this) {
 							ent.MoveTo(clickedPos);
 						}
 					}
@@ -128,8 +128,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	private void handleUnitSelection() {
-		
+	private void handleUnitSelection() {		
 		if (Input.GetMouseButtonDown(0)) {
 			clearSelection();
 			
@@ -402,7 +401,9 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget));
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget))) {
+					
+						}
 					}
 			
 				GUI.EndGroup();
@@ -416,7 +417,9 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition));
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition))) {
+					
+						}
 					}
 				GUI.EndGroup();
 			
@@ -480,16 +483,6 @@ public class PlayerController : MonoBehaviour {
 			if (Input.GetKeyUp((KeyCode)(49 + i))) {
 				spawnUnit(i);	
 			}
-		}
-	}
-	
-	private void createSpawnUnitButton(int index) {
-		Unit factionUnit = playerFaction.FactionUnits[index];
-		string buttonText = (index+1).ToString() + ": " + factionUnit.Name;
-		string tooltipText = "Gold cost: " + factionUnit.GoldCost + "\nUnit score: " + factionUnit.GetTotalScore();
-		if (GUILayout.Button(new GUIContent(buttonText, tooltipText), GUILayout.Height(40f)) || 
-			(Input.GetKeyUp((KeyCode)(49 + index)))) {
-			spawnUnit(index);
 		}
 	}
 	
