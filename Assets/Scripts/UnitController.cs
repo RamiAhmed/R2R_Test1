@@ -28,6 +28,82 @@ public class UnitController : Unit {
 	private bool allowedBuildLocation = false;
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
+	
+	// Tactical AI System
+	public enum Tactics {
+		Attack,
+		Guard,
+		Heal,
+		Follow,
+		Flank,
+		Backstab,
+		Charge,
+		HoldTheLine,
+		Flee
+	};
+	
+	public Tactics currentTactic = Tactics.Attack;
+	
+	public enum Target {
+		Nearest,
+		Strongest,
+		Weakest,
+		LowestHP,
+		HighestHP,
+		Select
+	};
+	
+	public Target currentTarget = Target.Nearest;
+	
+	public enum Condition {
+		Always,
+		HP_75, 
+		HP_50,
+		HP_25,
+		HP_less
+	};
+	
+	public Condition currentCondition = Condition.Always;
+	
+	public string GetTacticsName(Tactics tactic) {
+		string name = "";
+		switch (tactic) {
+			case Tactics.Attack: name = "Attack"; break;
+			case Tactics.Guard: name = "Guard"; break;
+			case Tactics.Heal: name = "Heal"; break;
+			case Tactics.Follow: name = "Follow"; break;
+			case Tactics.Flank: name = "Flank"; break;
+			case Tactics.Backstab: name = "Backstab"; break;
+			case Tactics.HoldTheLine: name = "Hold the Line"; break;
+			case Tactics.Flee: name = "Flee"; break;
+		}
+		return name;
+	}
+	
+	public string GetTargetName(Target target) {
+		string name = "";
+		switch (target) {
+			case Target.Nearest: name = "Nearest"; break;
+			case Target.Strongest: name = "Strongest"; break;
+			case Target.Weakest: name = "Weakest"; break;
+			case Target.LowestHP: name = "Most Damaged"; break;
+			case Target.HighestHP: name = "Least Damaged"; break;
+			case Target.Select: name = "Custom Selection"; break;
+		}
+		return name;
+	}
+	
+	public string GetConditionName(Condition condition) {
+		string name = "";
+		switch (condition) {
+			case Condition.Always: name = "Always"; break;
+			case Condition.HP_75: name = "Over 75% HP"; break;
+			case Condition.HP_50: name = "Over 50% HP"; break;
+			case Condition.HP_25: name = "Over 25% HP"; break;
+			case Condition.HP_less: name = "Less than 25% HP"; break;
+		}
+		return name;
+	}
 
 	// Use this for initialization
 	protected override void Start () {

@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public List<Entity> SelectedUnits = null;
 	
-	public Texture2D swordHUD, bootHUD, shieldHUD;
+	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -69,11 +69,8 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		
-		float xMarginFactor = 0.2f,
-			  yMarginFactor = 0.1f;
-		Vector2 pos = Input.mousePosition;
-		if (pos.x > screenWidth * xMarginFactor && pos.x < (screenWidth - screenWidth * xMarginFactor) &&
-			pos.y > screenHeight * yMarginFactor && pos.y < (screenHeight - screenHeight * yMarginFactor)) {
+		float yMarginFactor = 0.25f;
+		if (Input.mousePosition.y > screenHeight * yMarginFactor) {
 			handleUnitSelection();
 		}
 		else {
@@ -215,10 +212,11 @@ public class PlayerController : MonoBehaviour {
 			
 			//renderSelectedUnitGUI();
 			//renderGameDetails();
+			
 			renderTopHUD();
 			renderBottomHUD();
-			renderFeedbackMessage();
 			
+			renderFeedbackMessage();			
 			renderMarqueeSelection();
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
@@ -297,80 +295,160 @@ public class PlayerController : MonoBehaviour {
 	
 	private void renderBottomHUD() {
 		float width = (screenWidth * (1f - 0.13f)) - 0.01f ,
-			height = screenHeight * 0.2f;
+			height = screenHeight * 0.25f;
 		float x = screenWidth - width,
 			y = screenHeight - height;
 		
-		float elementWidth = width * (1f/3f),
+		float elementWidth = width/3f,
 			elementHeight = height;
 		
-		GUILayout.BeginArea(new Rect(x, y, width, height));
-		GUILayout.BeginHorizontal();
+		GUI.BeginGroup(new Rect(x, y, width, height)); // Start Bottom HUD
 		
-		// Unit stats / details
+		float unitButtonsHeight = elementHeight * 0.2f;
+		
+		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); // Unit details
 		if (SelectedUnits.Count > 0) {
 			Entity selectedUnit = SelectedUnits[0];
+			UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
 			
-			string swordTip = "Damage: " + selectedUnit.Damage + "\n";
-			swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
-			swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
-			GUILayout.Box(new GUIContent(swordHUD, swordTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f));
+			if (selectedUnitController != null) {
+				string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount();
+				if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Sell", sellTip))) {
+					selectedUnitController.SellUnit();	
+				}
+				
+				if (selectedUnitController.CanUpgrade()) {
+					string upgradeTip = "Upgrade Cost: " + selectedUnitController.UpgradesInto.GoldCost; 
+					upgradeTip += "\n Upgraded Unit Score: " + selectedUnitController.UpgradesInto.GetTotalScore();
+					if (GUI.Button(new Rect(elementWidth/2f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Upgrade", upgradeTip))) {
+						selectedUnitController.UpgradeUnit();	
+					}
+				}
+			}
 			
-			GUILayout.BeginVertical();
+			float unitTitleHeight = elementHeight * 0.15f;			
+			GUI.Box(new Rect(1f, unitButtonsHeight, elementWidth, unitTitleHeight), selectedUnit.Class + " : " + selectedUnit.Name);
+					
+			// Health bar	
+			float healthBarHeight = elementHeight * 0.25f;
+			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
+			GUI.BeginGroup(new Rect(elementWidth/4f, unitButtonsHeight + unitTitleHeight, hpWidth, healthBarHeight));
+				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints + " / " + selectedUnit.MaxHitPoints;
+				GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD, hpTip));			
+			GUI.EndGroup();
 			
-			string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
-			shieldTip += "Evasion: " + selectedUnit.Evasion;
-			GUILayout.Box(new GUIContent(shieldHUD, shieldTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f/2f));
-			
-			string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed;
-			GUILayout.Box(new GUIContent(bootHUD, bootTip), GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight*0.75f/2f));
-			
-			GUILayout.EndVertical();
+			float detailsHeight = elementHeight - healthBarHeight - unitButtonsHeight - unitTitleHeight;
+			GUI.BeginGroup(new Rect(0f, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
+				// Sword
+				string swordTip = "Damage: " + selectedUnit.Damage + "\n";
+				swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
+				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
+				GUI.Box(new Rect(0f, 0f, elementWidth/2f, detailsHeight), new GUIContent(swordHUD, swordTip));
+				
+				// Shield
+				string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
+				shieldTip += "Evasion: " + selectedUnit.Evasion;
+				GUI.Box(new Rect(elementWidth/2f, 0f, elementWidth/2f, detailsHeight/2f), new GUIContent(shieldHUD, shieldTip));
+				
+				// Boot
+				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed;
+				GUI.Box(new Rect(elementWidth/2f, detailsHeight/2f, elementWidth/2f, detailsHeight/2f), new GUIContent(bootHUD, bootTip));
+			GUI.EndGroup();
 		}
 		else {
-			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));
+			GUI.Box(new Rect(0f, unitButtonsHeight, elementWidth, elementHeight), "No unit selected");	
 		}
+				
+		GUI.EndGroup(); // End unit details
 		
-		// Tactics interface
+		elementHeight -= unitButtonsHeight;
 		
-		if (false) {
+		
+		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight, elementWidth-5f, elementHeight)); // Tactical AI System
+		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
+			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
+			
+			float columnWidth = (elementWidth-5f)/3f,
+				rowHeight = elementHeight * 0.2f;
+			
+			GUI.BeginGroup(new Rect(0f, 0f, columnWidth, elementHeight)); // Tactics
+			
+				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Tactics");
+			
+				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+			
+					if (selectedUnitController != null) {
+						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTacticsName(selectedUnitController.currentTactic));
+					}
+			
+				GUI.EndGroup();
+			GUI.EndGroup();
+			
+			GUI.BeginGroup(new Rect(columnWidth, 0f, columnWidth, elementHeight)); // Target
+				
+				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Target");
+				
+				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+			
+					if (selectedUnitController != null) {
+						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget));
+					}
+			
+				GUI.EndGroup();
+			
+			GUI.EndGroup();
+			
+			GUI.BeginGroup(new Rect(columnWidth*2f, 0f, columnWidth, elementHeight)); // Condition
+			
+				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Condition");
+			
+				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+			
+					if (selectedUnitController != null) {
+						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition));
+					}
+				GUI.EndGroup();
+			
+			GUI.EndGroup();
 			
 		}
 		else {
-			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));				
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	
 		}
 		
-		// Spawn unit grid
+		
+		GUI.EndGroup(); // End Tactics
+		
+		GUI.BeginGroup(new Rect(elementWidth*2f, unitButtonsHeight, elementWidth, elementHeight)); // Spawn Grid		
 		if (playerFaction.FactionUnits.Count > 0) {
+			GUI.BeginGroup(new Rect(0f, 0f, elementWidth, elementHeight));
+				createSpawnButton(0, elementWidth, elementHeight);
+			GUI.EndGroup();
 			
-			GUILayout.BeginVertical();
+			GUI.BeginGroup(new Rect(0f, elementHeight/2f, elementWidth, elementHeight));
+				createSpawnButton(2, elementWidth, elementHeight);
+			GUI.EndGroup();
 			
-			createSpawnButton(0, elementWidth, elementHeight);
+			GUI.BeginGroup(new Rect(elementWidth/2f, 0f, elementWidth, elementHeight));
+				createSpawnButton(1, elementWidth, elementHeight);
+			GUI.EndGroup();
 			
-			createSpawnButton(2, elementWidth, elementHeight);
-			
-			GUILayout.EndVertical();
-			
-			GUILayout.BeginVertical();
-			
-			createSpawnButton(1, elementWidth, elementHeight);
-			
-			createSpawnButton(3, elementWidth, elementHeight);
-			
-			GUILayout.EndVertical();			
-			
+			GUI.BeginGroup(new Rect(elementWidth/2f, elementHeight/2f, elementWidth, elementHeight));
+				createSpawnButton(3, elementWidth, elementHeight);
+			GUI.EndGroup();
 		}
 		else {
-			GUILayout.Box("", GUILayout.Width(elementWidth), GUILayout.Height(elementHeight));
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "ERROR: No spawnable units");	
 		}
 		
-		GUILayout.EndHorizontal();
-		GUILayout.EndArea();
+		GUI.EndGroup(); // end spawn grid
+		
+		
+		GUI.EndGroup(); // End Bottom HUD
 		
 		if (GUI.tooltip != "") {
 			Vector2 mousePos = Input.mousePosition;
-			float tipWidth = 200f,
-				tipHeight = 60f;
+			float tipWidth = 200f, tipHeight = 60f;
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}
 	}
@@ -378,11 +456,12 @@ public class PlayerController : MonoBehaviour {
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
 		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
 		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 
-		tip += "Unit Score: " + unit.GetTotalScore();
+		tip += "Unit Score: " + unit.GetTotalScore() + "\n";
+		tip += "Unit Class: " + unit.Class;
 		GUIContent btn = new GUIContent((index+1) + " : " + unit.Name, tip);
-		if (GUILayout.Button(btn, GUILayout.Width(elementWidth/2f), GUILayout.Height(elementHeight/2f))) {
-			spawnUnit(index);	
-		} 
+		if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, elementHeight/2f), btn)) {
+			spawnUnit(index);
+		}
 	}
 	
 	private void renderSelectedUnitGUI() {

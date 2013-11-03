@@ -5,7 +5,8 @@ using Pathfinding;
 
 public class Entity : MonoBehaviour {
 
-	public string Name = "Entity";
+	public string Name = "Entity",
+				Class = "Entity";
 	public float Damage = 1f,
 				Accuracy = 1f,
 				Evasion = 1f,
@@ -138,9 +139,9 @@ public class Entity : MonoBehaviour {
 			if (target.lastAttacker != null) {
 				this.attackTarget = target.lastAttacker;
 			}
-			else if (target.attackTarget != null) {
-				this.attackTarget = target.attackTarget;
-			}
+			//else if (target.attackTarget != null) {
+			//	this.attackTarget = target.attackTarget;
+			//}
 			else {
 				MoveTo(target.transform);
 			}
