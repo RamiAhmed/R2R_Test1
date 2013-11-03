@@ -32,13 +32,7 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
-	
-	/*
-	// Tactics ComboBox
-	private GUIContent[] tacticsBoxList;
-	private ComboBox tacticsComboBox;
-	private GUIStyle tacticsStyle = new GUIStyle();
-	 */
+	 
 	// Use this for initialization
 	void Start () {
 		playerFaction = this.GetComponent<Faction>();
@@ -212,12 +206,8 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-				//renderSpawnGUIButtons();
 				createSpawnShortcuts();
 			}
-			
-			//renderSelectedUnitGUI();
-			//renderGameDetails();
 			
 			renderTopHUD();
 			renderBottomHUD();
@@ -307,7 +297,7 @@ public class PlayerController : MonoBehaviour {
 		
 		float elementWidth = width/3f,
 			elementHeight = height;
-		
+				
 		GUI.BeginGroup(new Rect(x, y, width, height)); // Start Bottom HUD
 		
 		float unitButtonsHeight = elementHeight * 0.2f;
@@ -396,15 +386,10 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						/*if (tacticsComboBox == null) {
-							setupTacticsHUD(columnWidth, rowHeight);
-						}*/
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
-						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString);
-						/*int selectedTactic = tacticsComboBox.Show();
-						if (selectedTactic != (int)selectedUnitController.currentTactic) {
-							selectedUnitController.currentTactic = (UnitController.Tactics)selectedTactic;
-						}*/
+						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), tacticsString)) {
+							
+						}
 					}
 			
 				GUI.EndGroup();
@@ -417,7 +402,7 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget));
+						GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetTargetName(selectedUnitController.currentTarget));
 					}
 			
 				GUI.EndGroup();
@@ -431,7 +416,7 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
 			
 					if (selectedUnitController != null) {
-						GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition));
+						GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), selectedUnitController.GetConditionName(selectedUnitController.currentCondition));
 					}
 				GUI.EndGroup();
 			
@@ -478,32 +463,7 @@ public class PlayerController : MonoBehaviour {
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}
 	}
-	/*
-	private void setupTacticsHUD(float columnWidth, float rowHeight) {
-		UnitController unit = playerFaction.FactionUnits[0].GetComponent<UnitController>();
-		tacticsBoxList = new GUIContent[9] {
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Attack)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Backstab)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Charge)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Flank)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Flee)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Follow)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Guard)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.Heal)),
-			new GUIContent(unit.GetTacticsName(UnitController.Tactics.HoldTheLine))
-		};
-		
-		tacticsStyle.normal.textColor = Color.white;
-		tacticsStyle.onHover.background = 
-			tacticsStyle.hover.background = new Texture2D(2, 2);
-		tacticsStyle.padding.left = 
-			tacticsStyle.padding.right = 
-				tacticsStyle.padding.top = 
-				tacticsStyle.padding.bottom = 4;
-		
-		tacticsComboBox = new ComboBox(new Rect(0f, 0f, columnWidth, rowHeight), tacticsBoxList[0], tacticsBoxList, tacticsStyle); 
-	}
-	*/
+	
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
 		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
 		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 
@@ -514,111 +474,7 @@ public class PlayerController : MonoBehaviour {
 			spawnUnit(index);
 		}
 	}
-	/*
-	private void renderSelectedUnitGUI() {
-		if (SelectedUnits.Count > 0) {			
-			float width = screenWidth * 0.2f,
-				height = screenHeight * 0.7f;
-			float x = screenWidth - width - 5f,
-				y = (screenHeight - height)/4f;
-			
-			Entity selectedUnit = SelectedUnits[0];
-			if (selectedUnit != null && !selectedUnit.IsDead) {				
-				string unitString = selectedUnit.Name + "\n";
-				unitString += "\nHitpoints: " + Mathf.Round(selectedUnit.CurrentHitPoints) + " / " + Mathf.Round(selectedUnit.MaxHitPoints);
-				unitString += "\nDamage: " + selectedUnit.Damage;
-				unitString += "\nAccuracy: " + selectedUnit.Accuracy;
-				unitString += "\nEvasion: " + selectedUnit.Evasion;
-				unitString += "\nArmor: " + selectedUnit.Armor;
-				unitString += "\nMovement speed: " + selectedUnit.MovementSpeed;
-				unitString += "\nPerception Range: " + selectedUnit.PerceptionRange;
-				unitString += "\nAttacking Range: " + selectedUnit.AttackingRange;
-				unitString += "\nAttacks/second: " + selectedUnit.AttacksPerSecond;
-				unitString += "\nFleeing chance: " + Mathf.RoundToInt(selectedUnit.FleeThreshold*100f) + "%";
-				
-				unitString += "\n";
-				if (selectedUnit.GetIsEnemy()) {
-					unitString += "\nGold reward: " + selectedUnit.GetComponent<Enemy>().GoldReward;	
-				}
-				else if (selectedUnit.GetIsUnit()) {
-					unitString += "\nGold cost: " + selectedUnit.GetComponent<Unit>().GoldCost;
-				}
-				
-				unitString += "\nTotal unit score: " + selectedUnit.GetTotalScore();
-				
-				if (SelectedUnits.Count > 1) {
-					unitString += "\n\nSelected units: " + SelectedUnits.Count;
-				}	
-				
-				GUILayout.BeginArea(new Rect(x, y, width, height));
-				
-				GUILayout.BeginVertical();			
-				
-				GUILayout.Box(unitString, GUILayout.Width(width));
-				
-				GUILayout.EndVertical();
-				
-				GUILayout.BeginHorizontal();
-				
-				if (selectedUnit.GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-					UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();
-					
-					string sellGUITip = "Sell " + selectedUnit.Name + " for " + selectedUnitController.GetSellAmount() + " gold.";
-					if (GUILayout.Button(new GUIContent("Sell", sellGUITip), GUILayout.Height(40f), GUILayout.Width(width*0.49f))) {
-						selectedUnitController.SellUnit();	
-					}
-					
-					if (selectedUnitController.CanUpgrade()) {
-						string upgradeGUITip = "Upgrade " + selectedUnit.Name + " into\n " + selectedUnitController.UpgradesInto.Name + " for " + selectedUnitController.UpgradesInto.GoldCost + " gold.";
-						if (GUILayout.Button(new GUIContent("Upgrade", upgradeGUITip), GUILayout.Height(40f))) {
-							selectedUnitController.UpgradeUnit();	
-						}
-					}
-					
-				}
-				
-				GUILayout.EndHorizontal();
-				
-				GUILayout.EndArea();
-				
-				if (GUI.tooltip != "") {
-					Vector2 pos = Input.mousePosition;
-					float tipWidth = 200f, tipHeight = 50f;
-					GUI.Box(new Rect(pos.x-tipWidth, screenHeight - pos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
-				}
-			}
-		}		
-	}
-		
-	private void renderGameDetails() {
-		GUILayout.BeginArea(new Rect(5f, 5f, screenWidth*0.99f, 30f));
-		GUILayout.BeginHorizontal();
-		
-		GUILayout.Box("Last wave: " + _gameController.WaveCount);
-		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount);
-		
-		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(_gameController.MaxBuildTime));	
-			
-			if (GUILayout.Button(new GUIContent("Spawn Wave"))) {
-				_gameController.ForceSpawn = true;	
-			}
-		}
-		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-			GUI.color = Color.red;
-			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
-			GUI.color = Color.white;
-		}
-		
-		GUILayout.FlexibleSpace();
-		
-		GUILayout.Box("Gold: " + PlayerGold);
-		//GUILayout.Box("Lives left: " + PlayerLives);
-		
-		GUILayout.EndHorizontal();
-		GUILayout.EndArea();
-	}
-	*/
+	
 	private void createSpawnShortcuts() {
 		for (int i = 0; i < playerFaction.FactionUnits.Count; i++) {
 			if (Input.GetKeyUp((KeyCode)(49 + i))) {
@@ -626,32 +482,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 	}
-	/*
-	private void renderSpawnGUIButtons() {
-		float width = screenWidth * 0.9f,
-			height = screenHeight * 0.2f;
-		float x = (screenWidth - width)/2f,
-			y = screenHeight - (height/2f);
-		
-		GUILayout.BeginArea(new Rect(x, y, width, height));
-		
-		GUILayout.BeginHorizontal();
-		GUILayout.Space(width*0.1f);
-		
-		for (int i = 1; i <= playerFaction.FactionUnits.Count; i++) {
-			createSpawnUnitButton(i-1);	
-		}
-		
-		GUILayout.Space(width*0.1f);
-		GUILayout.EndHorizontal();
-		GUILayout.EndArea();
-		
-		if (GUI.tooltip != "") {
-			Vector2 pos = Input.mousePosition;
-			GUI.Box(new Rect(pos.x-10f, screenHeight - pos.y - 40f, 100f, 40f), GUI.tooltip);
-		}
-	}
-	*/
+	
 	private void createSpawnUnitButton(int index) {
 		Unit factionUnit = playerFaction.FactionUnits[index];
 		string buttonText = (index+1).ToString() + ": " + factionUnit.Name;
