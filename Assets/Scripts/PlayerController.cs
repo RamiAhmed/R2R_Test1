@@ -337,6 +337,8 @@ public class PlayerController : MonoBehaviour {
 				GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD, hpTip));			
 			GUI.EndGroup();
 			
+			GUI.Label(new Rect(elementWidth/4f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
+			
 			
 			// Class: Name
 			float unitTitleHeight = elementHeight * 0.15f;			
