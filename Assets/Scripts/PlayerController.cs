@@ -345,15 +345,16 @@ public class PlayerController : MonoBehaviour {
 			GUI.Box(new Rect(1f, unitButtonsHeight + healthBarHeight, elementWidth, unitTitleHeight), selectedUnit.Class + ": " + selectedUnit.Name);
 
 			
+			// Unit details
 			float detailsHeight = elementHeight - healthBarHeight - unitButtonsHeight - unitTitleHeight;
 			GUI.BeginGroup(new Rect(0f, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
+				// Profile picture
 				if (selectedUnit.ProfilePicture != null) {
 					GUI.Box(new Rect(0f, 0f, elementWidth/3f, detailsHeight), selectedUnit.ProfilePicture);
 				}
 				else {
 					GUI.Box(new Rect(0f, 0f, elementWidth/3f, detailsHeight), "No picture");
-				}
-			
+				}			
 			
 				// Sword
 				string swordTip = "Damage: " + selectedUnit.Damage + "\n";
