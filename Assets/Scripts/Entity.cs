@@ -24,6 +24,9 @@ public class Entity : MonoBehaviour {
 	
 	public int attackCount = 0, killCount = 0, attackedCount = 0;
 	
+	public string WalkAnimation = "", 
+				  AttackAnimation = "";
+	
 	[HideInInspector]
 	public bool Selected = false,
 				IsDead = false;
@@ -53,13 +56,21 @@ public class Entity : MonoBehaviour {
 
 	private float repathRate = 1.5f,
 				  lastRepath = -1f;
-
+	
+	private Animation animation;
+	
+	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		gateRef = GameObject.FindGameObjectWithTag("GateOfLife").GetComponent<GateOfLife>();
 		seeker = this.GetComponent<Seeker>();
 		controller = this.GetComponent<CharacterController>();
 		originalMaterialColor = this.renderer.material.color;
+		
+		animation = this.GetComponent<Animation>();
+		if (animation == null) {
+			animation = this.GetComponentInChildren<Animation>();
+		}
 	}
 
 	protected virtual void Start() {}
@@ -71,6 +82,22 @@ public class Entity : MonoBehaviour {
 		else {
 			this.renderer.material.color = originalMaterialColor;
 		}
+		
+		if (animation != null) {
+			if (isMoving) {				
+				if (!animation.IsPlaying(GetWalkAnimation())) {
+					animation.Play(GetWalkAnimation());
+				}
+			}
+		}
+	}
+	
+	protected string GetWalkAnimation() {
+		return WalkAnimation;
+	}
+	
+	protected string GetAttackAnimation() {
+		return AttackAnimation;	
 	}
 
 	protected virtual void FixedUpdate() {
@@ -202,7 +229,7 @@ public class Entity : MonoBehaviour {
 
 				lastRepath = Time.time + Random.value * repathRate * 0.5f;
 				targetPosition = position;
-				isMoving = true;
+				
 				seeker.StartPath(this.transform.position, targetPosition, OnPathComplete);
 
 				//Debug.Log("Move to: " + position);
@@ -215,6 +242,7 @@ public class Entity : MonoBehaviour {
 		p.Claim(this);
 		if (!p.error) {
 			StopMoving();
+			isMoving = true;
 
 			path = p;
 			currentWaypoint = 0;
@@ -240,6 +268,8 @@ public class Entity : MonoBehaviour {
         Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
         direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
         controller.SimpleMove(direction);
+		
+		lookAtTarget(direction);
 
 		if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
             currentWaypoint++;
@@ -248,6 +278,7 @@ public class Entity : MonoBehaviour {
 	}
 
 	public void StopMoving() {
+		//Debug.Log("STOP MOVING");
 		if (path != null) {
 			path.Release(this);
 			path = null;
@@ -292,6 +323,14 @@ public class Entity : MonoBehaviour {
 			this.CurrentHitPoints = 1f;
 		}
 	}
+	
+	private void lookAtTarget(Vector3 target) {
+		if (!this.GetIsGate()) {
+			Vector3 targetLookPos = target;
+			targetLookPos.y = this.renderer.bounds.extents.y / 2f;
+			this.transform.LookAt(targetLookPos);
+		}		
+	}
 
 	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
@@ -305,8 +344,8 @@ public class Entity : MonoBehaviour {
 			float currentTime = Time.time;
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
-
-				//this.transform.LookAt(opponent.transform.position);
+				
+				lookAtTarget(opponent.transform.position);
 
 				if (Bullet != null) {
 					ShootBullet(opponent);
@@ -328,6 +367,10 @@ public class Entity : MonoBehaviour {
 				if (opponent.lastAttacker == null) {
 					opponent.lastAttacker = this;
 				}
+				
+				if (animation != null) {
+				}
+					animation.Play(GetAttackAnimation());
 			}
 		}
 		return hitResult;

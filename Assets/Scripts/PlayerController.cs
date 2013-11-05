@@ -228,13 +228,13 @@ public class PlayerController : MonoBehaviour {
 						
 						string debugLabel = "Selected: " + selectedUnit.Class + ": " + selectedUnit.Name;
 						if (selectedUnit.lastAttacker != null) {
-							debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.gameObject;
+							debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
 						}
 						else {
 							debugLabel += "\nLast attacker: None";
 						}
 						if (selectedUnit.attackTarget != null) {
-							debugLabel += "\nAttack target: " + selectedUnit.attackTarget.gameObject;
+							debugLabel += "\nAttack target: " + selectedUnit.attackTarget.Name;
 						}
 						else {
 							debugLabel += "\nAttack target: None"; 

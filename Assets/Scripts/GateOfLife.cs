@@ -49,39 +49,5 @@ public class GateOfLife : Entity {
 			}
 		}
 	}
-	/*
-	protected override bool Attack(Entity opponent) {
-		bool hitResult = false;
-		StopMoving();
-		
-		if (opponent.IsDead || opponent == null) {
-			attackTarget = null;	
-		}		
-		else {
-			float currentTime = Time.time;
-			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
-				lastAttack = currentTime;
-				
-				//this.transform.LookAt(opponent.transform.position);
-				
-				if (Bullet != null && Bullet) {
-					ShootBullet(opponent);
-				}
-				
-				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
-					float damage = (this.Damage - opponent.Armor) + fGetD20();
-					opponent.ReceiveDamage(damage);
-					hitResult = true;
-					Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
-				}
-				else {
-					Debug.Log(this.Name + " missed " + opponent.Name);	
-				}
-				
-				opponent.lastAttacker = this;
-			}
-		}
-		return hitResult;
-	}
-	*/
+	
 }
