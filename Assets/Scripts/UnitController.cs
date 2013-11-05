@@ -29,7 +29,7 @@ public class UnitController : Unit {
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
 	
-	private Vector3 lookAtPos = Vector3.zero;
+	protected Vector3 lookAtPos = Vector3.zero;
 	
 	// Tactical AI System
 	public enum Tactics {

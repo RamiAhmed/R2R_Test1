@@ -62,7 +62,6 @@ public class Healer : UnitController {
 					if (waypoint.name.Contains("Start")) {
 						lookAtPos = waypoint.transform.position;
 						lookAtTarget(lookAtPos);
-						Debug.Log("lookAtPOs: " + lookAtPos);
 						break;
 					}
 				}			
