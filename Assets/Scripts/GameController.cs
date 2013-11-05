@@ -136,7 +136,7 @@ public class GameController : MonoBehaviour {
 	
 	private void SpawnWave() {
 		for (int i = 0; i < WaveSize; i++) {
-			Invoke("SpawnEnemy", (float)i/3f);	
+			Invoke("SpawnEnemy", (float)i/2f);	
 		}
 	}
 	

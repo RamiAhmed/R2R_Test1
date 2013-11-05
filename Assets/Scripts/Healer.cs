@@ -56,6 +56,17 @@ public class Healer : UnitController {
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			saveLocation();
+			
+			if (lookAtPos == Vector3.zero || lookAtPos.sqrMagnitude < 0f) {
+				foreach (GameObject waypoint in GameObject.FindGameObjectsWithTag("Waypoint")) {
+					if (waypoint.name.Contains("Start")) {
+						lookAtPos = waypoint.transform.position;
+						lookAtTarget(lookAtPos);
+						Debug.Log("lookAtPOs: " + lookAtPos);
+						break;
+					}
+				}			
+			}
 		}
 	}
 

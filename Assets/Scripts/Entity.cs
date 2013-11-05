@@ -231,7 +231,8 @@ public class Entity : MonoBehaviour {
 				targetPosition = position;
 				
 				seeker.StartPath(this.transform.position, targetPosition, OnPathComplete);
-
+				
+				lookAtTarget(position);
 				//Debug.Log("Move to: " + position);
 			}
 		}
@@ -268,8 +269,6 @@ public class Entity : MonoBehaviour {
         Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
         direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
         controller.SimpleMove(direction);
-		
-		lookAtTarget(direction);
 
 		if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
             currentWaypoint++;
@@ -324,10 +323,10 @@ public class Entity : MonoBehaviour {
 		}
 	}
 	
-	private void lookAtTarget(Vector3 target) {
+	protected void lookAtTarget(Vector3 target) {
 		if (!this.GetIsGate()) {
 			Vector3 targetLookPos = target;
-			targetLookPos.y = this.renderer.bounds.extents.y / 2f;
+			targetLookPos.y = this.collider.bounds.extents.y;
 			this.transform.LookAt(targetLookPos);
 		}		
 	}

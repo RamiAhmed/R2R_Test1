@@ -29,6 +29,8 @@ public class UnitController : Unit {
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
 	
+	private Vector3 lookAtPos = Vector3.zero;
+	
 	// Tactical AI System
 	public enum Tactics {
 		Attack,
@@ -312,6 +314,17 @@ public class UnitController : Unit {
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			saveLocation();
+			
+			if (lookAtPos == Vector3.zero || lookAtPos.sqrMagnitude < 0f) {
+				foreach (GameObject waypoint in GameObject.FindGameObjectsWithTag("Waypoint")) {
+					if (waypoint.name.Contains("Start")) {
+						lookAtPos = waypoint.transform.position;
+						lookAtTarget(lookAtPos);
+						Debug.Log("lookAtPOs: " + lookAtPos);
+						break;
+					}
+				}			
+			}
 		}
 	}
 

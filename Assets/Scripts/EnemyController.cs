@@ -34,7 +34,9 @@ public class EnemyController : Enemy {
 
 			counterPlayer = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().players[0].GetComponent<PlayerController>();
 		
-			currentEnemyState = EnemyState.MOVING;		
+			currentEnemyState = EnemyState.MOVING;	
+			
+			lookAtTarget(gateRef.transform.position);
 			
 		}
 		
