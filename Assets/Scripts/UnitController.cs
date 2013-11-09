@@ -401,15 +401,17 @@ public class UnitController : Unit {
 		if (attackingCircle == null) {
 			attackingCircle = Instantiate(Resources.Load("Misc Objects/Circles/AttackingCircle")) as GameObject;
 			attackingCircle.transform.parent = this.transform;
-			attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
-			attackingCircle.renderer.enabled = false;
+			//attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
+			attackingCircle.transform.localScale = new Vector3(AttackingRange, 1f, AttackingRange);
+			attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 		}
 		
 		if (perceptionCircle == null) {
 			perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
 			perceptionCircle.transform.parent = this.transform;
-			perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
-			perceptionCircle.renderer.enabled = false;
+			//perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
+			perceptionCircle.transform.localScale = new Vector3(PerceptionRange, 1f, PerceptionRange);
+			perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 		}
 	}
 	
@@ -420,30 +422,30 @@ public class UnitController : Unit {
 	
 	protected void drawAttackingRange() {
 		if (attackingCircle != null) {
-			if (!attackingCircle.renderer.enabled) {
-				attackingCircle.renderer.enabled = true;
+			if (!attackingCircle.GetComponentInChildren<MeshRenderer>().enabled) {
+				attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = true;
 			}	
 		}
 	}
 	
 	protected void drawPerceptionRange() {
 		if (perceptionCircle != null) {
-			if (!perceptionCircle.renderer.enabled) {
-				perceptionCircle.renderer.enabled = true;
+			if (!perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled) {
+				perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = true;
 			}	
 		}
 	}
 	
 	protected void disableRenderCircle() {
 		if (attackingCircle != null) {
-			if (attackingCircle.renderer.enabled) {
-				attackingCircle.renderer.enabled = false;
+			if (attackingCircle.GetComponentInChildren<MeshRenderer>().enabled) {
+				attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 			}
 		}
 		
 		if (perceptionCircle != null) {
-			if (perceptionCircle.renderer.enabled) {
-				perceptionCircle.renderer.enabled = false;
+			if (perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled) {
+				perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 			}
 		}
 	}
