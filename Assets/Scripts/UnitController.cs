@@ -265,11 +265,13 @@ public class UnitController : Unit {
 
 			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit)) {
-				float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
-				height += this.transform.collider.bounds.size.y/2f + 0.1f;
-				this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+			foreach (RaycastHit hit in Physics.RaycastAll(ray)) {
+				if (hit.collider.GetType() == typeof(TerrainCollider)) {
+					float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
+					height += this.transform.collider.bounds.size.y/2f + 0.1f;
+					this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+					break;
+				}
 			}
 
 			checkForCollisions();
