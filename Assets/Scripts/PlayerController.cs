@@ -353,9 +353,9 @@ public class PlayerController : MonoBehaviour {
 		float healthBarHeight = elementHeight * 0.25f;
 		
 		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); // Unit details
-		if (SelectedUnits.Count > 0 && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+		if (SelectedUnits.Count > 0) {
 			Entity selectedUnit = SelectedUnits[0];
-			if (selectedUnit.GetIsUnit()) {
+			if (selectedUnit.GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 				UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
 				
 				if (selectedUnitController != null) { // Sell & Upgrade buttons if unit

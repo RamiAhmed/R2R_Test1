@@ -20,7 +20,8 @@ public class Entity : MonoBehaviour {
 				FleeThreshold = 0.1f; // = 10 % health
 	public Texture2D ProfilePicture = null;
 
-	public GameObject Bullet = null;
+	public GameObject Bullet = null,
+					AlternateBullet = null;
 	
 	public int attackCount = 0, killCount = 0, attackedCount = 0;
 	
@@ -142,7 +143,11 @@ public class Entity : MonoBehaviour {
 	public float GetTotalScore() {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + (MovementSpeed/10f) + PerceptionRange + AttackingRange);
 	}
-
+	
+	public bool GetIsAlly(Entity target) {
+		return (this.GetIsUnit() && target.GetIsUnit()) || (this.GetIsEnemy() && target.GetIsEnemy());
+	}
+	
 	public void Heal(Entity target, float healAmount) {
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in Heal method");
@@ -152,8 +157,12 @@ public class Entity : MonoBehaviour {
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
 
-				if ((this.GetIsUnit() && target.GetIsUnit()) || (this.GetIsEnemy() && target.GetIsEnemy())) {
+				if (GetIsAlly(target)) {
 					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > target.MaxHitPoints ? target.MaxHitPoints : target.CurrentHitPoints + healAmount;
+					ShootBullet(target, true);
+					if (animation != null) {
+						animation.Play(GetAttackAnimation());	
+					}
 					Debug.Log(this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
 				}
 			}
@@ -368,15 +377,36 @@ public class Entity : MonoBehaviour {
 				}
 				
 				if (animation != null) {
-				}
 					animation.Play(GetAttackAnimation());
+				}					
 			}
 		}
 		return hitResult;
 	}
-
+	
 	protected virtual void ShootBullet(Entity opponent) {
-		GameObject newBullet = Instantiate(Bullet) as GameObject;
+		ShootBullet(opponent, false);	
+	}
+
+	protected virtual void ShootBullet(Entity opponent, bool bAlternate) {
+		GameObject newBullet = null;
+		if (!bAlternate) {
+			if (Bullet != null) {
+				newBullet = Instantiate(Bullet) as GameObject;
+			}
+			else {
+				Debug.LogWarning("Could not find Bullet");
+			}
+		}
+		else {
+			if (AlternateBullet != null) {
+				newBullet = Instantiate(AlternateBullet) as GameObject;	
+			}
+			else {
+				Debug.LogWarning("Could not find Alternate Bullet");
+			}
+		}
+			
 		if (newBullet.collider != null) {
 			Physics.IgnoreCollision(newBullet.collider, this.transform.collider);
 		}
