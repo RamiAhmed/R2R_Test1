@@ -651,12 +651,24 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	private void spawnUnit(int index) {
+	private UnitController getCurrentlyPlacingUnit() {
+		UnitController unit = null;
 		foreach (GameObject go in unitsList) {
-			if (go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
-				Debug.LogWarning("Already placing unit");
-				return;
+			if ((go != null) && go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
+				unit = go.GetComponent<UnitController>();
+				break;
 			}
+		}		
+		
+		return unit;
+	}
+	
+	private void spawnUnit(int index) {
+		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
+		if (currentlyPlacing != null) {
+			//Destroy(currentlyPlacing);
+			currentlyPlacing.DestroySelf();
+			//return;
 		}
 		
 		GameObject newUnit = Instantiate(playerFaction.FactionUnits[index].gameObject) as GameObject;

@@ -506,11 +506,8 @@ public class UnitController : Unit {
 		playerOwner.DisplayFeedbackMessage("You sold " + this.Name + " for " + goldReturned + " gold.", Color.yellow);
 
 		playerOwner.PlayerGold += goldReturned;
-		playerOwner.unitsList.Remove(this.gameObject);
 
-		Deselect(playerOwner.SelectedUnits);
-
-		Destroy(this.gameObject);
+		DestroySelf();
 	}
 
 	public override void Select(List<Entity> list) {
@@ -564,5 +561,15 @@ public class UnitController : Unit {
 		LastBuildLocation.z += Random.Range(-1f, 1f);
 		currentUnitState = UnitState.DEAD;
 		Deselect(playerOwner.SelectedUnits);
+	}
+	
+	public void DestroySelf() {
+		if (playerOwner.unitsList.Contains(this.gameObject)) {
+			playerOwner.unitsList.Remove(this.gameObject);
+		}
+		
+		Deselect(playerOwner.SelectedUnits);
+
+		Destroy(this.gameObject);		
 	}
 }
