@@ -144,6 +144,7 @@ public class UnitController : Unit {
 
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
+		greenDot.transform.localPosition = Vector3.zero;
 		
 		setupRenderCircle();
 	}
@@ -405,6 +406,7 @@ public class UnitController : Unit {
 			attackingCircle.transform.parent = this.transform;
 			//attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
 			attackingCircle.transform.localScale = new Vector3(AttackingRange, 1f, AttackingRange);
+			attackingCircle.transform.localPosition = Vector3.zero;
 			attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 		}
 		
@@ -413,6 +415,7 @@ public class UnitController : Unit {
 			perceptionCircle.transform.parent = this.transform;
 			//perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
 			perceptionCircle.transform.localScale = new Vector3(PerceptionRange, 1f, PerceptionRange);
+			perceptionCircle.transform.localPosition = Vector3.zero;
 			perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 		}
 	}
