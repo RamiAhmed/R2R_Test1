@@ -14,10 +14,6 @@ public class MenuController : MonoBehaviour {
 		_gameController = this.GetComponent<GameController>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
-		
-		if (MenuSkin != null) {
-			GUI.skin = MenuSkin;
-		}
 	}
 	
 	// Update is called once per frame
@@ -29,6 +25,10 @@ public class MenuController : MonoBehaviour {
 	
 	void OnGUI() {
 		if (_gameController.CurrentGameState == GameController.GameState.MENU || _gameController.CurrentGameState == GameController.GameState.ENDING) {
+			if (MenuSkin != null && GUI.skin != MenuSkin) {
+				GUI.skin = MenuSkin;
+			}
+			
 			float width = screenWidth * 0.75f,
 				height = screenHeight * 0.75f;
 			float x = (screenWidth - width)/2f,
