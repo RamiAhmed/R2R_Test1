@@ -13,21 +13,20 @@ public class Enemy : Entity {
 		
 		GoldReward = Mathf.Clamp(wave, 1, 10);
 		
-		MaxHitPoints = 100f + (wave*20f);
+		MaxHitPoints += (wave*20f);
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage = 10f + (wave*2f);
-		Accuracy = 5f + (wave*3f);
-		Evasion = 5f + (wave*3f);
-		Armor = 3f + (wave*2f);
+		Damage += (wave*2f);
+		Accuracy += (wave*3f);
+		Evasion += (wave*3f);
+		Armor += (wave*2f);
 		
-		MovementSpeed = 140f + (wave*20f);
-	//	MaxForce = 10f + (wave-1f);
+		MovementSpeed += (wave*20f);
 		
-		PerceptionRange = 10f + (wave/1.5f);
-		AttackingRange = 2f + (wave/5f);
+		PerceptionRange += (wave/1.5f);
+		AttackingRange += (wave/3f);
 		
-		AttacksPerSecond = 1f + (wave/5f);
-		FleeThreshold = 0.1f - (wave/100f);
+		AttacksPerSecond += (wave/5f);
+		FleeThreshold -= (wave/100f);
 	}
 }
