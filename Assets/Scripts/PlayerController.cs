@@ -88,7 +88,6 @@ public class PlayerController : MonoBehaviour {
 		else {
 			clearMarqueeRect();
 		}
-		
 	}
 	
 	private void respawnUnits() {

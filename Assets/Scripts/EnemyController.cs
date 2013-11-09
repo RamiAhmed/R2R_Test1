@@ -23,6 +23,7 @@ public class EnemyController : Enemy {
 			
 			GameObject redDot = Instantiate(Resources.Load("Misc Objects/RedDot")) as GameObject;
 			redDot.transform.parent = this.transform;
+			redDot.transform.localPosition = Vector3.zero;
 			
 			GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 			foreach (GameObject point in points) {

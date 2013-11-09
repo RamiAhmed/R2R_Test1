@@ -264,7 +264,7 @@ public class UnitController : Unit {
 				this.name = this.Name;
 			}
 
-			Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+			Ray ray = playerOwner.GetComponentInChildren<Camera>().ScreenPointToRay(Input.mousePosition);
 
 			foreach (RaycastHit hit in Physics.RaycastAll(ray)) {
 				if (hit.collider.GetType() == typeof(TerrainCollider)) {
