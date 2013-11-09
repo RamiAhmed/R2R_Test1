@@ -212,10 +212,10 @@ public class PlayerController : MonoBehaviour {
 	
 	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
-		if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
+		/*if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
 			renderGameOver();
 		}
-		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
+		else*/ if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 				createSpawnShortcuts();
 			}
@@ -227,33 +227,7 @@ public class PlayerController : MonoBehaviour {
 			renderMarqueeSelection();
 			
 			if (isDebugging) {
-				if (SelectedUnits.Count > 0) {
-					if (SelectedUnits[0].GetIsUnit()) {
-						UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
-						
-						string debugLabel = "DEBUG FEEDBACK\n";
-						
-						debugLabel += "\nSelected: " + selectedUnit.Class + ": " + selectedUnit.Name;
-						if (selectedUnit.lastAttacker != null) {
-							debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
-						}
-						else {
-							debugLabel += "\nLast attacker: None";
-						}
-						if (selectedUnit.attackTarget != null) {
-							debugLabel += "\nAttack target: " + selectedUnit.attackTarget.Name;
-						}
-						else {
-							debugLabel += "\nAttack target: None"; 
-						}
-						debugLabel += "\nAttack count: " + selectedUnit.attackCount;
-						debugLabel += "\nKill count: " + selectedUnit.killCount;
-						debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
-						float x = 10f, y = 50f, width = 200f, height = 300f;
-						GUI.Box(new Rect(x, y, width, height), "");
-						GUI.Label(new Rect(x+5f, y+5f, width-10f, height-6f), debugLabel);
-					}
-				}				
+				renderSelectedDebugFeedback();	
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
@@ -270,6 +244,36 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
+	private void renderSelectedDebugFeedback() {
+		if (SelectedUnits.Count > 0) {
+			if (SelectedUnits[0].GetIsUnit()) {
+				UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
+				
+				string debugLabel = "DEBUG FEEDBACK\n";
+				
+				debugLabel += "\nSelected: " + selectedUnit.Class + ": " + selectedUnit.Name;
+				if (selectedUnit.lastAttacker != null) {
+					debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
+				}
+				else {
+					debugLabel += "\nLast attacker: None";
+				}
+				if (selectedUnit.attackTarget != null) {
+					debugLabel += "\nAttack target: " + selectedUnit.attackTarget.Name;
+				}
+				else {
+					debugLabel += "\nAttack target: None"; 
+				}
+				debugLabel += "\nAttack count: " + selectedUnit.attackCount;
+				debugLabel += "\nKill count: " + selectedUnit.killCount;
+				debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
+				float x = 10f, y = 50f, width = 200f, height = 300f;
+				GUI.Box(new Rect(x, y, width, height), "");
+				GUI.Label(new Rect(x+5f, y+5f, width-10f, height-6f), debugLabel);
+			}
+		}			
+	}
+	
 	private void renderMarqueeSelection() {
 		marqueeRect = new Rect(marqueeOrigin.x, marqueeOrigin.y, marqueeSize.x, marqueeSize.y);	
 		GUI.color = new Color(0, 0, 0, .3f);
@@ -284,8 +288,11 @@ public class PlayerController : MonoBehaviour {
 			y = height/2f;
 		GUILayout.BeginArea(new Rect(x, y, width, height));
 		
-		GUI.color = Color.red;
-		GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
+		if (_gameController.GameEnded) {
+			//GUI.color = Color.red;
+			//GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
+			
+		}
 		
 		GUILayout.EndArea();
 	}
@@ -680,8 +687,10 @@ public class PlayerController : MonoBehaviour {
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
+			Color guiColor = GUI.color;
 			GUI.color = feedbackColor;
 			GUILayout.Box(feedbackText, GUILayout.Width(width), GUILayout.Height(height));
+			GUI.color = guiColor;
 			
 			GUILayout.EndArea();			
 		}

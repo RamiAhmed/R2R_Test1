@@ -21,6 +21,8 @@ public class GameController : MonoBehaviour {
 	
 	public float StartYPosition = 30f;
 	
+	public bool GameEnded = false;
+	
 	public enum GameState {
 		LOADING,
 		MENU,
@@ -150,7 +152,12 @@ public class GameController : MonoBehaviour {
 	
 	public void EndGame(bool bRestarting) {
 		if (!bRestarting) {
-			Application.Quit();	
+			//Application.Quit();	
+			GameEnded = true;
 		}
+	}
+	
+	public void QuitGame() {
+		Application.Quit();	
 	}
 }

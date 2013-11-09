@@ -28,7 +28,7 @@ public class MenuController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (_gameController.CurrentGameState == GameController.GameState.MENU) {
+		if (_gameController.CurrentGameState == GameController.GameState.MENU || _gameController.CurrentGameState == GameController.GameState.ENDING) {
 			float width = screenWidth * 0.75f,
 				height = screenHeight * 0.75f;
 			float x = (screenWidth - width)/2f,
@@ -36,9 +36,11 @@ public class MenuController : MonoBehaviour {
 			
 			float elementHeight = 40f;
 			
-			string playText = "Play Game";
+			string playText = "Play Game",
+				playTip = "Click to start playing the game";
 			if (_gameController.GameTime > 0f) {
 				playText = "Resume Game";
+				playTip = "Click to resume playing the game";
 			}
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
@@ -47,9 +49,14 @@ public class MenuController : MonoBehaviour {
 			
 			GUILayout.Box(new GUIContent("Right to Rule - Prototype 1"), GUILayout.Height(elementHeight));
 			
-			if (GUILayout.Button(new GUIContent(playText, "Click to start playing the game"), GUILayout.Height(elementHeight))) {
-				_gameController.CurrentGameState = GameController.GameState.PLAY;
-				_gameController.CurrentPlayState = GameController.PlayState.BUILD;
+			if (!_gameController.GameEnded) {
+				if (GUILayout.Button(new GUIContent(playText, playTip), GUILayout.Height(elementHeight))) {
+					_gameController.CurrentGameState = GameController.GameState.PLAY;
+					_gameController.CurrentPlayState = GameController.PlayState.BUILD;
+				}
+			}
+			else {
+				GUILayout.Box("Your Gate of Life died - You have lost the game.");	
 			}
 			
 			if (GUILayout.Button(new GUIContent("Restart Game", "Click to restart the current level"), GUILayout.Height(elementHeight))) {
@@ -57,12 +64,12 @@ public class MenuController : MonoBehaviour {
 			}
 			
 			if (GUILayout.Button(new GUIContent("Quit Game", "Click to exit and close the game"), GUILayout.Height(elementHeight))) {
-				_gameController.CurrentGameState = GameController.GameState.ENDING;
+				_gameController.QuitGame();
 			}
 			
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button(new GUIContent("A Tower Defense game by Alpha Stage Studios - www.alphastagestudios.com", "Click to open up the\n website in default browser."), GUILayout.Height(elementHeight/2f))) {
+			if (GUILayout.Button(new GUIContent("A Tower Defense game by Alpha Stage Studios - www.alphastagestudios.com", "Click to open up the\n website in default browser."), GUILayout.Height(elementHeight))) {
 				Application.OpenURL("www.alphastagestudios.com");	
 			}
 			
