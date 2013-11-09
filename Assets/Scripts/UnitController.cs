@@ -145,7 +145,7 @@ public class UnitController : Unit {
 		GameObject greenDot = Instantiate(Resources.Load("Misc Objects/GreenDot")) as GameObject;
 		greenDot.transform.parent = this.transform;
 		
-		setupRenderCircle(0.15f);
+		setupRenderCircle();
 	}
 
 	// Update is called once per frame
@@ -274,8 +274,7 @@ public class UnitController : Unit {
 
 			checkForCollisions();
 			
-			drawAttackingRange();
-			drawPerceptionRange();
+			DrawRangeCircles();
 		}
 	}
 
@@ -320,7 +319,7 @@ public class UnitController : Unit {
 					if (waypoint.name.Contains("Start")) {
 						lookAtPos = waypoint.transform.position;
 						lookAtTarget(lookAtPos);
-						Debug.Log("lookAtPOs: " + lookAtPos);
+//						Debug.Log("lookAtPOs: " + lookAtPos);
 						break;
 					}
 				}			
@@ -329,6 +328,10 @@ public class UnitController : Unit {
 	}
 
 	protected virtual void AttackingBehaviour() {
+		if (!Selected) {
+			disableRenderCircle();
+		}
+		
 		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
 			StopMoving();
 			currentUnitState = UnitState.PLACED;
@@ -371,7 +374,13 @@ public class UnitController : Unit {
 
 	protected virtual void FleeingBehaviour() {
 		if (attackTarget != null) {
-			if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+			if (this.MaxHitPoints - this.CurrentHitPoints > this.FleeThreshold * this.MaxHitPoints) {
+				this.currentUnitState = UnitState.PLACED;
+				this.FleeThreshold /= 2f;
+				attackTarget = null;
+				StopMoving();
+			}
+			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
 				FleeFrom(attackTarget.transform);
 			}
 			else {
@@ -388,16 +397,25 @@ public class UnitController : Unit {
 		}
 	}
 	
-	private void setupRenderCircle(float width) {
-		attackingCircle = Instantiate(Resources.Load("Misc Objects/Circles/AttackingCircle")) as GameObject;
-		attackingCircle.transform.parent = this.transform;
-		attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
-		attackingCircle.renderer.enabled = false;
+	private void setupRenderCircle() {
+		if (attackingCircle == null) {
+			attackingCircle = Instantiate(Resources.Load("Misc Objects/Circles/AttackingCircle")) as GameObject;
+			attackingCircle.transform.parent = this.transform;
+			attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
+			attackingCircle.renderer.enabled = false;
+		}
 		
-		perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
-		perceptionCircle.transform.parent = this.transform;
-		perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
-		perceptionCircle.renderer.enabled = false;
+		if (perceptionCircle == null) {
+			perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
+			perceptionCircle.transform.parent = this.transform;
+			perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
+			perceptionCircle.renderer.enabled = false;
+		}
+	}
+	
+	protected void DrawRangeCircles() {
+		drawAttackingRange();
+		drawPerceptionRange();
 	}
 	
 	protected void drawAttackingRange() {
@@ -431,7 +449,7 @@ public class UnitController : Unit {
 	}
 
 	public bool CanUpgrade() {
-		return UpgradesInto != null;
+		return UpgradesInto != null && _gameController.CurrentPlayState == GameController.PlayState.BUILD;
 	}
 
 	public void UpgradeUnit() {
@@ -492,10 +510,8 @@ public class UnitController : Unit {
 		if (this.currentUnitState != UnitState.DEAD && this.currentUnitState != UnitState.PLACING) {
 			base.Select(list);
 			
-			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD &&
-				_gameController.CurrentGameState == GameController.GameState.PLAY) {
-				drawAttackingRange();
-				drawPerceptionRange();
+			if (_gameController.CurrentGameState == GameController.GameState.PLAY) {
+				DrawRangeCircles();
 			}
 		}
 	}
@@ -511,16 +527,20 @@ public class UnitController : Unit {
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}
-
-		if (currentUnitState == UnitState.DEAD) {
-			StopMoving();
-			Debug.Log("Unit dead");
-			Deselect(playerOwner.SelectedUnits);
-			playerOwner.unitsList.Remove(this.gameObject);
-			playerOwner.deadUnitsList.Add(this.gameObject);
-
-			this.gameObject.SetActive(false);
+		else if (currentUnitState == UnitState.DEAD) {
+			OnDeath();
 		}
+	}
+	
+	private void OnDeath() {
+		StopMoving();
+		Debug.Log("Unit dead");
+		lookAtPos = Vector3.zero;
+		Deselect(playerOwner.SelectedUnits);
+		playerOwner.unitsList.Remove(this.gameObject);
+		playerOwner.deadUnitsList.Add(this.gameObject);
+
+		this.gameObject.SetActive(false);		
 	}
 
 	protected override void RemoveSelf() {

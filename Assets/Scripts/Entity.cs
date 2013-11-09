@@ -41,7 +41,7 @@ public class Entity : MonoBehaviour {
 	protected Color originalMaterialColor = Color.white;
 	protected float lastAttack = 0f;
 
-	protected float meleeDistance = 3f;
+	protected float meleeDistance = 5f;
 
 	private float killY = -100f;
 

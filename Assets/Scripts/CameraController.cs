@@ -40,7 +40,9 @@ public class CameraController : MonoBehaviour {
 			
 			if (Input.GetMouseButton(1)) {
 				float rotateVelocity = Input.GetAxis("Mouse X") * CameraMoveSpeed * CameraRotateMultiplier * deltaTime;
-				playerObject.transform.Rotate(0, rotateVelocity, 0, Space.World);
+				//playerObject.transform.Rotate(0f, rotateVelocity, 0f, Space.World);
+				Vector3 centerPoint = this.GetComponent<Camera>().ScreenToWorldPoint(new Vector3(screenWidth/2f, 1f, screenHeight/2f));
+				playerObject.transform.RotateAround(centerPoint, Vector3.up, rotateVelocity/2f);
 			}
 			
 			Vector3 edgeMove = edgeCameraMove(mousePos, deltaTime);

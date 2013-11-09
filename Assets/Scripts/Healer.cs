@@ -37,7 +37,8 @@ public class Healer : UnitController {
 			}
 			else {
 				Entity damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
-				if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold)) {
+				if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold) && 
+					Vector3.Distance(damagedUnit.transform.position, this.transform.position) < PerceptionRange) {
 					StopMoving();
 					healTarget = damagedUnit;
 					this.currentUnitState = UnitController.UnitState.HEALING;					

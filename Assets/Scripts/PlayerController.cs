@@ -67,10 +67,15 @@ public class PlayerController : MonoBehaviour {
 			if (_gameController.BuildTime <= 0f) {
 				respawnUnits();
 			}
-			
-			if (SelectedUnits.Count > 0) {
-				if (Input.GetMouseButtonDown(1)) {
+		}
+		
+		if (SelectedUnits.Count > 0) {
+			if (Input.GetMouseButtonDown(1)) {
+				if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					moveUnit();
+				}
+				else {
+					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.", Color.red);	
 				}
 			}
 		}
@@ -226,7 +231,9 @@ public class PlayerController : MonoBehaviour {
 					if (SelectedUnits[0].GetIsUnit()) {
 						UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
 						
-						string debugLabel = "Selected: " + selectedUnit.Class + ": " + selectedUnit.Name;
+						string debugLabel = "DEBUG FEEDBACK\n";
+						
+						debugLabel += "\nSelected: " + selectedUnit.Class + ": " + selectedUnit.Name;
 						if (selectedUnit.lastAttacker != null) {
 							debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
 						}
@@ -243,7 +250,8 @@ public class PlayerController : MonoBehaviour {
 						debugLabel += "\nKill count: " + selectedUnit.killCount;
 						debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
 						float x = 10f, y = 50f, width = 200f, height = 300f;
-						GUI.Label(new Rect(x, y, width, height), debugLabel);
+						GUI.Box(new Rect(x, y, width, height), "");
+						GUI.Label(new Rect(x+5f, y+5f, width-10f, height-6f), debugLabel);
 					}
 				}				
 			}
@@ -303,7 +311,7 @@ public class PlayerController : MonoBehaviour {
 			float maxBuildTime = _gameController.WaveCount <= 0f ? _gameController.MaxBuildTime * 2f : _gameController.MaxBuildTime;
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime));	
 			
-			if (GUILayout.Button(new GUIContent("Spawn Wave"))) {
+			if (GUILayout.Button(new GUIContent("Spawn Now"))) {
 				_gameController.ForceSpawn = true;	
 			}
 		}
@@ -338,7 +346,7 @@ public class PlayerController : MonoBehaviour {
 		float healthBarHeight = elementHeight * 0.25f;
 		
 		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); // Unit details
-		if (SelectedUnits.Count > 0) {
+		if (SelectedUnits.Count > 0 && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			Entity selectedUnit = SelectedUnits[0];
 			if (selectedUnit.GetIsUnit()) {
 				UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
@@ -410,7 +418,7 @@ public class PlayerController : MonoBehaviour {
 		elementHeight -= unitButtonsHeight + healthBarHeight;		
 		
 		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); // Tactical AI System
-		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
+		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {			
 			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 			
 			float columnWidth = (elementWidth-5f)/3f,
@@ -486,6 +494,9 @@ public class PlayerController : MonoBehaviour {
 			
 			GUI.EndGroup();
 			
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You cannot set Tactics while in Combat Phase.");		
 		}
 		else {
 			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	

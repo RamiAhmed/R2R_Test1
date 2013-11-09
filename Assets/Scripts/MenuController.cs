@@ -52,6 +52,10 @@ public class MenuController : MonoBehaviour {
 				_gameController.CurrentPlayState = GameController.PlayState.BUILD;
 			}
 			
+			if (GUILayout.Button(new GUIContent("Restart Game", "Click to restart the current level"), GUILayout.Height(elementHeight))) {
+				_gameController.RestartGame();	
+			}
+			
 			if (GUILayout.Button(new GUIContent("Quit Game", "Click to exit and close the game"), GUILayout.Height(elementHeight))) {
 				_gameController.CurrentGameState = GameController.GameState.ENDING;
 			}

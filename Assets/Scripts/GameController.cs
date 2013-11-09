@@ -4,18 +4,11 @@ using System.Collections.Generic;
 
 public class GameController : MonoBehaviour {
 	
-	[HideInInspector]
 	public List<GameObject> enemies = new List<GameObject>();
-	[HideInInspector]
 	public List<GameObject> players = new List<GameObject>();
 	
-	[HideInInspector]
 	public float GameTime = 0f;
-	
-	[HideInInspector]
 	public float BuildTime = 0f;
-	
-	[HideInInspector]
 	public int WaveCount = 0;
 	
 	[HideInInspector]
@@ -25,6 +18,8 @@ public class GameController : MonoBehaviour {
 	
 	public float MaxBuildTime = 30f;
 	public int WaveSize = 15;
+	
+	public float StartYPosition = 30f;
 	
 	public enum GameState {
 		LOADING,
@@ -48,6 +43,8 @@ public class GameController : MonoBehaviour {
 	
 	private GameObject miniMapCam;
 	
+	private bool isRestarting = false;
+	
 	// Use this for initialization
 	void Start () {
 		GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
@@ -55,7 +52,7 @@ public class GameController : MonoBehaviour {
 		foreach (GameObject point in points) {
 			if (point.transform.name.Contains("End")) {
 				Vector3 targetPos = point.transform.position;
-				targetPos.y += 30f;
+				targetPos.y += StartYPosition;
 				player.transform.position = targetPos;
 				break;
 			}
@@ -116,7 +113,7 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		else if (CurrentGameState == GameState.ENDING) {
-			Application.Quit();	
+			EndGame(isRestarting);
 		}
 		else {
 			if (miniMapCam.activeSelf) {
@@ -143,5 +140,17 @@ public class GameController : MonoBehaviour {
 	private void SpawnEnemy() {
 		GameObject enemy = Instantiate(Resources.Load("Enemies/Enemy")) as GameObject;
 		enemies.Add(enemy);
+	}
+	
+	public void RestartGame() {
+		isRestarting = true;
+		this.CurrentGameState = GameState.ENDING;
+		Application.LoadLevel(0);	
+	}
+	
+	public void EndGame(bool bRestarting) {
+		if (!bRestarting) {
+			Application.Quit();	
+		}
 	}
 }
