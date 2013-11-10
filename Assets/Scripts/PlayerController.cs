@@ -211,16 +211,15 @@ public class PlayerController : MonoBehaviour {
 	
 	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
-		/*if (_gameController.CurrentGameState == GameController.GameState.ENDING) {
-			renderGameOver();
-		}
-		else*/ if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
+		 if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 				createSpawnShortcuts();
 			}
 			
 			renderTopHUD();
 			renderBottomHUD();
+			
+			renderSelectedUnitHealthbar();
 			
 			renderFeedbackMessage();			
 			renderMarqueeSelection();
@@ -230,16 +229,29 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
-			float width = screenWidth * 0.2f,
+			float width = screenWidth * 0.4f,
 				  height = 30f;
 			float x = (screenWidth/2f) - (width/2f),
 				  y = (screenHeight/2f) - (height/2f);
 			
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
-			GUILayout.Box("PAUSED");
+			GUILayout.Box("PAUSED\n Press 'P' or 'Pause|Break' to resume game.");
 			
 			GUILayout.EndArea();				
+		}
+	}
+	
+	private void renderSelectedUnitHealthbar() {
+		if (SelectedUnits.Count > 0) {
+			float width = 100f, height = 30f;
+			foreach (Entity selected in SelectedUnits) {
+				Vector3 healthBarPos = playerCam.WorldToScreenPoint(selected.transform.position);
+				
+				GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), width * (selected.CurrentHitPoints / selected.MaxHitPoints), height));
+					GUI.Label(new Rect(0f, 0f, width, height), healthBarHUD);
+				GUI.EndGroup();
+			}
 		}
 	}
 	
@@ -635,8 +647,9 @@ public class PlayerController : MonoBehaviour {
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
 		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
 		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 
-		tip += "Unit Score: " + unit.GetTotalScore() + "\n";
-		tip += "Unit Class: " + unit.Class;
+		tip += "Unit Class: " + unit.Class + "\n";
+		tip += "Unit Score: " + unit.GetTotalScore();
+		
 		GUIContent btn = new GUIContent((index+1) + " : " + unit.Name, tip);
 		if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, elementHeight/2f), btn)) {
 			spawnUnit(index);
@@ -666,9 +679,7 @@ public class PlayerController : MonoBehaviour {
 	private void spawnUnit(int index) {
 		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
 		if (currentlyPlacing != null) {
-			//Destroy(currentlyPlacing);
 			currentlyPlacing.DestroySelf();
-			//return;
 		}
 		
 		GameObject newUnit = Instantiate(playerFaction.FactionUnits[index].gameObject) as GameObject;
