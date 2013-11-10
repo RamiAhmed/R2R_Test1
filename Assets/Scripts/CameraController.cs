@@ -5,7 +5,7 @@ public class CameraController : MonoBehaviour {
 	
 	public int EdgeThreshold = 25,
 				CameraMoveSpeed = 50,
-				MinimumY = 5,
+				MinimumY = 10,
 				MaximumY = 30;
 	public float CameraScrollMultiplier = 2f,
 				CameraRotateMultiplier = 3f;
