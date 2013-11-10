@@ -230,7 +230,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
 			float width = screenWidth * 0.4f,
-				  height = 30f;
+				  height = 50f;
 			float x = (screenWidth/2f) - (width/2f),
 				  y = (screenHeight/2f) - (height/2f);
 			
@@ -247,8 +247,9 @@ public class PlayerController : MonoBehaviour {
 			float width = 100f, height = 30f;
 			foreach (Entity selected in SelectedUnits) {
 				Vector3 healthBarPos = playerCam.WorldToScreenPoint(selected.transform.position);
+				float barWidth = width * (selected.CurrentHitPoints / selected.MaxHitPoints);
 				
-				GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), width * (selected.CurrentHitPoints / selected.MaxHitPoints), height));
+				GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
 					GUI.Label(new Rect(0f, 0f, width, height), healthBarHUD);
 				GUI.EndGroup();
 			}
