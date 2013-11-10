@@ -311,40 +311,40 @@ public class PlayerController : MonoBehaviour {
 	
 	private void renderTopHUD() {
 		float width = screenWidth * 0.99f,
-			height = screenHeight * 0.10f;
+			height = screenHeight * 0.05f;
 		float x = 1f,
 			y = 2f;
 		
 		GUILayout.BeginArea(new Rect(x, y, width, height));		
 		GUILayout.BeginHorizontal();
 		
-		if (GUILayout.Button("Main Menu")) {
+		if (GUILayout.Button("Main Menu", GUILayout.Height(height))) {
 			_gameController.CurrentGameState = GameController.GameState.MENU;
 		}
 		
 		GUILayout.FlexibleSpace();
 		
-		GUILayout.Box("Last wave: " + _gameController.WaveCount);
+		GUILayout.Box("Last wave: " + _gameController.WaveCount, GUILayout.Height(height));
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 			float maxBuildTime = _gameController.WaveCount <= 0f ? _gameController.MaxBuildTime * 2f : _gameController.MaxBuildTime;
-			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime));	
+			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
 			
-			if (GUILayout.Button(new GUIContent("Spawn Now"))) {
+			if (GUILayout.Button(new GUIContent("Spawn Now"), GUILayout.Height(height))) {
 				_gameController.ForceSpawn = true;	
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			GUI.color = Color.red;
-			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize);	
+			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize, GUILayout.Height(height));	
 			GUI.color = Color.white;
 		}
 		
 		GUILayout.FlexibleSpace();
 		
-		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount);
+		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, GUILayout.Height(height));
 		
-		GUILayout.Box("Gold: " + PlayerGold);		
+		GUILayout.Box("Gold: " + PlayerGold, GUILayout.Height(height));		
 		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
