@@ -14,6 +14,9 @@ public class CameraController : MonoBehaviour {
 	private int screenWidth, screenHeight;
 	private Vector3 homePosition = Vector3.zero;
 	private GameObject playerObject;
+	private Terrain terrain;
+	private Vector3 mapMinBounds, mapMaxBounds;
+	private float nonPassibleBorderWidth = 25f;
 	
 	private GameController _gameController;
 
@@ -24,6 +27,16 @@ public class CameraController : MonoBehaviour {
 		playerObject = this.transform.parent.gameObject;
 		homePosition = playerObject.transform.position;
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+		terrain = GameObject.FindGameObjectWithTag("Terrain").GetComponent<Terrain>();
+		
+		Vector3 terrainSize = terrain.terrainData.size;
+		mapMinBounds = new Vector3(terrain.transform.position.x, 0f, terrain.transform.position.z);
+		mapMaxBounds += mapMinBounds + new Vector3(terrainSize.x, 0f, terrainSize.z);
+		
+		mapMinBounds.x += nonPassibleBorderWidth;
+		mapMinBounds.z += nonPassibleBorderWidth;
+		mapMaxBounds.x -= nonPassibleBorderWidth;
+		mapMaxBounds.z -= nonPassibleBorderWidth;
 	}
 	
 	// Update is called once per frame
@@ -52,12 +65,31 @@ public class CameraController : MonoBehaviour {
 			
 			Vector3 scrollMove = scrollCameraMove(deltaTime);
 			if (scrollMove != Vector3.zero) {
-				cameraVector += scrollMove;
+				playerObject.transform.Translate(scrollMove, Space.World);
 			}
 			
-			playerObject.transform.Translate(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical"), Space.Self);
-			playerObject.transform.Translate(cameraVector, Space.World);
+			cameraVector += new Vector3(Input.GetAxis("Horizontal"), 0f, Input.GetAxis("Vertical"));
+			
+			playerObject.transform.Translate(cameraVector, Space.Self);
+			
+			limitCameraMovementToTerrain();
 		}
+	}
+	
+	private void limitCameraMovementToTerrain() {
+		Vector3 playerPos = playerObject.transform.position;
+		if (playerPos.x > mapMaxBounds.x) {
+			playerObject.transform.position = new Vector3(mapMaxBounds.x, playerPos.y, playerPos.z);
+		}
+		else if (playerPos.x < mapMinBounds.x) {
+			playerObject.transform.position = new Vector3(mapMinBounds.x, playerPos.y, playerPos.z);
+		}
+		if (playerPos.z > mapMaxBounds.z) {
+			playerObject.transform.position = new Vector3(playerPos.x, playerPos.y, mapMaxBounds.z);
+		}
+		else if (playerPos.z < mapMinBounds.z) {
+			playerObject.transform.position = new Vector3(playerPos.x, playerPos.y, mapMinBounds.z);
+		}		
 	}
 	
 	private Vector3 scrollCameraMove(float deltaTime) {
@@ -80,18 +112,18 @@ public class CameraController : MonoBehaviour {
 	private Vector3 edgeCameraMove(Vector3 mousePos, float deltaTime) {
 		Vector3 cameraVelocity = Vector3.zero;
 
-		if (mousePos.x > screenWidth - EdgeThreshold) {
-			cameraVelocity = playerObject.transform.right * CameraMoveSpeed * deltaTime;	
+		if (mousePos.x > screenWidth - EdgeThreshold) {	
+			cameraVelocity = Vector3.right * CameraMoveSpeed * deltaTime;	
 		}
 		else if (mousePos.x < EdgeThreshold) {
-			cameraVelocity = -playerObject.transform.right * CameraMoveSpeed * deltaTime;
+			cameraVelocity = -Vector3.right * CameraMoveSpeed * deltaTime;	
 		}
 		
 		if (mousePos.y > screenHeight - EdgeThreshold) {
-			cameraVelocity = playerObject.transform.forward * CameraMoveSpeed * deltaTime;
+			cameraVelocity = Vector3.forward * CameraMoveSpeed * deltaTime;
 		}
 		else if (mousePos.y < EdgeThreshold) {
-			cameraVelocity = -playerObject.transform.forward * CameraMoveSpeed * deltaTime;
+			cameraVelocity = -Vector3.forward * CameraMoveSpeed * deltaTime;
 		}
 		
 		return cameraVelocity;		
