@@ -6,7 +6,7 @@ public class CameraController : MonoBehaviour {
 	public int EdgeThreshold = 25,
 				CameraMoveSpeed = 50,
 				MinimumY = 5,
-				MaximumY = 50;
+				MaximumY = 30;
 	public float CameraScrollMultiplier = 2f,
 				CameraRotateMultiplier = 3f;
 	
@@ -90,6 +90,12 @@ public class CameraController : MonoBehaviour {
 		else if (playerPos.z < mapMinBounds.z) {
 			playerObject.transform.position = new Vector3(playerPos.x, playerPos.y, mapMinBounds.z);
 		}		
+		if (this.transform.position.y > MaximumY) {
+			this.transform.position = new Vector3(playerPos.x, MaximumY, playerPos.z);	
+		}
+		else if (this.transform.position.y < MinimumY) {
+			this.transform.position = new Vector3(playerPos.x, MinimumY, playerPos.z);
+		}
 	}
 	
 	private Vector3 scrollCameraMove(float deltaTime) {
