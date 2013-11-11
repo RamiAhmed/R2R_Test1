@@ -4,6 +4,18 @@ using System.Collections;
 public class Enemy : Entity {
 	
 	public int GoldReward = 1;
+	
+	public float HitPointsScaleFactor = 10f,
+				DamageScaleFactor = 1f,
+				AccuracyScaleFactor = 1f,
+				EvasionScaleFactor = 1f,
+				ArmorScaleFactor = 1f,
+				MovementSpeedScaleFactor = 1.5f,
+				PerceptionRangeScaleFactor = 0.5f,
+				AttackingRangeScaleFactor = 0.3f,
+				AttacksPerSecondScaleFactor = 0.1f,
+				FleeThresholdScaleFactor = 0.01f;
+				
 
 	// Use this for initialization
 	protected override void Start () {
@@ -17,20 +29,20 @@ public class Enemy : Entity {
 		
 		GoldReward = Mathf.Clamp(wave, 1, 10);
 		
-		MaxHitPoints += (wave*20f);
+		MaxHitPoints += (wave*HitPointsScaleFactor);
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage += wave;
-		Accuracy += wave;
-		Evasion += wave;
-		Armor += wave;
+		Damage += wave*DamageScaleFactor;
+		Accuracy += wave*AccuracyScaleFactor;
+		Evasion += wave*EvasionScaleFactor;
+		Armor += wave*ArmorScaleFactor;
 		
-		MovementSpeed += (wave*2);
+		MovementSpeed += (wave*MovementSpeedScaleFactor);
 		
-		PerceptionRange += (wave/2f);
-		AttackingRange += (wave/3f);
+		PerceptionRange += (wave*PerceptionRangeScaleFactor);
+		AttackingRange += (wave*AttackingRangeScaleFactor);
 		
-		AttacksPerSecond += (wave/10f);
-		FleeThreshold -= (wave/100f);
+		AttacksPerSecond += (wave*AttacksPerSecondScaleFactor);
+		FleeThreshold -= (wave*FleeThresholdScaleFactor);
 	}
 }
