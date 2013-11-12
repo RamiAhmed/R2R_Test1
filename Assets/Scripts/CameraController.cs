@@ -3,8 +3,8 @@ using System.Collections;
 
 public class CameraController : MonoBehaviour {
 	
-	public int EdgeThreshold = 25,
-				CameraMoveSpeed = 50,
+	public int EdgeThreshold = 15,
+				CameraMoveSpeed = 30,
 				MinimumY = 10,
 				MaximumY = 30;
 	public float CameraScrollMultiplier = 2f,
@@ -15,7 +15,8 @@ public class CameraController : MonoBehaviour {
 	private Vector3 homePosition = Vector3.zero;
 	private GameObject playerObject;
 	private Terrain terrain;
-	private Vector3 mapMinBounds, mapMaxBounds;
+	private Vector3 mapMinBounds = Vector3.zero, 
+					mapMaxBounds = Vector3.zero;
 	private float nonPassibleBorderWidth = 25f;
 	
 	private GameController _gameController;

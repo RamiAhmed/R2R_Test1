@@ -436,7 +436,8 @@ public class PlayerController : MonoBehaviour {
 		
 		elementHeight -= unitButtonsHeight + healthBarHeight;		
 		
-		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); // Tactical AI System
+		// Tactical AI System
+		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
 		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {			
 			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 			
@@ -514,8 +515,11 @@ public class PlayerController : MonoBehaviour {
 			GUI.EndGroup();
 			
 		}
-		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You cannot set Tactics while in Combat Phase.");		
+		else if (SelectedUnits.Count > 0 && _gameController.CurrentPlayState != GameController.PlayState.BUILD && SelectedUnits[0].GetIsUnit()) {
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics in the Build phase.");		
+		}
+		else if (SelectedUnits.Count > 0 && !SelectedUnits[0].GetIsUnit()) {
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics on your own units.");
 		}
 		else {
 			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	
