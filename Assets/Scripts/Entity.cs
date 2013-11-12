@@ -165,6 +165,9 @@ public class Entity : MonoBehaviour {
 					}
 					Debug.Log(_gameController.GameTime + ": " + this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
 				}
+				else {
+					Debug.LogWarning(_gameController.GameTime + ": " + this.Name + " tried to heal non-ally : " + target.Name);	
+				}
 			}
 		}
 
@@ -175,8 +178,12 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
 		}
 		else {
+			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.lastAttacker != null) {
 				this.attackTarget = target.lastAttacker;
+			}
+			else if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < AttackingRange) {
+				this.attackTarget = nearestEnemy;
 			}
 			else {
 				MoveTo(target.transform);
@@ -189,8 +196,12 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FollowOther method");	
 		}
 		else {
+			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.attackTarget != null) {
 				this.attackTarget = target.attackTarget;	
+			}
+			else if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < AttackingRange) {
+				this.attackTarget = nearestEnemy;
 			}
 			else {
 				MoveTo(target.transform);
