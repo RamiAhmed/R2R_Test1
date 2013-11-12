@@ -34,15 +34,9 @@ public class UnitController : Unit {
 	// Tactical AI System
 	public enum Tactics {
 		Attack,
-		Backstab,
-		Charge,
-		Flank,
-		Flee,
 		Follow,
-		Guard,
-		Heal,	
-		HoldTheLine
-		
+		Guard,	
+		HoldTheLine		
 	};
 	
 	public Tactics currentTactic = Tactics.Attack;
@@ -52,8 +46,7 @@ public class UnitController : Unit {
 		Strongest,
 		Weakest,
 		LowestHP,
-		HighestHP,
-		Select
+		HighestHP
 	};
 	
 	public Target currentTarget = Target.Nearest;
@@ -72,14 +65,9 @@ public class UnitController : Unit {
 		string name = "";
 		switch (tactic) {
 			case Tactics.Attack: name = "Attack"; break;
-			case Tactics.Charge: name = "Charge"; break;
 			case Tactics.Guard: name = "Guard"; break;
-			case Tactics.Heal: name = "Heal"; break;
 			case Tactics.Follow: name = "Follow"; break;
-			case Tactics.Flank: name = "Flank"; break;
-			case Tactics.Backstab: name = "Backstab"; break;
 			case Tactics.HoldTheLine: name = "Hold the Line"; break;
-			case Tactics.Flee: name = "Flee"; break;
 		}
 		return name;
 	}
@@ -92,7 +80,6 @@ public class UnitController : Unit {
 			case Target.Weakest: name = "Weakest"; break;
 			case Target.LowestHP: name = "Most Damaged"; break;
 			case Target.HighestHP: name = "Least Damaged"; break;
-			case Target.Select: name = "Custom Selection"; break;
 		}
 		return name;
 	}
@@ -104,7 +91,6 @@ public class UnitController : Unit {
 			case Target.Weakest: obj = GetWeakestUnit(list); break;
 			case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
 			case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
-			case Target.Select: obj = null; break; // Not implemented yet
 		}
 		
 		if (obj == null) {
@@ -201,13 +187,13 @@ public class UnitController : Unit {
 	private void toggleRenderMaterial(bool bToggle) {
 		if (bToggle) {
 			if (allowedBuildLocation) {
-				this.renderer.material.color = Color.red;
+				//this.renderer.material.color = Color.red;
 				allowedBuildLocation = false;
 			}
 		}
 		else {
 			if (!allowedBuildLocation) {
-				this.renderer.material.color = Color.green;
+				//this.renderer.material.color = Color.green;
 				allowedBuildLocation = true;
 			}
 		}
@@ -344,10 +330,6 @@ public class UnitController : Unit {
 		else if (attackTarget != null) {
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 				// Flee by chance
-				this.currentUnitState = UnitState.FLEEING;
-			}
-			else if (currentTactic == Tactics.Flee && GetIsCurrentConditionTrue()) {
-				// Flee by choice
 				this.currentUnitState = UnitState.FLEEING;
 			}
 			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) <= AttackingRange) {

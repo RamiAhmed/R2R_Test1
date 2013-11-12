@@ -53,7 +53,7 @@ public class Entity : MonoBehaviour {
 	private CharacterController controller;
 
 	private int currentWaypoint = 0;
-	private float nextWaypointDistance = 3f;
+	private float nextWaypointDistance = 1.5f;
 
 	private float repathRate = 1.5f,
 				  lastRepath = -1f;
@@ -77,12 +77,12 @@ public class Entity : MonoBehaviour {
 	protected virtual void Start() {}
 
 	protected virtual void Update() {
-		if (this.Selected) {
+		/*if (this.Selected) {
 			this.renderer.material.color = Color.blue;
 		}
 		else {
 			this.renderer.material.color = originalMaterialColor;
-		}
+		}*/
 		
 		if (animation != null) {
 			if (isMoving) {				
