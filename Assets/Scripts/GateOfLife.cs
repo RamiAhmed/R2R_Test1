@@ -33,7 +33,7 @@ public class GateOfLife : Entity {
 		else {
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 				if (attackTarget != null) {
-					if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+					if (GetIsWithinAttackingRange(attackTarget)) {
 						Attack(attackTarget);	
 					}
 					else {
@@ -42,7 +42,7 @@ public class GateOfLife : Entity {
 				}
 				else {
 					Entity enemy = GetNearestUnit(_gameController.enemies);
-					if (enemy != null && Vector3.Distance(enemy.transform.position, this.transform.position) < AttackingRange) {
+					if (enemy != null && GetIsWithinAttackingRange(enemy)) {
 						attackTarget = enemy;
 					}
 				}

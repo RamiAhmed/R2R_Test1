@@ -296,7 +296,7 @@ public class PlayerController : MonoBehaviour {
 				foreach (GameObject unit in unitsList) {
 					unitScoreSum += unit.GetComponent<Entity>().GetTotalScore();
 				}
-				debugLabel += "\n\nTotal Unit Value: " + unitScoreSum;
+				debugLabel += "\n\nTotal Unit Score: " + unitScoreSum;
 				
 				debugLabel += "\nCurrently Selected Units Count: " + SelectedUnits.Count;
 				
@@ -304,7 +304,7 @@ public class PlayerController : MonoBehaviour {
 				foreach(Entity unit in SelectedUnits) {
 					unitScoreSum += unit.GetTotalScore();
 				}
-				debugLabel += "\nCurrently Selected Units Total Value: " + unitScoreSum;
+				debugLabel += "\nCurrently Selected Units Total Score: " + unitScoreSum;
 				
 				float x = 10f, y = 50f, width = 300f, height = 300f;
 				GUI.Box(new Rect(x, y, width, height), "");

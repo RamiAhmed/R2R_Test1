@@ -207,13 +207,11 @@ public class UnitController : Unit {
 	private void toggleRenderMaterial(bool bToggle) {
 		if (bToggle) {
 			if (allowedBuildLocation) {
-				//this.renderer.material.color = Color.red;
 				allowedBuildLocation = false;
 			}
 		}
 		else {
 			if (!allowedBuildLocation) {
-				//this.renderer.material.color = Color.green;
 				allowedBuildLocation = true;
 			}
 		}
@@ -253,13 +251,15 @@ public class UnitController : Unit {
 			healTarget = null;
 			lastAttacker = null;
 		}
-		else if (healTarget != null && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
-			if (Vector3.Distance(healTarget.transform.position, this.transform.position) < AttackingRange) {
+		else if (healTarget != null && !healTarget.IsDead && healTarget.CurrentHitPoints < healTarget.MaxHitPoints * HealThreshold) {
+			if (GetIsWithinAttackingRange(healTarget)) {
 				StopMoving();
 				Heal(healTarget, this.Damage + fGetD20()/10f);	
 			}
 			else {
-				MoveTo(healTarget.transform);
+				if (!GetIsWithinAttackingRange(healTarget)) {
+					MoveTo(healTarget.transform);
+				}
 			}
 		}	
 		else {
@@ -314,6 +314,7 @@ public class UnitController : Unit {
 		}
 		
 		if (attackTarget != null) {
+			StopMoving();
 			this.currentUnitState = UnitState.ATTACKING;
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
@@ -324,7 +325,7 @@ public class UnitController : Unit {
 				if (isHealer) {
 					Entity damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
 					if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold) && 
-						Vector3.Distance(damagedUnit.transform.position, this.transform.position) < PerceptionRange) {
+						GetIsWithinPerceptionRange(damagedUnit)) {
 						StopMoving();
 						healTarget = damagedUnit;
 						this.currentUnitState = UnitController.UnitState.HEALING;	
@@ -340,24 +341,31 @@ public class UnitController : Unit {
 					else if (currentTactic == Tactics.Follow) {
 						FollowOther(tacticalTarget);
 					}
-					else if (currentTactic == Tactics.HoldTheLine) {						
-						if (Vector3.Distance(tacticalTarget.transform.position, this.transform.position) < AttackingRange) {
+					else if (currentTactic == Tactics.HoldTheLine) {
+						if (GetIsWithinAttackingRange(tacticalTarget)) {
 							attackTarget = tacticalTarget; 
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
-						else if (Vector3.Distance(GetNearestUnit(_gameController.enemies).transform.position, this.transform.position) < AttackingRange) {
+						else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
 							attackTarget = GetNearestUnit(_gameController.enemies);
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
 					}
 					else {
-						if (Vector3.Distance(tacticalTarget.transform.position, this.transform.position) < PerceptionRange) {
+						if (GetIsWithinPerceptionRange(tacticalTarget)) {
 							attackTarget = tacticalTarget;
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
+					}
+					
+					if ((attackTarget == null && lastAttacker != null) &&
+							GetIsWithinPerceptionRange(lastAttacker)) {
+						attackTarget = lastAttacker;
+						this.currentUnitState = UnitState.ATTACKING;
+						StopMoving();
 					}
 				}
 			}				
@@ -393,7 +401,7 @@ public class UnitController : Unit {
 				// Flee by chance
 				this.currentUnitState = UnitState.FLEEING;
 			}
-			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) <= AttackingRange) {
+			else if (GetIsWithinAttackingRange(attackTarget)) {
 				// Attack
 				Attack(attackTarget);
 			}
@@ -426,7 +434,7 @@ public class UnitController : Unit {
 				attackTarget = null;
 				StopMoving();
 			}
-			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+			else if (GetIsWithinPerceptionRange(attackTarget)) {
 				FleeFrom(attackTarget.transform);
 			}
 			else {
@@ -447,7 +455,6 @@ public class UnitController : Unit {
 		if (attackingCircle == null) {
 			attackingCircle = Instantiate(Resources.Load("Misc Objects/Circles/AttackingCircle")) as GameObject;
 			attackingCircle.transform.parent = this.transform;
-			//attackingCircle.transform.localScale = new Vector3(AttackingRange/5f, 1f, AttackingRange/5f);
 			attackingCircle.transform.localScale = new Vector3(AttackingRange, 1f, AttackingRange);
 			attackingCircle.transform.localPosition = Vector3.zero;
 			attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
@@ -456,7 +463,6 @@ public class UnitController : Unit {
 		if (perceptionCircle == null) {
 			perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
 			perceptionCircle.transform.parent = this.transform;
-			//perceptionCircle.transform.localScale = new Vector3(PerceptionRange/5f, 1f, PerceptionRange/5f);
 			perceptionCircle.transform.localScale = new Vector3(PerceptionRange, 1f, PerceptionRange);
 			perceptionCircle.transform.localPosition = Vector3.zero;
 			perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = false;

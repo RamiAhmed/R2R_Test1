@@ -76,13 +76,6 @@ public class Entity : MonoBehaviour {
 	protected virtual void Start() {}
 
 	protected virtual void Update() {
-		/*if (this.Selected) {
-			this.renderer.material.color = Color.blue;
-		}
-		else {
-			this.renderer.material.color = originalMaterialColor;
-		}*/
-		
 		if (animation != null) {
 			if (isMoving) {				
 				if (!animation.IsPlaying(GetWalkAnimation())) {
@@ -92,6 +85,18 @@ public class Entity : MonoBehaviour {
 		}
 	}
 	
+	public bool GetIsWithinPerceptionRange(Entity target) {
+		return GetIsWithinRange(target, PerceptionRange);	
+	}
+	
+	public bool GetIsWithinAttackingRange(Entity target) {
+		return GetIsWithinRange(target, AttackingRange);
+	}
+	
+	public bool GetIsWithinRange(Entity target, float range) {
+		return target != null && Vector3.Distance(target.transform.position, this.transform.position) < range;
+	}
+			
 	protected string GetWalkAnimation() {
 		return WalkAnimation;
 	}
@@ -181,11 +186,13 @@ public class Entity : MonoBehaviour {
 			if (target.lastAttacker != null) {
 				this.attackTarget = target.lastAttacker;
 			}
-			else if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < AttackingRange) {
+			else if (nearestEnemy != null && GetIsWithinAttackingRange(nearestEnemy)) {
 				this.attackTarget = nearestEnemy;
 			}
 			else {
-				MoveTo(target.transform);
+				if (!GetIsWithinAttackingRange(target)) {
+					MoveTo(target.transform);
+				}
 			}
 		}
 	}
@@ -199,11 +206,13 @@ public class Entity : MonoBehaviour {
 			if (target.attackTarget != null) {
 				this.attackTarget = target.attackTarget;	
 			}
-			else if (nearestEnemy != null && Vector3.Distance(nearestEnemy.transform.position, this.transform.position) < AttackingRange) {
+			else if (nearestEnemy != null && GetIsWithinAttackingRange(nearestEnemy)) {
 				this.attackTarget = nearestEnemy;
 			}
 			else {
-				MoveTo(target.transform);
+				if (!GetIsWithinAttackingRange(target)) {
+					MoveTo(target.transform);
+				}
 			}
 		}
 	}

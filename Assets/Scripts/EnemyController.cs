@@ -71,7 +71,7 @@ public class EnemyController : Enemy {
 				currentEnemyState = EnemyState.ATTACKING;
 			}
 			else if (gateRef != null) {
-				if (Vector3.Distance(this.transform.position, gateRef.transform.position) < AttackingRange) {
+				if (GetIsWithinAttackingRange(gateRef)) {
 					StopMoving();
 					attackTarget = gateRef;
 					currentEnemyState = EnemyState.ATTACKING;
@@ -86,10 +86,9 @@ public class EnemyController : Enemy {
 		else if (currentEnemyState == EnemyState.ATTACKING) {
 			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 				this.currentEnemyState = EnemyState.FLEEING;
-			}
-			
-			if (attackTarget != null) {
-				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < AttackingRange) {
+			}			
+			else if (attackTarget != null) {
+				if (GetIsWithinAttackingRange(attackTarget)) {
 					StopMoving();
 					Attack(attackTarget);	
 				}
@@ -103,7 +102,7 @@ public class EnemyController : Enemy {
 		}
 		else if (currentEnemyState == EnemyState.FLEEING) {
 			if (attackTarget != null) {
-				if (Vector3.Distance(attackTarget.transform.position, this.transform.position) < PerceptionRange) {
+				if (GetIsWithinPerceptionRange(attackTarget)) {
 					FleeFrom(attackTarget.transform);	
 				}
 				else {
