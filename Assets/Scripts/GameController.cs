@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour {
 	public int MaxUnitCount = 50;
 	
 	public float MaxBuildTime = 30f;
-	public int WaveSize = 15;
+	public int WaveSize = 10;
 	
 	public float StartYPosition = 30f;
 	

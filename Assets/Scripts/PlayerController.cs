@@ -660,7 +660,7 @@ public class PlayerController : MonoBehaviour {
 		tip += "Unit Class: " + unit.Class + "\n";
 		tip += "Unit Score: " + unit.GetTotalScore();
 		
-		GUIContent btn = new GUIContent((index+1) + " : " + unit.Name, tip);
+		GUIContent btn = new GUIContent((index+1) + " : " + unit.Name + " (" + unit.Class + ")", tip);
 		if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, elementHeight/2f), btn)) {
 			spawnUnit(index);
 		}
