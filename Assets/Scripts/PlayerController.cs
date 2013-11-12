@@ -364,7 +364,7 @@ public class PlayerController : MonoBehaviour {
 		
 		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, GUILayout.Height(height));
 		
-		GUILayout.Box("Gold: " + PlayerGold, GUILayout.Height(height));		
+		GUILayout.Box("Gold: " + PlayerGold + "g", GUILayout.Height(height));		
 		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
@@ -433,7 +433,8 @@ public class PlayerController : MonoBehaviour {
 			GUI.BeginGroup(new Rect(0f, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
 				// Profile picture
 				if (selectedUnit.ProfilePicture != null) {
-					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), selectedUnit.ProfilePicture);
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), "");
+					GUI.DrawTexture(new Rect(0f, 0f, detailsWidth, detailsHeight), selectedUnit.ProfilePicture, ScaleMode.ScaleToFit);
 				}
 				else {
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), "No picture");
