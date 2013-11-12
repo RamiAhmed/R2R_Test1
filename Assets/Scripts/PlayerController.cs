@@ -313,22 +313,6 @@ public class PlayerController : MonoBehaviour {
 		GUI.color = Color.white;
 	}
 	
-	private void renderGameOver() {
-		float width = screenWidth * 0.5f,
-			height = screenHeight * 0.5f;
-		float x = width/2f,
-			y = height/2f;
-		GUILayout.BeginArea(new Rect(x, y, width, height));
-		
-		if (_gameController.GameEnded) {
-			//GUI.color = Color.red;
-			//GUILayout.Box("You have lost your Gate of Life!\nGAME OVER", GUILayout.Width(width));
-			
-		}
-		
-		GUILayout.EndArea();
-	}
-	
 	private void renderTopHUD() {
 		float width = screenWidth * 0.99f,
 			height = screenHeight * 0.05f;
@@ -338,7 +322,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.BeginArea(new Rect(x, y, width, height));		
 		GUILayout.BeginHorizontal();
 		
-		if (GUILayout.Button("Main Menu", GUILayout.Height(height))) {
+		if (GUILayout.Button("Main Menu (ESC)", GUILayout.Height(height))) {
 			_gameController.CurrentGameState = GameController.GameState.MENU;
 		}
 		
@@ -350,7 +334,7 @@ public class PlayerController : MonoBehaviour {
 			float maxBuildTime = _gameController.WaveCount <= 0f ? _gameController.MaxBuildTime * 2f : _gameController.MaxBuildTime;
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
 			
-			if (GUILayout.Button(new GUIContent("Spawn Now"), GUILayout.Height(height))) {
+			if (GUILayout.Button(new GUIContent("Spawn Now (Space)"), GUILayout.Height(height)) || Input.GetKeyDown(KeyCode.Space)) {
 				_gameController.ForceSpawn = true;	
 			}
 		}
