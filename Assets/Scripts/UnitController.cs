@@ -29,6 +29,8 @@ public class UnitController : Unit {
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
 	
+	private Entity healTarget = null;
+	
 	protected Vector3 lookAtPos = Vector3.zero;
 	
 	// Tactical AI System
@@ -220,12 +222,26 @@ public class UnitController : Unit {
 		else if (currentUnitState == UnitState.FLEEING) {
 			FleeingBehaviour();
 		}
-		else if (currentUnitState == UnitState.HEALING) {
+		else if (currentUnitState == UnitState.HEALING && isHealer) {
 			HealingBehaviour();
 		}
 	}
 
-	protected virtual void HealingBehaviour() {}
+	protected virtual void HealingBehaviour() {
+		if (healTarget != null && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
+			if (Vector3.Distance(healTarget.transform.position, this.transform.position) < AttackingRange) {
+				StopMoving();
+				Heal(healTarget, this.Damage + fGetD20()/10f);	
+			}
+			else {
+				MoveTo(healTarget.transform);
+			}
+		}	
+		else {
+			healTarget = null;
+			this.currentUnitState = UnitController.UnitState.PLACED;			
+		}
+	}
 
 	protected virtual void PlacingBehaviour() {
 		if (this.playerOwner != null) {
@@ -280,6 +296,17 @@ public class UnitController : Unit {
 				GuardOther(gateRef);
 			}
 			else {
+				if (isHealer) {
+					Entity damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
+					if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold) && 
+						Vector3.Distance(damagedUnit.transform.position, this.transform.position) < PerceptionRange) {
+						StopMoving();
+						healTarget = damagedUnit;
+						this.currentUnitState = UnitController.UnitState.HEALING;	
+						return;
+					}
+				}
+				
 				if (currentTactic == Tactics.Guard) {
 					Entity guardedUnit = GetTacticalTarget(playerOwner.unitsList);
 					GuardOther(guardedUnit);
