@@ -615,7 +615,7 @@ public class PlayerController : MonoBehaviour {
 			GUI.Label(new Rect(center.x-(radius*(bgRectSizeFactor/2f)), center.y-(radius*(bgRectSizeFactor/2f)), radius*bgRectSizeFactor, radius*bgRectSizeFactor), TacticsCircleHUD);
 			GUI.depth = 0;
 			
-			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Cancel") || Input.GetKeyDown(KeyCode.Escape)) {
+			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Confirm") || Input.GetKeyDown(KeyCode.Escape)) {
 				if (selectingTactic)
 					selectingTactic = false;	
 				
