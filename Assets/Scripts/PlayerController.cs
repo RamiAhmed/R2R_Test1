@@ -606,7 +606,7 @@ public class PlayerController : MonoBehaviour {
 	private void renderTacticsInterface() {
 		Vector2 center = new Vector2(screenWidth/2f, screenHeight/2f);
 		float radius = 150f;
-		Rect rect = new Rect(0f, 0f, 100f, 25f);
+		Rect rect = new Rect(0f, 0f, 130f, 25f);
 		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
 		
 		if (selectingTactic || selectingTarget || selectingCondition) {
@@ -640,7 +640,7 @@ public class PlayerController : MonoBehaviour {
 				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
 				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
 				
-				if (GUI.Button(rect, tacticName)) {
+				if (GUI.Button(rect, new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)))) {
 					selectedUnit.currentTactic = tactic;
 					selectingTactic = false;
 				}
@@ -659,7 +659,7 @@ public class PlayerController : MonoBehaviour {
 				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
 				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
 				
-				if (GUI.Button(rect, targetName)) {
+				if (GUI.Button(rect, new GUIContent(targetName, selectedUnit.GetTargetTip(target)))) {
 					selectedUnit.currentTarget = target;
 					selectingTarget = false;
 				}
@@ -677,7 +677,7 @@ public class PlayerController : MonoBehaviour {
 				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - (rect.width/2f);
 				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - (rect.height/2f);
 				
-				if (GUI.Button(rect, conditionName)) {
+				if (GUI.Button(rect, new GUIContent(conditionName))) {
 					selectedUnit.currentCondition = condition;
 					selectingTarget = false;
 				}
