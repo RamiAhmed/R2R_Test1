@@ -474,11 +474,11 @@ public class PlayerController : MonoBehaviour {
 		
 		// Tactical AI System
 		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
-		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {			
+		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
 			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 			
 			float columnWidth = (elementWidth-5f)/3f,
-				rowHeight = elementHeight * 0.2f;
+				rowHeight = elementHeight * 0.25f;
 			
 			GUI.BeginGroup(new Rect(0f, 0f, columnWidth, elementHeight)); // Tactics
 			
@@ -490,13 +490,18 @@ public class PlayerController : MonoBehaviour {
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
 						string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(tacticsString, tacticsTip))) {
-							selectingTactic = true;
-					
-							if (selectingTarget) 
-								selectingTarget = false;
-					
-							if (selectingCondition)
-								selectingCondition = false;
+							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+								selectingTactic = true;
+						
+								if (selectingTarget) 
+									selectingTarget = false;
+						
+								if (selectingCondition)
+									selectingCondition = false;
+							}
+							else {
+								DisplayFeedbackMessage("You can only set Tactics in the Build phase.");
+							}
 						}
 					}
 			
@@ -513,13 +518,18 @@ public class PlayerController : MonoBehaviour {
 						string targetString = selectedUnitController.GetTargetName(selectedUnitController.currentTarget);
 						string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(targetString, targetTip))) {
-							selectingTarget = true;
-					
-							if (selectingTactic) 
-								selectingTactic = false;
-					
-							if (selectingCondition)
-								selectingCondition = false;
+							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+								selectingTarget = true;
+						
+								if (selectingTactic) 
+									selectingTactic = false;
+						
+								if (selectingCondition)
+									selectingCondition = false;
+							}
+							else {
+								DisplayFeedbackMessage("You can only set Targets in the Build phase.");
+							}
 						}
 					}
 			
@@ -537,22 +547,24 @@ public class PlayerController : MonoBehaviour {
 						string conditionString = selectedUnitController.GetConditionName(selectedUnitController.currentCondition);
 						string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(conditionString, conditionTip))) {
-							selectingCondition = true;
-					
-							if (selectingTactic) 
-								selectingTactic = false;
-					
-							if (selectingTarget) 
-								selectingTarget = false;
+							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+								selectingCondition = true;
+						
+								if (selectingTactic) 
+									selectingTactic = false;
+						
+								if (selectingTarget) 
+									selectingTarget = false;
+							}
+							else {
+								DisplayFeedbackMessage("You can only set Conditions in the Build phase.");
+							}
 						}
 					}
 				GUI.EndGroup();
 			
 			GUI.EndGroup();
 			
-		}
-		else if (SelectedUnits.Count > 0 && _gameController.CurrentPlayState != GameController.PlayState.BUILD && SelectedUnits[0].GetIsUnit()) {
-			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics in the Build phase.");		
 		}
 		else if (SelectedUnits.Count > 0 && !SelectedUnits[0].GetIsUnit()) {
 			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics on your own units.");
