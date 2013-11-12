@@ -58,8 +58,7 @@ public class Entity : MonoBehaviour {
 	private float repathRate = 1.5f,
 				  lastRepath = -1f;
 	
-	private Animation animation;
-	
+	private Animation animation;	
 	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();

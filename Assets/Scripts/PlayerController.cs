@@ -83,9 +83,10 @@ public class PlayerController : MonoBehaviour {
 		float yMarginFactor = 0.25f,
 			  xMarginFactor = 0.3f;
 		Rect disallowedRect = new Rect((xMarginFactor/2f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
+		Rect disallowedRect2 = new Rect((xMarginFactor*1.5f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
 		
 		Vector2 mousePos = new Vector2(Input.mousePosition.x, screenHeight - Input.mousePosition.y);
-		bool disallowedClick = disallowedRect.Contains(mousePos);
+		bool disallowedClick = disallowedRect.Contains(mousePos) || disallowedRect2.Contains(mousePos);
 		//Debug.Log("disallowedRect: " + disallowedRect + ", disallowedClick: " + disallowedClick);
 		if (!disallowedClick && 
 			(!selectingTactic && !selectingTarget && !selectingCondition)) {

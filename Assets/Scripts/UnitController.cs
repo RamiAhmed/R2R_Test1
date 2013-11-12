@@ -86,18 +86,36 @@ public class UnitController : Unit {
 		return name;
 	}
 	
-	public Entity GetTacticalTarget(List<GameObject> list) {
-		Entity obj = null;	
-		switch (currentTarget) {
-			case Target.Strongest: obj = GetStrongestUnit(list); break;
-			case Target.Weakest: obj = GetWeakestUnit(list); break;
-			case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
-			case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
+	public Entity GetTacticalTarget() {
+		List<GameObject> list = null;
+		
+		switch (currentTactic) {
+			case Tactics.Attack: 
+			case Tactics.HoldTheLine: list = _gameController.enemies; break;
+			case Tactics.Follow:
+			case Tactics.Guard: list = playerOwner.unitsList; break;
 		}
 		
-		if (obj == null) {
-			obj = GetNearestUnit(list);
+		return list != null ? GetTacticalTarget(list) : null;
+	}
+	
+	public Entity GetTacticalTarget(List<GameObject> list) {
+		Entity obj = null;	
+		if (list != null) {
+			switch (currentTarget) {
+				case Target.Strongest: obj = GetStrongestUnit(list); break;
+				case Target.Weakest: obj = GetWeakestUnit(list); break;
+				case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
+				case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
+			}
+			
+			if (obj == null) {
+				obj = GetNearestUnit(list);
+			}
 		}
+		else {
+			obj = this;
+		}		
 		
 		return obj;
 	}
@@ -228,7 +246,14 @@ public class UnitController : Unit {
 	}
 
 	protected virtual void HealingBehaviour() {
-		if (healTarget != null && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
+		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
+			StopMoving();
+			currentUnitState = UnitState.PLACED;
+			attackTarget = null;
+			healTarget = null;
+			lastAttacker = null;
+		}
+		else if (healTarget != null && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
 			if (Vector3.Distance(healTarget.transform.position, this.transform.position) < AttackingRange) {
 				StopMoving();
 				Heal(healTarget, this.Damage + fGetD20()/10f);	
@@ -307,19 +332,29 @@ public class UnitController : Unit {
 					}
 				}
 				
-				if (currentTactic == Tactics.Guard) {
-					Entity guardedUnit = GetTacticalTarget(playerOwner.unitsList);
-					GuardOther(guardedUnit);
-				}
-				else if (currentTactic == Tactics.Follow) {
-					Entity followUnit = GetTacticalTarget(playerOwner.unitsList);
-					FollowOther(followUnit);
-				}
-				else {
-					Entity targetEnemy = GetTacticalTarget(_gameController.enemies);
-					if (targetEnemy != null) {
-						if (Vector3.Distance(targetEnemy.transform.position, this.transform.position) < PerceptionRange) {
-							attackTarget = targetEnemy;
+				Entity tacticalTarget = GetTacticalTarget();
+				if (tacticalTarget != null) {
+					if (currentTactic == Tactics.Guard) {
+						GuardOther(tacticalTarget);
+					}
+					else if (currentTactic == Tactics.Follow) {
+						FollowOther(tacticalTarget);
+					}
+					else if (currentTactic == Tactics.HoldTheLine) {						
+						if (Vector3.Distance(tacticalTarget.transform.position, this.transform.position) < AttackingRange) {
+							attackTarget = tacticalTarget; 
+							this.currentUnitState = UnitState.ATTACKING;
+							StopMoving();
+						}
+						else if (Vector3.Distance(GetNearestUnit(_gameController.enemies).transform.position, this.transform.position) < AttackingRange) {
+							attackTarget = GetNearestUnit(_gameController.enemies);
+							this.currentUnitState = UnitState.ATTACKING;
+							StopMoving();
+						}
+					}
+					else {
+						if (Vector3.Distance(tacticalTarget.transform.position, this.transform.position) < PerceptionRange) {
+							attackTarget = tacticalTarget;
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
@@ -335,7 +370,6 @@ public class UnitController : Unit {
 					if (waypoint.name.Contains("Start")) {
 						lookAtPos = waypoint.transform.position;
 						lookAtTarget(lookAtPos);
-//						Debug.Log("lookAtPOs: " + lookAtPos);
 						break;
 					}
 				}			
@@ -363,18 +397,8 @@ public class UnitController : Unit {
 				// Attack
 				Attack(attackTarget);
 			}
-			else if (Vector3.Distance(attackTarget.transform.position, this.transform.position) > AttackingRange) {
-				if (currentTactic == Tactics.HoldTheLine) {
-					if (lastAttacker != null) {
-						MoveTo(lastAttacker.transform);
-						if (attackTarget != lastAttacker) {
-							attackTarget = lastAttacker;
-						}
-					}
-				}
-				else {
-					MoveTo(attackTarget.transform);
-				}
+			else {
+				MoveTo(attackTarget.transform);
 			}
 		}
 		else {
