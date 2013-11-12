@@ -392,13 +392,17 @@ public class PlayerController : MonoBehaviour {
 			}
 			
 			// Health bar
-			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);			
-			GUI.BeginGroup(new Rect(0f, unitButtonsHeight, hpWidth, healthBarHeight));
-				string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
-				GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD, hpTip));			
+			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);		
+			//string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
+			string hpLabel = selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
+			GUI.BeginGroup(new Rect(0f, unitButtonsHeight, hpWidth, healthBarHeight));				
+				//GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD));			
+				GUI.DrawTexture(new Rect(0f, 0f, elementWidth, healthBarHeight), healthBarHUD, ScaleMode.StretchToFill);
 			GUI.EndGroup();
 			
-			GUI.Label(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
+			//GUI.Label(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
+			GUI.DrawTexture(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), healthContainerHUD, ScaleMode.StretchToFill);
+			GUI.Label(new Rect(elementWidth/2f, unitButtonsHeight+healthBarHeight/3f, elementWidth, healthBarHeight), new GUIContent(hpLabel));
 			
 			
 			// Class: Name
@@ -408,29 +412,47 @@ public class PlayerController : MonoBehaviour {
 			
 			// Unit details
 			float detailsHeight = elementHeight - healthBarHeight - unitButtonsHeight - unitTitleHeight;
+			float detailsWidth = elementWidth/3f;
 			GUI.BeginGroup(new Rect(0f, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
 				// Profile picture
 				if (selectedUnit.ProfilePicture != null) {
-					GUI.Box(new Rect(0f, 0f, elementWidth/3f, detailsHeight), selectedUnit.ProfilePicture);
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), selectedUnit.ProfilePicture);
 				}
 				else {
-					GUI.Box(new Rect(0f, 0f, elementWidth/3f, detailsHeight), "No picture");
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), "No picture");
 				}			
 			
 				// Sword
 				string swordTip = "Damage: " + selectedUnit.Damage + "\n";
 				swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
 				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
-				GUI.Box(new Rect(elementWidth/3f, 0f, elementWidth/3f, detailsHeight), new GUIContent(swordHUD, swordTip));
-				
+				GUI.BeginGroup(new Rect(detailsWidth, 0f, elementWidth, detailsHeight));
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), new GUIContent(swordHUD, swordTip));
+					
+					string dpsLabel = "DPS: " + selectedUnit.GetDamagePerSecond().ToString("F0");
+					GUI.Label(new Rect(5f, detailsHeight/3f, detailsWidth, detailsHeight), new GUIContent(dpsLabel));
+				GUI.EndGroup();		
+			
 				// Shield
 				string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
 				shieldTip += "Evasion: " + selectedUnit.Evasion;
-				GUI.Box(new Rect(elementWidth/3f*2f, 0f, elementWidth/3f, detailsHeight/2f), new GUIContent(shieldHUD, shieldTip));
+				GUI.BeginGroup(new Rect(detailsWidth*2f, 0f, elementWidth, detailsHeight/2f));
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight/2f), new GUIContent(shieldHUD, shieldTip));
+			
+					string defenseLabel = "Armor: " + selectedUnit.Armor;
+					GUI.Label(new Rect(5f, 5f, detailsWidth, detailsHeight), new GUIContent(defenseLabel));				
+				GUI.EndGroup();
 				
 				// Boot
-				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed;
-				GUI.Box(new Rect(elementWidth/3f*2f, detailsHeight/2f, elementWidth/3f, detailsHeight/2f), new GUIContent(bootHUD, bootTip));
+				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed + "\n";
+				bootTip += "Flee Chance: " + (selectedUnit.FleeThreshold*100f) + "%";
+				GUI.BeginGroup(new Rect(detailsWidth*2f, detailsHeight/2f, detailsWidth, detailsHeight/2f));
+					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight/2f), new GUIContent(bootHUD, bootTip));
+			
+					string moveLabel = "Speed: " + selectedUnit.MovementSpeed;
+					GUI.Label(new Rect(5f, 5f, detailsWidth, detailsHeight), new GUIContent(moveLabel));
+				GUI.EndGroup();
+				
 			GUI.EndGroup();
 		}
 		else {

@@ -315,6 +315,11 @@ public class Entity : MonoBehaviour {
 	protected float fGetD20() {
 		return Random.Range(1f, 20f);
 	}
+	
+	public float GetDamagePerSecond() {
+		return (this.Damage + 9f) * AttacksPerSecond;
+		// +9 = assumed mean value of d20
+	}
 
 	public void ReceiveDamage(float damage) {
 		if (damage <= 0f) {
