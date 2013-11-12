@@ -14,7 +14,8 @@ public class Enemy : Entity {
 				PerceptionRangeScaleFactor = 0.5f,
 				AttackingRangeScaleFactor = 0.3f,
 				AttacksPerSecondScaleFactor = 0.1f,
-				FleeThresholdScaleFactor = 0.01f;
+				FleeThresholdScaleFactor = 0.01f,
+				WaveSizeScaleFactor = 0f;
 				
 
 	// Use this for initialization
@@ -44,5 +45,7 @@ public class Enemy : Entity {
 		
 		AttacksPerSecond += (wave*AttacksPerSecondScaleFactor);
 		FleeThreshold -= (wave*FleeThresholdScaleFactor);
+		
+		_gameController.WaveSize += Mathf.RoundToInt(wave * WaveSizeScaleFactor);
 	}
 }
