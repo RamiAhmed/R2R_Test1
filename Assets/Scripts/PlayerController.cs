@@ -262,8 +262,8 @@ public class PlayerController : MonoBehaviour {
 	
 	private void renderSelectedDebugFeedback() {
 		if (SelectedUnits.Count > 0) {
-			if (SelectedUnits[0].GetIsUnit()) {
-				UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
+			if (SelectedUnits[0].GetIsUnit() || SelectedUnits[0].GetIsEnemy()) {
+				Entity selectedUnit = SelectedUnits[0];
 				
 				string debugLabel = "DEBUG FEEDBACK\n";
 				
@@ -331,7 +331,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.Box("Last wave: " + _gameController.WaveCount, GUILayout.Height(height));
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			float maxBuildTime = _gameController.WaveCount <= 0f ? _gameController.MaxBuildTime * 2f : _gameController.MaxBuildTime;
+			float maxBuildTime = _gameController.GetMaxBuildTime();
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
 			
 			if (GUILayout.Button(new GUIContent("Spawn Now (Space)"), GUILayout.Height(height)) || Input.GetKeyDown(KeyCode.Space)) {

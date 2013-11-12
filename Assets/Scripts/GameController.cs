@@ -64,6 +64,10 @@ public class GameController : MonoBehaviour {
 		miniMapCam = GameObject.FindGameObjectWithTag("MiniMapCam");
 	}
 	
+	public float GetMaxBuildTime() {
+		return WaveCount <= 0 ? MaxBuildTime * 2f : MaxBuildTime;	
+	}
+	
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
@@ -94,7 +98,7 @@ public class GameController : MonoBehaviour {
 			if (CurrentPlayState == PlayState.BUILD) {
 				BuildTime += Time.deltaTime;
 				
-				float maxTime = WaveCount <= 0 ? MaxBuildTime * 2f : MaxBuildTime;
+				float maxTime = GetMaxBuildTime();
 				
 				if (BuildTime >= maxTime || ForceSpawn) {
 					ForceSpawn = false;
