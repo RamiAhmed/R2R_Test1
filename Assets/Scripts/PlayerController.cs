@@ -268,7 +268,7 @@ public class PlayerController : MonoBehaviour {
 				string debugLabel = "DEBUG FEEDBACK\n";
 				
 				debugLabel += "\nSelected: " + selectedUnit.Class + ": " + selectedUnit.Name;
-				debugLabel += "\nCurrently Selected Units Count: " + SelectedUnits.Count;
+	
 				if (selectedUnit.lastAttacker != null) {
 					debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
 				}
@@ -284,6 +284,21 @@ public class PlayerController : MonoBehaviour {
 				debugLabel += "\nAttack count: " + selectedUnit.attackCount;
 				debugLabel += "\nKill count: " + selectedUnit.killCount;
 				debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
+				
+				float unitScoreSum = 0f;
+				foreach (GameObject unit in unitsList) {
+					unitScoreSum += unit.GetComponent<Entity>().GetTotalScore();
+				}
+				debugLabel += "\n\nTotal Unit Value: " + unitScoreSum;
+				
+				debugLabel += "\nCurrently Selected Units Count: " + SelectedUnits.Count;
+				
+				unitScoreSum = 0f;
+				foreach(Entity unit in SelectedUnits) {
+					unitScoreSum += unit.GetTotalScore();
+				}
+				debugLabel += "\nCurrently Selected Units Total Value: " + unitScoreSum;
+				
 				float x = 10f, y = 50f, width = 300f, height = 300f;
 				GUI.Box(new Rect(x, y, width, height), "");
 				GUI.Label(new Rect(x+5f, y+5f, width-10f, height-6f), debugLabel);
@@ -376,15 +391,17 @@ public class PlayerController : MonoBehaviour {
 				UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
 				
 				if (selectedUnitController != null) { // Sell & Upgrade buttons if unit
-					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount();
-					if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Sell", sellTip))) {
+					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount() + "g",
+							sellLabel = "Sell (Cost: " + selectedUnitController.GoldCost + "g)";
+					if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent(sellLabel, sellTip))) {
 						selectedUnitController.SellUnit();	
 					}
 					
 					if (selectedUnitController.CanUpgrade()) {
-						string upgradeTip = "Upgrade Cost: " + selectedUnitController.UpgradesInto.GoldCost; 
+						string upgradeTip = "Upgrade Cost: " + selectedUnitController.UpgradesInto.GoldCost + "g",
+								upgradeLabel = "Upgrade (Cost: " + selectedUnitController.UpgradesInto.GoldCost + "g)"; 
 						upgradeTip += "\n Upgraded Unit Score: " + selectedUnitController.UpgradesInto.GetTotalScore();
-						if (GUI.Button(new Rect(elementWidth/2f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent("Upgrade", upgradeTip))) {
+						if (GUI.Button(new Rect(elementWidth/2f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent(upgradeLabel, upgradeTip))) {
 							selectedUnitController.UpgradeUnit();	
 						}
 					}
