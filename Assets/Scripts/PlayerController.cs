@@ -613,13 +613,13 @@ public class PlayerController : MonoBehaviour {
 	
 	private void renderTacticsInterface() {
 		Vector2 center = new Vector2(screenWidth/2f, screenHeight/2f);
-		float radius = 180f;
-		Rect rect = new Rect(0f, 0f, 130f, 25f);
+		float radius = 150f;
+		Rect rect = new Rect(0f, 0f, 100f, 25f);
 		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
 		
 		if (selectingTactic || selectingTarget || selectingCondition) {
 			GUI.depth = 1;
-			float bgRectSizeFactor = 3.1f;
+			float bgRectSizeFactor = 3f;
 			GUI.Label(new Rect(center.x-(radius*(bgRectSizeFactor/2f)), center.y-(radius*(bgRectSizeFactor/2f)), radius*bgRectSizeFactor, radius*bgRectSizeFactor), TacticsCircleHUD);
 			GUI.depth = 0;
 			
@@ -695,7 +695,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
 		UnitController unit = playerFaction.FactionUnits[index].GetComponent<UnitController>();
-		string tip = "Gold Cost: " + unit.GoldCost + "\n"; 
+		string tip = "Gold Cost: " + unit.GoldCost + "g\n"; 
 		tip += "Unit Class: " + unit.Class + "\n";
 		tip += "Unit Score: " + unit.GetTotalScore();
 		
