@@ -358,7 +358,17 @@ public class UnitController : Unit {
 	}
 
 	protected virtual void FleeingBehaviour() {
-		if (attackTarget != null) {
+		if (!Selected) {
+			disableRenderCircle();
+		}
+		
+		if (_gameController.CurrentPlayState != GameController.PlayState.COMBAT) {
+			StopMoving();
+			currentUnitState = UnitState.PLACED;
+			attackTarget = null;
+			lastAttacker = null;
+		}
+		else if (attackTarget != null) {
 			if (this.MaxHitPoints - this.CurrentHitPoints > this.FleeThreshold * this.MaxHitPoints) {
 				this.currentUnitState = UnitState.PLACED;
 				this.FleeThreshold /= 2f;
@@ -520,6 +530,7 @@ public class UnitController : Unit {
 	
 	private void OnDeath() {
 		StopMoving();
+		StopAllAnimations();
 		Debug.Log("Unit dead");
 		lookAtPos = Vector3.zero;
 		Deselect(playerOwner.SelectedUnits);

@@ -92,23 +92,27 @@ public class PlayerController : MonoBehaviour {
 	
 	private void respawnUnits() {
 		if (deadUnitsList.Count > 0) {
-			Debug.Log("Respawn units");
-			foreach (GameObject go in deadUnitsList) {
+			Debug.Log(_gameController.GameTime + ": " + "Respawn units");
+			foreach (GameObject go in deadUnitsList) {				
 				UnitController unit = go.GetComponent<UnitController>();
 				
 				unitsList.Add(go);
-				unit.SetIsNotDead();					
+				unit.SetIsNotDead();
 				
 				go.SetActive(true);
 			}
 			deadUnitsList.Clear();
 		}			
 		
-		foreach (GameObject go in unitsList) {
-			UnitController unit = go.GetComponent<UnitController>();
-			unit.StopMoving();
-			unit.transform.position = unit.LastBuildLocation;	
-			unit.currentUnitState = UnitController.UnitState.PLACED;
+		if (unitsList.Count > 0) {
+			foreach (GameObject go in unitsList) {
+				UnitController unit = go.GetComponent<UnitController>();
+				unit.StopMoving();
+				unit.StopAllAnimations();
+				unit.transform.position = unit.LastBuildLocation;	
+				unit.currentUnitState = UnitController.UnitState.PLACED;
+				unit.SetIsNotDead();
+			}
 		}
 	}
 					
@@ -264,6 +268,7 @@ public class PlayerController : MonoBehaviour {
 				string debugLabel = "DEBUG FEEDBACK\n";
 				
 				debugLabel += "\nSelected: " + selectedUnit.Class + ": " + selectedUnit.Name;
+				debugLabel += "\nCurrently Selected Units Count: " + SelectedUnits.Count;
 				if (selectedUnit.lastAttacker != null) {
 					debugLabel += "\nLast attacker: " + selectedUnit.lastAttacker.Name;
 				}
@@ -279,7 +284,7 @@ public class PlayerController : MonoBehaviour {
 				debugLabel += "\nAttack count: " + selectedUnit.attackCount;
 				debugLabel += "\nKill count: " + selectedUnit.killCount;
 				debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
-				float x = 10f, y = 50f, width = 200f, height = 300f;
+				float x = 10f, y = 50f, width = 300f, height = 300f;
 				GUI.Box(new Rect(x, y, width, height), "");
 				GUI.Label(new Rect(x+5f, y+5f, width-10f, height-6f), debugLabel);
 			}

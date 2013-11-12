@@ -163,7 +163,7 @@ public class Entity : MonoBehaviour {
 					if (animation != null) {
 						animation.Play(GetAttackAnimation());	
 					}
-					Debug.Log(this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
+					Debug.Log(_gameController.GameTime + ": " + this.Name + " healed " + target.Name + " for " + healAmount + " hitpoints");
 				}
 			}
 		}
@@ -317,6 +317,12 @@ public class Entity : MonoBehaviour {
 			this.IsDead = true;
 		}
 	}
+	
+	public void StopAllAnimations() {
+		if (animation != null) {
+			animation.Stop();
+		}
+	}
 
 	public void SetIsNotDead() {
 		SetIsNotDead(true);
@@ -363,10 +369,10 @@ public class Entity : MonoBehaviour {
 					float damage = (this.Damage - opponent.Armor) + fGetD20();
 					opponent.ReceiveDamage(damage);
 					hitResult = true;
-					Debug.Log(this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
+					Debug.Log(_gameController.GameTime + ": " + this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
 				}
 				else {
-					Debug.Log(this.Name + " missed " + opponent.Name);
+					Debug.Log(_gameController.GameTime + ": " + this.Name + " missed " + opponent.Name);
 				}
 				
 				this.attackCount += 1;
