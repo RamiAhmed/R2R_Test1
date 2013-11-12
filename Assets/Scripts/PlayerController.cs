@@ -4,8 +4,7 @@ using System.Collections.Generic;
 
 public class PlayerController : MonoBehaviour {
 	
-	public List<GameObject> unitsList, deadUnitsList;
-	public List<Entity> SelectedUnits = null;
+	public List<Entity> unitsList = null, deadUnitsList = null, SelectedUnits = null;
 	
 	public bool isDebugging = false;
 	
@@ -44,8 +43,8 @@ public class PlayerController : MonoBehaviour {
 		//playerFaction = this.GetComponent<Faction>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
-		unitsList = new List<GameObject>();
-		deadUnitsList = new List<GameObject>();
+		unitsList = new List<Entity>();
+		deadUnitsList = new List<Entity>();
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		SelectedUnits = new List<Entity>();		
@@ -74,8 +73,8 @@ public class PlayerController : MonoBehaviour {
 				if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 					moveUnit();
 				}
-				else {
-					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.", Color.red);	
+				else if (SelectedUnits[0].GetIsUnit()) {
+					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.");	
 				}
 			}
 		}
@@ -100,19 +99,19 @@ public class PlayerController : MonoBehaviour {
 	private void respawnUnits() {
 		if (deadUnitsList.Count > 0) {
 			Debug.Log(_gameController.GameTime + ": " + "Respawn units");
-			foreach (GameObject go in deadUnitsList) {				
+			foreach (Entity go in deadUnitsList) {				
 				UnitController unit = go.GetComponent<UnitController>();
 				
 				unitsList.Add(go);
 				unit.SetIsNotDead();
 				
-				go.SetActive(true);
+				go.gameObject.SetActive(true);
 			}
 			deadUnitsList.Clear();
 		}			
 		
 		if (unitsList.Count > 0) {
-			foreach (GameObject go in unitsList) {
+			foreach (Entity go in unitsList) {
 				UnitController unit = go.GetComponent<UnitController>();
 				unit.StopMoving();
 				unit.StopAllAnimations();
@@ -175,21 +174,48 @@ public class PlayerController : MonoBehaviour {
 			    backupRect = new Rect(marqueeRect.x - Mathf.Abs(marqueeRect.width), marqueeRect.y - Mathf.Abs(marqueeRect.height), Mathf.Abs(marqueeRect.width), Mathf.Abs(marqueeRect.height));
 			}
 			
-			if ((marqueeRect.width > 0f || backupRect.width > 0f) && (marqueeRect.height > 0f || backupRect.height > 0f)) {				
-				foreach (GameObject unit in unitsList) {
+			if ((marqueeRect.width > 0f || backupRect.width > 0f) && (marqueeRect.height > 0f || backupRect.height > 0f)) {	
+				bool unitFound = false;
+				foreach (Entity unit in unitsList) {
 				    //Convert the world position of the unit to a screen position and then to a GUI point
 				    Vector3 _screenPos = playerCam.WorldToScreenPoint(unit.transform.position);
 				    Vector2 _screenPoint = new Vector2(_screenPos.x, screenHeight - _screenPos.y);
 				    //Ensure that any units not within the marquee are currently unselected
-					Entity ent = unit.GetComponent<Entity>();
 				    if (!marqueeRect.Contains(_screenPoint) || !backupRect.Contains(_screenPoint)) {
-						ent.Deselect(SelectedUnits);
+						unit.Deselect(SelectedUnits);
 				    }
 				    
 					if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
-						ent.Select(SelectedUnits);
+						unit.Select(SelectedUnits);
+						if (!unitFound) {
+							unitFound = true;
+						}
 				    }
 				}
+				
+				if (!unitFound) {
+					foreach (Entity enemy in _gameController.enemies) {
+					    //Convert the world position of the unit to a screen position and then to a GUI point
+					    Vector3 _screenPos = playerCam.WorldToScreenPoint(enemy.transform.position);
+					    Vector2 _screenPoint = new Vector2(_screenPos.x, screenHeight - _screenPos.y);
+					    //Ensure that any units not within the marquee are currently unselected
+					    if (!marqueeRect.Contains(_screenPoint) || !backupRect.Contains(_screenPoint)) {
+							enemy.Deselect(SelectedUnits);
+					    }
+					    
+						if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
+							enemy.Select(SelectedUnits);
+					    }							
+					}
+				}
+				else {
+					foreach (Entity entity in SelectedUnits) {
+						if (entity.GetIsEnemy() || (entity.GetIsUnit() && entity.GetComponent<UnitController>().playerOwner != this)) {
+							entity.Deselect(SelectedUnits);
+						}
+					}
+				}
+				
 			}
 		}
 		
@@ -293,8 +319,8 @@ public class PlayerController : MonoBehaviour {
 				debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;
 				
 				float unitScoreSum = 0f;
-				foreach (GameObject unit in unitsList) {
-					unitScoreSum += unit.GetComponent<Entity>().GetTotalScore();
+				foreach (Entity unit in unitsList) {
+					unitScoreSum += unit.GetTotalScore();
 				}
 				debugLabel += "\n\nTotal Unit Score: " + unitScoreSum;
 				
@@ -719,7 +745,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private UnitController getCurrentlyPlacingUnit() {
 		UnitController unit = null;
-		foreach (GameObject go in unitsList) {
+		foreach (Entity go in unitsList) {
 			if ((go != null) && go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
 				unit = go.GetComponent<UnitController>();
 				break;
@@ -745,7 +771,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (PlayerGold >= cost) {
 			newUnit.GetComponent<UnitController>().playerOwner = this;
-			unitsList.Add(newUnit);		
+			unitsList.Add(newUnit.GetComponent<Entity>());		
 		}
 		else {
 			Destroy(newUnit);

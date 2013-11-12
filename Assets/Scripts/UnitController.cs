@@ -110,7 +110,7 @@ public class UnitController : Unit {
 	}
 	
 	public Entity GetTacticalTarget() {
-		List<GameObject> list = null;
+		List<Entity> list = null;
 		
 		switch (currentTactic) {
 			case Tactics.Attack: 
@@ -122,7 +122,7 @@ public class UnitController : Unit {
 		return list != null ? GetTacticalTarget(list) : null;
 	}
 	
-	public Entity GetTacticalTarget(List<GameObject> list) {
+	public Entity GetTacticalTarget(List<Entity> list) {
 		Entity obj = null;	
 		if (list != null) {
 			switch (currentTarget) {
@@ -299,13 +299,13 @@ public class UnitController : Unit {
 			}
 
 			if (Input.GetMouseButtonDown(1)) {
-				playerOwner.unitsList.Remove(this.gameObject);
+				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
 				return;
 			}
 
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-				playerOwner.unitsList.Remove(this.gameObject);
+				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
 				return;
 			}
@@ -543,7 +543,7 @@ public class UnitController : Unit {
 				GameObject newUnit = Instantiate(UpgradesInto.gameObject) as GameObject;
 
 				newUnit.transform.position = this.transform.position;
-				playerOwner.unitsList.Add(newUnit);
+				playerOwner.unitsList.Add(newUnit.GetComponent<Entity>());
 				UnitController unitCont = newUnit.GetComponent<UnitController>();
 				unitCont.playerOwner = this.playerOwner;
 				unitCont.currentUnitState = UnitState.PLACED;
@@ -553,7 +553,7 @@ public class UnitController : Unit {
 
 				this.Deselect(playerOwner.SelectedUnits);
 
-				playerOwner.unitsList.Remove(this.gameObject);
+				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
 			}
 			else {
@@ -614,8 +614,8 @@ public class UnitController : Unit {
 		Debug.Log("Unit dead");
 		lookAtPos = Vector3.zero;
 		Deselect(playerOwner.SelectedUnits);
-		playerOwner.unitsList.Remove(this.gameObject);
-		playerOwner.deadUnitsList.Add(this.gameObject);
+		playerOwner.unitsList.Remove(this);
+		playerOwner.deadUnitsList.Add(this);
 
 		this.gameObject.SetActive(false);		
 	}
@@ -637,8 +637,8 @@ public class UnitController : Unit {
 	}
 	
 	public void DestroySelf() {
-		if (playerOwner.unitsList.Contains(this.gameObject)) {
-			playerOwner.unitsList.Remove(this.gameObject);
+		if (playerOwner.unitsList.Contains(this)) {
+			playerOwner.unitsList.Remove(this);
 		}
 		
 		Deselect(playerOwner.SelectedUnits);

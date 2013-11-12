@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class GameController : MonoBehaviour {
 	
-	public List<GameObject> enemies = new List<GameObject>();
-	public List<GameObject> players = new List<GameObject>();
+	public List<Entity> enemies;
+	public List<GameObject> players;
 	
 	public float GameTime = 0f;
 	public float BuildTime = 0f;
@@ -49,6 +49,9 @@ public class GameController : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+		enemies = new List<Entity>();
+		players = new List<GameObject>();
+		
 		GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
 		GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 		foreach (GameObject point in points) {
@@ -145,7 +148,7 @@ public class GameController : MonoBehaviour {
 	
 	private void SpawnEnemy() {
 		GameObject enemy = Instantiate(Resources.Load("Enemies/Enemy")) as GameObject;
-		enemies.Add(enemy);
+		enemies.Add(enemy.GetComponent<Entity>());
 	}
 	
 	public void RestartGame() {

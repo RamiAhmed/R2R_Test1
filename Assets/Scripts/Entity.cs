@@ -457,89 +457,89 @@ public class Entity : MonoBehaviour {
 		return this != null && this.transform.GetComponent<GateOfLife>() != null;
 	}
 
-	protected Entity GetNearestUnit(List<GameObject> list) {
+	protected Entity GetNearestUnit(List<Entity> list) {
 		if (list.Count <= 0)
 			return null;
 
-		GameObject nearest = null;
+		Entity nearest = null;
 		float shortestDistance = PerceptionRange;
-		foreach (GameObject unit in list) {
+		foreach (Entity unit in list) {
 			float distance = Vector3.Distance(unit.transform.position, this.transform.position);
-			if (distance < shortestDistance && unit != this.gameObject) {
+			if (distance < shortestDistance && unit.gameObject != this.gameObject) {
 				nearest = unit;
 				shortestDistance = distance;
 			}
 		}
 
-		return nearest != null ? nearest.GetComponent<Entity>() : null;
+		return nearest != null ? nearest : null;
 	}
 
-	protected Entity GetWeakestUnit(List<GameObject> list) {
+	protected Entity GetWeakestUnit(List<Entity> list) {
 		if (list.Count <= 0)
 			return null;
 
-		GameObject weakest = null;
-		float weakestScore = list[0].GetComponent<Entity>().GetTotalScore();
-		foreach (GameObject unit in list) {
-			float score = unit.GetComponent<Entity>().GetTotalScore();
-			if (score < weakestScore && unit != this.gameObject)	{
+		Entity weakest = null;
+		float weakestScore = list[0].GetTotalScore();
+		foreach (Entity unit in list) {
+			float score = unit.GetTotalScore();
+			if (score < weakestScore && unit.gameObject != this.gameObject)	{
 				weakest = unit;
 				weakestScore = score;
 			}
 		}
 
-		return weakest != null ? weakest.GetComponent<Entity>() : null;
+		return weakest != null ? weakest : null;
 	}
 
-	protected Entity GetStrongestUnit(List<GameObject> list) {
+	protected Entity GetStrongestUnit(List<Entity> list) {
 		if (list.Count <= 0)
 			return null;
 
-		GameObject strongest = null;
+		Entity strongest = null;
 		float strongestScore = 0;
-		foreach (GameObject unit in list) {
-			float score = unit.GetComponent<Entity>().GetTotalScore();
-			if (score > strongestScore && unit != this.gameObject) {
+		foreach (Entity unit in list) {
+			float score = unit.GetTotalScore();
+			if (score > strongestScore && unit.gameObject != this.gameObject) {
 				strongest = unit;
 				strongestScore = score;
 			}
 		}
 
-		return strongest != null ? strongest.GetComponent<Entity>() : null;
+		return strongest != null ? strongest : null;
 	}
 
-	protected Entity GetLeastDamagedUnit(List <GameObject> list) {
+	protected Entity GetLeastDamagedUnit(List <Entity> list) {
 		if (list.Count <= 0) {
 			return null;
 		}
 
-		GameObject leastDamaged = null;
+		Entity leastDamaged = null;
 		float damage = 100;
-		foreach (GameObject unit in list) {
-			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff < damage || hpDiff <= 0f && unit != this.gameObject) {
+		foreach (Entity unit in list) {
+			float hpDiff = unit.MaxHitPoints - unit.CurrentHitPoints;
+			if (hpDiff < damage || hpDiff <= 0f && unit.gameObject != this.gameObject) {
 				leastDamaged = unit;
 				damage = hpDiff;
 			}
 		}
 
-		return leastDamaged != null ? leastDamaged.GetComponent<Entity>() : null;
+		return leastDamaged != null ? leastDamaged : null;
 	}
 
-	protected Entity GetMostDamagedUnit(List<GameObject> list) {
+	protected Entity GetMostDamagedUnit(List<Entity> list) {
 		if (list.Count <= 0)
 			return null;
 
-		GameObject mostDamaged = null;
+		Entity mostDamaged = null;
 		float damage = 0;
-		foreach (GameObject unit in list) {
-			float hpDiff = unit.GetComponent<Entity>().MaxHitPoints - unit.GetComponent<Entity>().CurrentHitPoints;
-			if (hpDiff > damage && hpDiff >= 0f && unit != this.gameObject) {
+		foreach (Entity unit in list) {
+			float hpDiff = unit.MaxHitPoints - unit.CurrentHitPoints;
+			if (hpDiff > damage && hpDiff >= 0f && unit.gameObject != this.gameObject) {
 				mostDamaged = unit;
 				damage = hpDiff;
 			}
 		}
 
-		return mostDamaged != null ? mostDamaged.GetComponent<Entity>() : null;
+		return mostDamaged != null ? mostDamaged : null;
 	}
 }

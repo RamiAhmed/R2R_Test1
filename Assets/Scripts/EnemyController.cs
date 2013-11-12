@@ -131,7 +131,7 @@ public class EnemyController : Enemy {
 				counterPlayer.PlayerGold += this.GoldReward;
 			}
 			Deselect(counterPlayer.SelectedUnits);
-			_gameController.enemies.Remove(this.gameObject);
+			_gameController.enemies.Remove(this);
 			Destroy(this.gameObject);	
 		}
 	}
@@ -139,7 +139,7 @@ public class EnemyController : Enemy {
 	protected override void RemoveSelf() {
 		base.RemoveSelf();
 		
-		_gameController.enemies.Remove(this.gameObject);
+		_gameController.enemies.Remove(this);
 		Destroy(this.gameObject);
 	}
 
