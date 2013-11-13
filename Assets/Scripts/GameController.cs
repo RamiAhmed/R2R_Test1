@@ -22,6 +22,10 @@ public class GameController : MonoBehaviour {
 	public float StartYPosition = 30f;
 	
 	public bool GameEnded = false;
+
+	public AudioClip BuildMusic, CombatMusic, BackgroundMusic;
+
+	public AudioSource audioSource;
 	
 	public enum GameState {
 		LOADING,
@@ -65,6 +69,9 @@ public class GameController : MonoBehaviour {
 		players.Add(player);
 	
 		miniMapCam = GameObject.FindGameObjectWithTag("MiniMapCam");
+
+		audioSource = audioSource == null ? (this.GetComponent<AudioSource>() == null ? this.gameObject.AddComponent<AudioSource>() : this.GetComponent<AudioSource>()) : audioSource;
+		audioSource.playOnAwake = false;
 	}
 	
 	public float GetMaxBuildTime() {
@@ -99,6 +106,11 @@ public class GameController : MonoBehaviour {
 			}
 			
 			if (CurrentPlayState == PlayState.BUILD) {
+				if (!audioSource.isPlaying) {
+					//audioSource.loop = true;
+					audioSource.PlayOneShot(BuildMusic);
+				}
+
 				BuildTime += Time.deltaTime;
 				
 				float maxTime = GetMaxBuildTime();
@@ -108,14 +120,21 @@ public class GameController : MonoBehaviour {
 					WaveCount++;
 					BuildTime = 0f;
 					CurrentPlayState = PlayState.COMBAT;
+					audioSource.Stop();
 				}
 			}
 			else if (CurrentPlayState == PlayState.COMBAT) {
+				if (!audioSource.isPlaying) {
+					//audioSource.loop = true;
+					audioSource.PlayOneShot(CombatMusic);
+				}
+
 				if (!hasSpawnedThisWave) {
 					hasSpawnedThisWave = true;
 					SpawnWave();
 				}				
 				else if (CheckForWaveEnd()) {
+					audioSource.Stop();
 					CurrentPlayState = PlayState.BUILD;
 					hasSpawnedThisWave = false;
 				}
