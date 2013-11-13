@@ -34,9 +34,7 @@ public class PlayerController : MonoBehaviour {
 	private Color feedbackColor = Color.white;
 	
 	// Tactical AI system
-	private bool selectingTactic = false, 
-				 selectingTarget = false, 
-				 selectingCondition = false;
+	private bool selectingTactics = false;
 	 
 	// Use this for initialization
 	void Start () {
@@ -87,8 +85,7 @@ public class PlayerController : MonoBehaviour {
 		Vector2 mousePos = new Vector2(Input.mousePosition.x, screenHeight - Input.mousePosition.y);
 		bool disallowedClick = disallowedRect.Contains(mousePos) || disallowedRect2.Contains(mousePos);
 		//Debug.Log("disallowedRect: " + disallowedRect + ", disallowedClick: " + disallowedClick);
-		if (!disallowedClick && 
-			(!selectingTactic && !selectingTarget && !selectingCondition)) {
+		if (!disallowedClick && !selectingTactics) {
 			handleUnitSelection();
 		}
 		else {
@@ -523,13 +520,8 @@ public class PlayerController : MonoBehaviour {
 						string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(tacticsString, tacticsTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								selectingTactic = true;
-						
-								if (selectingTarget) 
-									selectingTarget = false;
-						
-								if (selectingCondition)
-									selectingCondition = false;
+								if (!selectingTactics) 
+									selectingTactics = true;
 							}
 							else {
 								DisplayFeedbackMessage("You can only set Tactics in the Build phase.");
@@ -551,13 +543,8 @@ public class PlayerController : MonoBehaviour {
 						string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(targetString, targetTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								selectingTarget = true;
-						
-								if (selectingTactic) 
-									selectingTactic = false;
-						
-								if (selectingCondition)
-									selectingCondition = false;
+								if (!selectingTactics) 
+									selectingTactics = true;
 							}
 							else {
 								DisplayFeedbackMessage("You can only set Targets in the Build phase.");
@@ -580,13 +567,8 @@ public class PlayerController : MonoBehaviour {
 						string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
 						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(conditionString, conditionTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								selectingCondition = true;
-						
-								if (selectingTactic) 
-									selectingTactic = false;
-						
-								if (selectingTarget) 
-									selectingTarget = false;
+								if (!selectingTactics) 
+									selectingTactics = true;
 							}
 							else {
 								DisplayFeedbackMessage("You can only set Conditions in the Build phase.");
@@ -653,7 +635,7 @@ public class PlayerController : MonoBehaviour {
 		if (selectedUnit == null) {
 			Debug.LogWarning("Could not find selected unit in renderTacticsInterface");
 		}		
-		else if (selectingTactic || selectingTarget || selectingCondition) {
+		else if (selectingTactics) {
 			float width = screenWidth * 0.6f,
 			height = screenHeight * 0.3f;
 			float x = (screenWidth - width)/2f,
@@ -731,14 +713,8 @@ public class PlayerController : MonoBehaviour {
 			GUILayout.FlexibleSpace();
 
 			if (GUILayout.Button("Confirm ('Q' key)", GUILayout.Width(width), GUILayout.Height(elementHeight)) || Input.GetKeyDown(KeyCode.Q)) {
-				if (selectingTactic)
-					selectingTactic = false;	
-				
-				if (selectingTarget)
-					selectingTarget = false;
-				
-				if (selectingCondition)
-					selectingCondition = false;	
+				if (selectingTactics)
+					selectingTactics = false;	
 			}
 
 			GUILayout.EndArea();
