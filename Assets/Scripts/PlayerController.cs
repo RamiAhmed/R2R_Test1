@@ -460,7 +460,8 @@ public class PlayerController : MonoBehaviour {
 			y = screenHeight - height;
 		
 		float elementWidth = width/3f,
-			elementHeight = height;
+			elementHeight = height,
+			elementX = 0f;
 				
 		GUI.BeginGroup(new Rect(x, y, width, height)); 
 		// Start Bottom HUD
@@ -498,23 +499,23 @@ public class PlayerController : MonoBehaviour {
 			// Health bar
 			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);		
 			string hpLabel = selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
-			GUI.BeginGroup(new Rect(0f, unitButtonsHeight, hpWidth, healthBarHeight));				
+			GUI.BeginGroup(new Rect(elementX, unitButtonsHeight, hpWidth, healthBarHeight));				
 				GUI.DrawTexture(new Rect(0f, 0f, elementWidth, healthBarHeight), healthBarHUD, ScaleMode.StretchToFill);
 			GUI.EndGroup();
 
-			GUI.DrawTexture(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), healthContainerHUD, ScaleMode.StretchToFill);
+			GUI.DrawTexture(new Rect(elementX, unitButtonsHeight, elementWidth, healthBarHeight), healthContainerHUD, ScaleMode.StretchToFill);
 			GUI.Label(new Rect(elementWidth/2f, unitButtonsHeight+healthBarHeight/3f, elementWidth, healthBarHeight), new GUIContent(hpLabel));
 			
 			
 			// Class: Name
 			float unitTitleHeight = elementHeight * 0.15f;			
-			GUI.Box(new Rect(1f, unitButtonsHeight + healthBarHeight, elementWidth, unitTitleHeight), selectedUnit.Class + ": " + selectedUnit.Name);
+			GUI.Box(new Rect(elementX+1f, unitButtonsHeight + healthBarHeight, elementWidth, unitTitleHeight), selectedUnit.Class + ": " + selectedUnit.Name);
 
 			
 			// Unit details
 			float detailsHeight = elementHeight - healthBarHeight - unitButtonsHeight - unitTitleHeight;
 			float detailsWidth = elementWidth/3f;
-			GUI.BeginGroup(new Rect(0f, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
+			GUI.BeginGroup(new Rect(elementX, healthBarHeight + unitButtonsHeight + unitTitleHeight, elementWidth, detailsHeight));
 				// Profile picture
 				if (selectedUnit.ProfilePicture != null) {
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), "");
@@ -527,7 +528,8 @@ public class PlayerController : MonoBehaviour {
 				// Sword
 				string swordTip = "Damage: " + selectedUnit.Damage + "\n";
 				swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
-				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond;
+				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond + "\n";
+				swordTip += "Attacking Range: " + selectedUnit.AttackingRange;
 				GUI.BeginGroup(new Rect(detailsWidth, 0f, elementWidth, detailsHeight));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), new GUIContent(swordHUD, swordTip));
 					
@@ -547,7 +549,8 @@ public class PlayerController : MonoBehaviour {
 				
 				// Boot
 				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed + "\n";
-				bootTip += "Flee Chance: " + (selectedUnit.FleeThreshold*100f) + "%";
+				bootTip += "Flee Chance: " + (selectedUnit.FleeThreshold*100f) + "%\n";
+				bootTip += "Perception Range: " + selectedUnit.PerceptionRange;
 				GUI.BeginGroup(new Rect(detailsWidth*2f, detailsHeight/2f, detailsWidth, detailsHeight/2f));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight/2f), new GUIContent(bootHUD, bootTip));
 			
@@ -562,11 +565,13 @@ public class PlayerController : MonoBehaviour {
 		}
 				
 		GUI.EndGroup(); // End unit details
-		
+
+		elementX += elementWidth;
 		elementHeight -= unitButtonsHeight + healthBarHeight;		
-		
+		elementWidth += elementWidth/2f;
+
 		// Tactical AI System
-		GUI.BeginGroup(new Rect(elementWidth+2.5f, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
+		GUI.BeginGroup(new Rect(elementX, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
 		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
 			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 			
@@ -665,12 +670,17 @@ public class PlayerController : MonoBehaviour {
 		else {
 			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	
 		}
-		
-		
+				
 		GUI.EndGroup(); // End Tactics
-		
-		GUI.BeginGroup(new Rect(elementWidth*2f, unitButtonsHeight + healthBarHeight, elementWidth, elementHeight)); // Spawn Grid		
+
+		elementX += elementWidth;
+		elementWidth = elementWidth/3f-5f;
+
+		GUI.BeginGroup(new Rect(elementX, unitButtonsHeight + healthBarHeight, elementWidth, elementHeight)); // Spawn Grid	
 		if (playerFaction.FactionUnits.Count > 0) {
+			if (!GUI.skin.button.wordWrap)
+				GUI.skin.button.wordWrap = true;
+
 			GUI.BeginGroup(new Rect(0f, 0f, elementWidth, elementHeight));
 				createSpawnButton(0, elementWidth, elementHeight);
 			GUI.EndGroup();
@@ -703,7 +713,7 @@ public class PlayerController : MonoBehaviour {
 		if (GUI.tooltip != "") {
 			GUI.skin.box.wordWrap = true;
 			Vector2 mousePos = Input.mousePosition;
-			float tipWidth = 250f, tipHeight = 60f;
+			float tipWidth = 250f, tipHeight = 70f;
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}		
 	}
