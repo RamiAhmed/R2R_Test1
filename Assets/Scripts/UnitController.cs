@@ -198,15 +198,21 @@ public class UnitController : Unit {
 		}
 	}
 
+	private void activateTAIS() {
+		if (!playerOwner.bSelectingTactics) {
+			Select(playerOwner.SelectedUnits);
+			Debug.Log("Activate TAIS");
+			playerOwner.bSelectingTactics = true;
+		}
+	}
+
 	private bool buildUnit() {
 		bool buildResult = false;
 		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
 				playerOwner.PlayerGold -= this.GoldCost;
-				//this.renderer.material.color = originalMaterialColor;
 				currentUnitState = UnitState.PLACED;
-				Select(playerOwner.SelectedUnits);
-				playerOwner.bSelectingTactics = true;
+				Invoke("activateTAIS", 0.25f);
 				buildResult = true;
 			}
 			else {
