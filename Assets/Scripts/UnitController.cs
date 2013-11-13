@@ -376,6 +376,7 @@ public class UnitController : Unit {
 						FollowOther(tacticalTarget);
 					}
 					else if (currentTactic == Tactics.HoldTheLine) {
+
 						if (GetIsWithinAttackingRange(tacticalTarget)) {
 							attackTarget = tacticalTarget; 
 							this.currentUnitState = UnitState.ATTACKING;
@@ -383,6 +384,11 @@ public class UnitController : Unit {
 						}
 						else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
 							attackTarget = GetNearestUnit(_gameController.enemies);
+							this.currentUnitState = UnitState.ATTACKING;
+							StopMoving();
+						}
+						else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
+							attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
 							this.currentUnitState = UnitState.ATTACKING;
 							StopMoving();
 						}
