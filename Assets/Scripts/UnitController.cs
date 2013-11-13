@@ -542,7 +542,7 @@ public class UnitController : Unit {
 	}
 
 	public void UpgradeUnit() {
-		Debug.Log("Upgrade Unit");
+		Debug.Log(_gameController.GameTime + ": Upgraded Unit");
 
 		if (CanUpgrade()) {
 			StopMoving();
@@ -573,7 +573,6 @@ public class UnitController : Unit {
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You cannot afford to upgrade " + this.Name);
-				Debug.Log("You cannot afford to upgrade " + this.Name);
 			}
 		}
 		else {
@@ -586,7 +585,7 @@ public class UnitController : Unit {
 	}
 
 	public void SellUnit() {
-		Debug.Log("SellUnit");
+		Debug.Log(_gameController.GameTime + ": Sell Unit");
 		StopMoving();
 
 		int goldReturned = GetSellAmount();
