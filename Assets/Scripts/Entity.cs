@@ -28,7 +28,8 @@ public class Entity : MonoBehaviour {
 	public string WalkAnimation = "", 
 				  AttackAnimation = "";
 
-	public List<AudioClip> AttackSounds = new List<AudioClip>();
+	public List<AudioClip> AttackSounds = new List<AudioClip>(),
+	DeathSounds = new List<AudioClip>();
 
 	private AudioSource audioSource;
 	
@@ -77,6 +78,7 @@ public class Entity : MonoBehaviour {
 		}
 
 		audioSource = this.GetComponent<AudioSource>() != null ? this.GetComponent<AudioSource>() : this.gameObject.AddComponent<AudioSource>();
+		audioSource.playOnAwake = false;
 	}
 
 	protected virtual void Start() {}
@@ -356,12 +358,14 @@ public class Entity : MonoBehaviour {
 		if (this.CurrentHitPoints <= 0f) {
 			//Debug.Log(this.ToString() + " is dead");
 			this.IsDead = true;
+			PlayRandomSong(DeathSounds);
 		}
 	}
 	
 	public void StopAllAnimations() {
 		if (animation != null) {
 			animation.Stop();
+			// TODO Find nicer solution
 		}
 	}
 
@@ -387,13 +391,19 @@ public class Entity : MonoBehaviour {
 		}		
 	}
 
-	private void PlayRandomSong(List<AudioClip> sounds) {
+	public void PlayRandomSong(List<AudioClip> sounds) {
 		if (audioSource != null) {
-			if (AttackSounds.Count > 0) {
-				AudioClip sound = sounds.Count > 1 != null ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
+			if (sounds.Count > 0) {
+				AudioClip sound = sounds.Count > 1 ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
 				audioSource.PlayOneShot(sound);
-				//audioSource.Play(sound);
+				Debug.Log("Playing sound: " + sound.ToString());
 			}		
+			else {
+				Debug.LogWarning("Could not find audio clips " + sounds.ToString() + " (count: " + sounds.Count + ") for " + this.Name);
+			}
+		}
+		else {
+			Debug.LogWarning("Could not find audio source for " + this.Name);
 		}
 	}
 

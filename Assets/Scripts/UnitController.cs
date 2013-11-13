@@ -144,9 +144,6 @@ public class UnitController : Unit {
 				obj = GetNearestUnit(list);
 			}
 		}
-		else {
-			obj = this;
-		}		
 		
 		return obj;
 	}
@@ -297,7 +294,7 @@ public class UnitController : Unit {
 				Heal(healTarget, this.Damage + fGetD20()/10f);	
 			}
 			else {
-				if (!GetIsWithinAttackingRange(healTarget)) {
+				if (!GetIsWithinRange(healTarget, meleeDistance)) {
 					MoveTo(healTarget.transform);
 				}
 			}
@@ -345,18 +342,21 @@ public class UnitController : Unit {
 
 	private void RunTAIS(Entity target, Tactics currentTactic) {
 		if (isHealer) {
-			if (target == null) {
+			target = target == null || !target.GetIsUnit() ? GetTacticalTarget(playerOwner.unitsList) : target;
+			if (target == null || (target.CurrentHitPoints > target.MaxHitPoints * HealThreshold)) {
 				target = GetMostDamagedUnit(playerOwner.unitsList);
 			}
 			
-			if (target != null && (target.CurrentHitPoints < target.MaxHitPoints * HealThreshold) && GetIsWithinPerceptionRange(target)) {
-				healTarget = target;
-				this.currentUnitState = UnitController.UnitState.HEALING;
+			if (target != null && (target.CurrentHitPoints < target.MaxHitPoints * HealThreshold)) {
+				if (GetIsWithinPerceptionRange(target)) {
+					healTarget = target;
+					this.currentUnitState = UnitController.UnitState.HEALING;
+				}
 			}
-
 		}
 
 		if (!isHealer || (isHealer && healTarget == null)) {
+			target = target == null || target.GetIsUnit() ? GetTacticalTarget(_gameController.enemies) : target;
 			if (target != null) {
 				if (currentTactic == Tactics.Guard) {
 					attackTarget = GuardOther(target);
