@@ -492,6 +492,9 @@ public class UnitController : Unit {
 			attackingCircle.transform.localPosition = Vector3.zero;
 			attackingCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
 		}
+		else {
+			Debug.LogWarning("Could not find attacking circle prefab");
+		}
 		
 		if (perceptionCircle == null) {
 			perceptionCircle = Instantiate(Resources.Load("Misc Objects/Circles/PerceptionCircle")) as GameObject;
@@ -499,6 +502,9 @@ public class UnitController : Unit {
 			perceptionCircle.transform.localScale = new Vector3(PerceptionRange, 1f, PerceptionRange);
 			perceptionCircle.transform.localPosition = Vector3.zero;
 			perceptionCircle.GetComponentInChildren<MeshRenderer>().enabled = false;
+		}
+		else {
+			Debug.LogWarning("Could not find perception circle prefab");
 		}
 	}
 	
