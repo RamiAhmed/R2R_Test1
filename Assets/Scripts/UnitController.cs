@@ -625,7 +625,7 @@ public class UnitController : Unit {
 	private void OnDeath() {
 		StopMoving();
 		StopAllAnimations();
-		Debug.Log("Unit dead");
+		Debug.Log(_gameController.GameTime + ": Unit dead");
 		lookAtPos = Vector3.zero;
 		Deselect(playerOwner.SelectedUnits);
 		playerOwner.unitsList.Remove(this);
