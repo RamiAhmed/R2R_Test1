@@ -66,10 +66,10 @@ public class UnitController : Unit {
 	public string GetTacticsTip(Tactics tactic) {
 		string tip = "";
 		switch (tactic) {
-			case Tactics.Attack: tip = "Attack: Unit will attack target at will."; break;
-			case Tactics.Guard: tip = "Guard: Unit will attempt to protect target."; break;
-			case Tactics.Follow: tip = "Assist: Unit will attempt to follow and assist target."; break;
-			case Tactics.HoldTheLine: tip = "Stand Ground: Unit will attempt to stand ground and not move far."; break;
+			case Tactics.Attack: tip = "Attack: Unit will attack target at will (default behaviour)."; break;
+			case Tactics.Guard: tip = "Guard: Unit will attempt to protect target, by attacking any enemy attacking target."; break;
+			case Tactics.Follow: tip = "Assist: Unit will attempt to follow and assist target, by attacking the same enemy as target."; break;
+			case Tactics.HoldTheLine: tip = "Stand Ground: Unit will attempt to stand ground and not move far from the initial position."; break;
 		}
 		return tip;			
 	}
