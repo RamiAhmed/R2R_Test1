@@ -76,6 +76,15 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 		}
+		else {
+			if (Input.GetMouseButtonDown(0)) {
+				UnitController currentlySelectedUnit = getCurrentlyPlacingUnit();
+				Debug.Log("Build " + getCurrentlyPlacingUnit().ToString());
+				if (currentlySelectedUnit != null) {
+					currentlySelectedUnit.BuildUnit();
+				}
+			}
+		}
 		
 		float yMarginFactor = 0.25f,
 			  xMarginFactor = 0.3f;
@@ -401,18 +410,21 @@ public class PlayerController : MonoBehaviour {
 		float elementWidth = width/3f,
 			elementHeight = height;
 				
-		GUI.BeginGroup(new Rect(x, y, width, height)); // Start Bottom HUD
+		GUI.BeginGroup(new Rect(x, y, width, height)); 
+		// Start Bottom HUD
 		
 		float unitButtonsHeight = elementHeight * 0.2f;
 		float healthBarHeight = elementHeight * 0.25f;
 		
-		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); // Unit details
+		GUI.BeginGroup(new Rect(0, 0, elementWidth, elementHeight)); 
+		// Unit details
 		if (SelectedUnits.Count > 0) {
 			Entity selectedUnit = SelectedUnits[0];
 			if (selectedUnit.GetIsUnit() && _gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 				UnitController selectedUnitController = selectedUnit.GetComponent<UnitController>();	
 				
-				if (selectedUnitController != null) { // Sell & Upgrade buttons if unit
+				if (selectedUnitController != null) { 
+					// Sell & Upgrade buttons if unit
 					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount() + "g",
 							sellLabel = "Sell (Cost: " + selectedUnitController.GoldCost + "g)";
 					sellTip += "\nSelling will remove the unit permanently.";

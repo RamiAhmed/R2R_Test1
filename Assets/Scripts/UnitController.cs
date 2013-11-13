@@ -206,7 +206,7 @@ public class UnitController : Unit {
 		}
 	}
 
-	private bool buildUnit() {
+	public bool BuildUnit() {
 		bool buildResult = false;
 		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
@@ -291,7 +291,7 @@ public class UnitController : Unit {
 			healTarget = null;
 			lastAttacker = null;
 		}
-		else if (healTarget != null && !healTarget.IsDead && healTarget.CurrentHitPoints < healTarget.MaxHitPoints * HealThreshold) {
+		else if (healTarget != null && !healTarget.IsDead && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
 			if (GetIsWithinAttackingRange(healTarget)) {
 				StopMoving();
 				Heal(healTarget, this.Damage + fGetD20()/10f);	
@@ -310,11 +310,11 @@ public class UnitController : Unit {
 
 	protected virtual void PlacingBehaviour() {
 		if (this.playerOwner != null) {
-			if (Input.GetMouseButtonDown(0)) {
-				if (buildUnit())
+		/*	if (Input.GetMouseButtonDown(0)) {
+				if (BuildUnit())
 					return;
 			}
-
+*/
 			if (Input.GetMouseButtonDown(1)) {
 				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
@@ -363,54 +363,57 @@ public class UnitController : Unit {
 			}
 			else {
 				if (isHealer) {
-					Entity damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
+					Entity damagedUnit = GetTacticalTarget(playerOwner.unitsList);
+					if (damagedUnit == null) {
+						damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
+					}
+
 					if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold) && 
 						GetIsWithinPerceptionRange(damagedUnit)) {
-						StopMoving();
 						healTarget = damagedUnit;
-						this.currentUnitState = UnitController.UnitState.HEALING;	
-						return;
+						this.currentUnitState = UnitController.UnitState.HEALING;
 					}
 				}
-				
-				Entity tacticalTarget = GetTacticalTarget();
-				if (tacticalTarget != null) {
-					if (currentTactic == Tactics.Guard) {
-						GuardOther(tacticalTarget);
-					}
-					else if (currentTactic == Tactics.Follow) {
-						FollowOther(tacticalTarget);
-					}
-					else if (currentTactic == Tactics.HoldTheLine) {
+				else {
+					Entity tacticalTarget = GetTacticalTarget();
+					if (tacticalTarget != null) {
+						if (currentTactic == Tactics.Guard) {
+							GuardOther(tacticalTarget);
+						}
+						else if (currentTactic == Tactics.Follow) {
+							FollowOther(tacticalTarget);
+						}
+						else if (currentTactic == Tactics.HoldTheLine) {
 
-						if (GetIsWithinAttackingRange(tacticalTarget)) {
-							attackTarget = tacticalTarget; 
-							this.currentUnitState = UnitState.ATTACKING;
-							StopMoving();
+							if (GetIsWithinAttackingRange(tacticalTarget)) {
+								attackTarget = tacticalTarget; 
+								//this.currentUnitState = UnitState.ATTACKING;
+								//StopMoving();
+							}
+							else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
+								attackTarget = GetNearestUnit(_gameController.enemies);
+								//this.currentUnitState = UnitState.ATTACKING;
+								//StopMoving();
+							}
+							else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
+								attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
+								//this.currentUnitState = UnitState.ATTACKING;
+								//StopMoving();
+							}
 						}
-						else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
-							attackTarget = GetNearestUnit(_gameController.enemies);
-							this.currentUnitState = UnitState.ATTACKING;
-							StopMoving();
+						else {
+							if (GetIsWithinPerceptionRange(tacticalTarget)) {
+								attackTarget = tacticalTarget;
+								//this.currentUnitState = UnitState.ATTACKING;
+								//StopMoving();
+							}
 						}
-						else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
-							attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
-							this.currentUnitState = UnitState.ATTACKING;
-							StopMoving();
+						
+						if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
+							attackTarget = lastAttacker;
+							//this.currentUnitState = UnitState.ATTACKING;
+							//StopMoving();
 						}
-					}
-					else {
-						if (GetIsWithinPerceptionRange(tacticalTarget)) {
-							attackTarget = tacticalTarget;
-							this.currentUnitState = UnitState.ATTACKING;
-							StopMoving();
-						}
-					}
-					
-					if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
-						attackTarget = lastAttacker;
-						this.currentUnitState = UnitState.ATTACKING;
-						StopMoving();
 					}
 				}
 			}				
