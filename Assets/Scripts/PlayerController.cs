@@ -132,11 +132,12 @@ public class PlayerController : MonoBehaviour {
 								ent.MoveTo(clickedPos);
 							}
 						}
-						break;
 					}
 					else {
 						DisplayFeedbackMessage("You cannot move units to that location.");
 					}
+
+					break;
 				}
 			}
 		}
