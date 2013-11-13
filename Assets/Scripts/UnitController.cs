@@ -384,8 +384,7 @@ public class UnitController : Unit {
 						}
 					}
 					
-					if ((attackTarget == null && lastAttacker != null) &&
-							GetIsWithinPerceptionRange(lastAttacker)) {
+					if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
 						attackTarget = lastAttacker;
 						this.currentUnitState = UnitState.ATTACKING;
 						StopMoving();
