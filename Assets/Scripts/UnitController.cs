@@ -348,6 +348,50 @@ public class UnitController : Unit {
 		}
 	}
 
+	private void RunTAIS(Entity target, Tactics currentTactic) {
+		if (isHealer) {
+			if (target == null) {
+				target = GetMostDamagedUnit(playerOwner.unitsList);
+			}
+			
+			if (target != null && (target.CurrentHitPoints < target.MaxHitPoints * HealThreshold) && GetIsWithinPerceptionRange(target)) {
+				healTarget = target;
+				this.currentUnitState = UnitController.UnitState.HEALING;
+			}
+		}
+		else {
+			if (target != null) {
+				if (currentTactic == Tactics.Guard) {
+					attackTarget = GuardOther(target);
+				}
+				else if (currentTactic == Tactics.Follow) {
+					attackTarget = FollowOther(target);
+				}
+				else if (currentTactic == Tactics.HoldTheLine) {					
+					if (GetIsWithinAttackingRange(target)) {
+						attackTarget = target; 
+					}
+					else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
+						attackTarget = GetNearestUnit(_gameController.enemies);
+					}
+					else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
+						attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
+					}
+				}
+				else {
+					if (GetIsWithinPerceptionRange(target)) {
+						attackTarget = target;
+					}
+				}
+				
+				// self defense fallback
+				if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
+					attackTarget = lastAttacker;
+				}
+			}
+		}
+	}
+
 	protected virtual void PlacedBehaviour() {
 		if (!Selected) {
 			disableRenderCircle();
@@ -362,60 +406,7 @@ public class UnitController : Unit {
 				GuardOther(gateRef);
 			}
 			else {
-				if (isHealer) {
-					Entity damagedUnit = GetTacticalTarget(playerOwner.unitsList);
-					if (damagedUnit == null) {
-						damagedUnit = GetMostDamagedUnit(playerOwner.unitsList);
-					}
-
-					if (damagedUnit != null && (damagedUnit.CurrentHitPoints < damagedUnit.MaxHitPoints * HealThreshold) && 
-						GetIsWithinPerceptionRange(damagedUnit)) {
-						healTarget = damagedUnit;
-						this.currentUnitState = UnitController.UnitState.HEALING;
-					}
-				}
-				else {
-					Entity tacticalTarget = GetTacticalTarget();
-					if (tacticalTarget != null) {
-						if (currentTactic == Tactics.Guard) {
-							GuardOther(tacticalTarget);
-						}
-						else if (currentTactic == Tactics.Follow) {
-							FollowOther(tacticalTarget);
-						}
-						else if (currentTactic == Tactics.HoldTheLine) {
-
-							if (GetIsWithinAttackingRange(tacticalTarget)) {
-								attackTarget = tacticalTarget; 
-								//this.currentUnitState = UnitState.ATTACKING;
-								//StopMoving();
-							}
-							else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
-								attackTarget = GetNearestUnit(_gameController.enemies);
-								//this.currentUnitState = UnitState.ATTACKING;
-								//StopMoving();
-							}
-							else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
-								attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
-								//this.currentUnitState = UnitState.ATTACKING;
-								//StopMoving();
-							}
-						}
-						else {
-							if (GetIsWithinPerceptionRange(tacticalTarget)) {
-								attackTarget = tacticalTarget;
-								//this.currentUnitState = UnitState.ATTACKING;
-								//StopMoving();
-							}
-						}
-						
-						if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
-							attackTarget = lastAttacker;
-							//this.currentUnitState = UnitState.ATTACKING;
-							//StopMoving();
-						}
-					}
-				}
+				RunTAIS(GetTacticalTarget(), currentTactic);
 			}				
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {

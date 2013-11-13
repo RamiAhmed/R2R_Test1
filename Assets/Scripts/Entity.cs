@@ -27,6 +27,10 @@ public class Entity : MonoBehaviour {
 	
 	public string WalkAnimation = "", 
 				  AttackAnimation = "";
+
+	public List<AudioClip> AttackSounds = new List<AudioClip>();
+
+	private AudioSource audioSource;
 	
 	[HideInInspector]
 	public bool Selected = false,
@@ -71,6 +75,8 @@ public class Entity : MonoBehaviour {
 		if (animation == null) {
 			animation = this.GetComponentInChildren<Animation>();
 		}
+
+		audioSource = this.GetComponent<AudioSource>() != null ? this.GetComponent<AudioSource>() : this.gameObject.AddComponent<AudioSource>();
 	}
 
 	protected virtual void Start() {}
@@ -177,17 +183,18 @@ public class Entity : MonoBehaviour {
 
 	}
 
-	public void GuardOther(Entity target) {
+	public Entity GuardOther(Entity target) {
+		Entity newTarget = null;
 		if (target == null || !target) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
 		}
 		else {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.lastAttacker != null) {
-				this.attackTarget = target.lastAttacker;
+				newTarget = target.lastAttacker;
 			}
 			else if (nearestEnemy != null && GetIsWithinAttackingRange(nearestEnemy)) {
-				this.attackTarget = nearestEnemy;
+				newTarget = nearestEnemy;
 			}
 			else {
 				if (!GetIsWithinAttackingRange(target)) {
@@ -195,19 +202,22 @@ public class Entity : MonoBehaviour {
 				}
 			}
 		}
+
+		return newTarget;
 	}
 	
-	public void FollowOther(Entity target) {
+	public Entity FollowOther(Entity target) {
+		Entity newTarget = null;
 		if (target == null) {
 			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FollowOther method");	
 		}
 		else {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.attackTarget != null) {
-				this.attackTarget = target.attackTarget;	
+				newTarget = target.attackTarget;	
 			}
 			else if (nearestEnemy != null && GetIsWithinAttackingRange(nearestEnemy)) {
-				this.attackTarget = nearestEnemy;
+				newTarget = nearestEnemy;
 			}
 			else {
 				if (!GetIsWithinAttackingRange(target)) {
@@ -215,6 +225,8 @@ public class Entity : MonoBehaviour {
 				}
 			}
 		}
+
+		return newTarget;
 	}
 
 	public void FleeFrom(Transform target) {
@@ -375,6 +387,16 @@ public class Entity : MonoBehaviour {
 		}		
 	}
 
+	private void PlayRandomSong(List<AudioClip> sounds) {
+		if (audioSource != null) {
+			if (AttackSounds.Count > 0) {
+				AudioClip sound = sounds.Count > 1 != null ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
+				audioSource.PlayOneShot(sound);
+				//audioSource.Play(sound);
+			}		
+		}
+	}
+
 	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
 		StopMoving();
@@ -393,6 +415,8 @@ public class Entity : MonoBehaviour {
 				if (Bullet != null) {
 					ShootBullet(opponent);
 				}
+
+				PlayRandomSong(AttackSounds);
 
 				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 					float damage = (this.Damage - opponent.Armor) + fGetD20();
