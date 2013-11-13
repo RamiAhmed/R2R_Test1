@@ -555,6 +555,11 @@ public class UnitController : Unit {
 				newUnit.transform.position = this.transform.position;
 				playerOwner.unitsList.Add(newUnit.GetComponent<Entity>());
 				UnitController unitCont = newUnit.GetComponent<UnitController>();
+
+				unitCont.currentTactic = this.currentTactic;
+				unitCont.currentTarget = this.currentTarget;
+				unitCont.currentCondition = this.currentCondition;
+
 				unitCont.playerOwner = this.playerOwner;
 				unitCont.currentUnitState = UnitState.PLACED;
 				unitCont.Select(playerOwner.SelectedUnits);
