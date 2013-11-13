@@ -203,8 +203,10 @@ public class UnitController : Unit {
 		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
 				playerOwner.PlayerGold -= this.GoldCost;
-				this.renderer.material.color = originalMaterialColor;
+				//this.renderer.material.color = originalMaterialColor;
 				currentUnitState = UnitState.PLACED;
+				Select(playerOwner.SelectedUnits);
+				playerOwner.bSelectingTactics = true;
 				buildResult = true;
 			}
 			else {
