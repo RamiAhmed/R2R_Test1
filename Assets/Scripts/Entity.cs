@@ -197,7 +197,7 @@ public class Entity : MonoBehaviour {
 				newTarget = nearestEnemy;
 			}
 			else {
-				if (!GetIsWithinAttackingRange(target)) {
+				if (!GetIsWithinRange(target, meleeDistance)) {
 					MoveTo(target.transform);
 				}
 			}
@@ -220,7 +220,7 @@ public class Entity : MonoBehaviour {
 				newTarget = nearestEnemy;
 			}
 			else {
-				if (!GetIsWithinAttackingRange(target)) {
+				if (!GetIsWithinRange(target, meleeDistance)) {
 					MoveTo(target.transform);
 				}
 			}

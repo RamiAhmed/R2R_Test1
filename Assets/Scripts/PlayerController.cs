@@ -79,7 +79,6 @@ public class PlayerController : MonoBehaviour {
 		else {
 			if (Input.GetMouseButtonDown(0)) {
 				UnitController currentlySelectedUnit = getCurrentlyPlacingUnit();
-				Debug.Log("Build " + getCurrentlyPlacingUnit().ToString());
 				if (currentlySelectedUnit != null) {
 					currentlySelectedUnit.BuildUnit();
 				}
@@ -400,6 +399,59 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
 	}
+
+	
+	private Texture2D GetTacticsIcon(UnitController.Tactics tactic) {
+		Texture2D icon = null;
+		switch (tactic) {
+		case UnitController.Tactics.Attack: icon = playerFaction.TAISAttack; break;
+		case UnitController.Tactics.Follow: icon = playerFaction.TAISAssist; break;
+		case UnitController.Tactics.Guard: icon = playerFaction.TAISGuard; break;
+		case UnitController.Tactics.HoldTheLine: icon = playerFaction.TAISStandGuard; break;
+		}	
+		
+		return icon;
+	}
+	
+	private Texture2D GetTargetIcon(UnitController.Tactics tactic, UnitController.Target target) {
+		Texture2D icon = null;
+		bool bAlly = (tactic == UnitController.Tactics.Follow || tactic == UnitController.Tactics.Guard);
+		
+		if (bAlly) {
+			switch (target) {
+			case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ALLY; break;
+			case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ALLY; break;
+			case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ALLY; break;
+			case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ALLY; break;
+			case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ALLY; break;
+			}
+		}
+		else {
+			switch (target) {
+			case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ENEMY; break;
+			case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ENEMY; break;
+			case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ENEMY; break;
+			case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ENEMY; break;
+			case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ENEMY; break;
+			}
+		}
+		
+		return icon;
+	}
+	
+	private Texture2D GetConditionIcon(UnitController.Condition condition) {
+		Texture2D icon = null;
+		switch (condition) {
+		case UnitController.Condition.Always: icon = playerFaction.TAISAlways; break;
+		case UnitController.Condition.HP_75: icon = playerFaction.TAIS75HP; break;
+		case UnitController.Condition.HP_50: icon = playerFaction.TAIS50HP; break;
+		case UnitController.Condition.HP_25: icon = playerFaction.TAIS25HP; break;
+		case UnitController.Condition.HP_less: icon = playerFaction.TAISLessHP; break;
+		}
+		
+		return icon;
+	}
+
 	
 	private void renderBottomHUD() {
 		float width = (screenWidth * (1f - 0.13f)) - 0.01f ,
@@ -530,7 +582,10 @@ public class PlayerController : MonoBehaviour {
 					if (selectedUnitController != null) {
 						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
 						string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(tacticsString, tacticsTip))) {
+						
+						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetTacticsIcon(selectedUnitController.currentTactic), ScaleMode.ScaleToFit);
+
+						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(tacticsString, tacticsTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 								if (!bSelectingTactics) 
 									bSelectingTactics = true;
@@ -552,8 +607,17 @@ public class PlayerController : MonoBehaviour {
 			
 					if (selectedUnitController != null) {
 						string targetString = selectedUnitController.GetTargetName(selectedUnitController.currentTarget);
+						Texture2D icon = GetTargetIcon(selectedUnitController.currentTactic, selectedUnitController.currentTarget);
+						if (selectedUnitController.currentTactic == UnitController.Tactics.HoldTheLine) {
+							targetString = "Self";
+							icon = playerFaction.TAISSelf;
+						}
+						
 						string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(targetString, targetTip))) {
+
+						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), icon, ScaleMode.ScaleToFit);
+
+						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(targetString, targetTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 								if (!bSelectingTactics) 
 									bSelectingTactics = true;
@@ -561,7 +625,7 @@ public class PlayerController : MonoBehaviour {
 							else {
 								DisplayFeedbackMessage("You can only set Targets in the Build phase.");
 							}
-						}
+						}						
 					}
 			
 				GUI.EndGroup();
@@ -577,7 +641,10 @@ public class PlayerController : MonoBehaviour {
 					if (selectedUnitController != null) {
 						string conditionString = selectedUnitController.GetConditionName(selectedUnitController.currentCondition);
 						string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
-						if (GUI.Button(new Rect(0f, 0f, columnWidth, rowHeight), new GUIContent(conditionString, conditionTip))) {
+
+						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetConditionIcon(selectedUnitController.currentCondition), ScaleMode.ScaleToFit);
+
+						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(conditionString, conditionTip))) {
 							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
 								if (!bSelectingTactics) 
 									bSelectingTactics = true;
@@ -641,57 +708,6 @@ public class PlayerController : MonoBehaviour {
 		}		
 	}
 
-	private Texture2D GetTacticsIcon(UnitController.Tactics tactic) {
-		Texture2D icon = null;
-		switch (tactic) {
-			case UnitController.Tactics.Attack: icon = playerFaction.TAISAttack; break;
-			case UnitController.Tactics.Follow: icon = playerFaction.TAISAssist; break;
-			case UnitController.Tactics.Guard: icon = playerFaction.TAISGuard; break;
-			case UnitController.Tactics.HoldTheLine: icon = playerFaction.TAISStandGuard; break;
-		}	
-
-		return icon;
-	}
-
-	private Texture2D GetTargetIcon(UnitController.Tactics tactic, UnitController.Target target) {
-		Texture2D icon = null;
-		bool bAlly = (tactic == UnitController.Tactics.Follow || tactic == UnitController.Tactics.Guard);
-
-		if (bAlly) {
-			switch (target) {
-				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ALLY; break;
-				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ALLY; break;
-				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ALLY; break;
-				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ALLY; break;
-				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ALLY; break;
-			}
-		}
-		else {
-			switch (target) {
-				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ENEMY; break;
-				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ENEMY; break;
-				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ENEMY; break;
-				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ENEMY; break;
-				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ENEMY; break;
-			}
-		}
-
-		return icon;
-	}
-
-	private Texture2D GetConditionIcon(UnitController.Condition condition) {
-		Texture2D icon = null;
-		switch (condition) {
-			case UnitController.Condition.Always: icon = playerFaction.TAISAlways; break;
-			case UnitController.Condition.HP_75: icon = playerFaction.TAIS75HP; break;
-			case UnitController.Condition.HP_50: icon = playerFaction.TAIS50HP; break;
-			case UnitController.Condition.HP_25: icon = playerFaction.TAIS25HP; break;
-			case UnitController.Condition.HP_less: icon = playerFaction.TAISLessHP; break;
-		}
-
-		return icon;
-	}
-	
 	private void renderTacticsInterface() {
 		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
 
@@ -743,29 +759,43 @@ public class PlayerController : MonoBehaviour {
 
 			// Targets
 			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
+				
+				if (selectedUnit.currentTactic != UnitController.Tactics.HoldTheLine) {
+					GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
 
-				GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
+					arr = System.Enum.GetValues(typeof(UnitController.Target));			
+					count = arr.Length;
 
-				arr = System.Enum.GetValues(typeof(UnitController.Target));			
-				count = arr.Length;
+					for (int i = 0; i < count; i++) {
+						UnitController.Target target = (UnitController.Target) i;
+						string targetName = selectedUnit.GetTargetName(target);
 
-				for (int i = 0; i < count; i++) {
-					UnitController.Target target = (UnitController.Target) i;
-					string targetName = selectedUnit.GetTargetName(target);
+						Texture2D icon = GetTargetIcon(selectedUnit.currentTactic, target);
 
-					Texture2D icon = GetTargetIcon(selectedUnit.currentTactic, target);
+						GUILayout.BeginHorizontal();
+							if (icon != null) {
+								GUILayout.Space(elementWidth/5f);
+								GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+							}
+							if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)), GUILayout.Height(elementHeight))) {
+								selectedUnit.currentTarget = target;
+							}
+						GUILayout.EndHorizontal();
+					}
+				}
+				else {
+					GUILayout.Box("Current Target: Self", GUILayout.Height(elementHeight));
 
 					GUILayout.BeginHorizontal();
+						Texture2D icon = playerFaction.TAISSelf;
 						if (icon != null) {
 							GUILayout.Space(elementWidth/5f);
-							GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+							GUI.DrawTexture(new Rect(elementWidth, elementHeight+10f, elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
-						if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)), GUILayout.Height(elementHeight))) {
-							selectedUnit.currentTarget = target;
-						}
+						GUILayout.Box(new GUIContent("Self", "Stand Guard tactic can only target self."), GUILayout.Height(elementHeight));				
+
 					GUILayout.EndHorizontal();
 				}
-
 			GUILayout.EndVertical();
 
 			// Conditions
