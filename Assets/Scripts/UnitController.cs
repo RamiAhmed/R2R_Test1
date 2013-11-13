@@ -554,12 +554,11 @@ public class UnitController : Unit {
 	}
 
 	public void UpgradeUnit() {
-		Debug.Log(_gameController.GameTime + ": Upgraded Unit");
-
 		if (CanUpgrade()) {
 			StopMoving();
 
 			if (playerOwner.PlayerGold >= UpgradesInto.GoldCost) {
+				Debug.Log(_gameController.GameTime + ": Upgraded Unit");
 				playerOwner.PlayerGold -= UpgradesInto.GoldCost;
 
 				GameObject newUnit = Instantiate(UpgradesInto.gameObject) as GameObject;
