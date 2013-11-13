@@ -247,8 +247,7 @@ public class PlayerController : MonoBehaviour {
 				selectedUnit.Select(SelectedUnits);
 				break;			
 			}			
-		}	
-		
+		}			
 	}
 	
 	/* GUI & UNIT SPAWNING */
@@ -271,19 +270,23 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
-			float width = screenWidth * 0.4f,
-				  height = 50f;
-			float x = (screenWidth/2f) - (width/2f),
-				  y = (screenHeight/2f) - (height/2f);
-			
-			GUILayout.BeginArea(new Rect(x, y, width, height));
-			
-			GUILayout.Box("PAUSED\n Press 'P' or 'Pause|Break' to resume game.");
-			
-			GUILayout.EndArea();				
+			renderPauseGUI();
 		}
 	}
-	
+
+	private void renderPauseGUI() {
+		float width = screenWidth * 0.4f,
+		height = 50f;
+		float x = (screenWidth/2f) - (width/2f),
+		y = (screenHeight/2f) - (height/2f);
+		
+		GUILayout.BeginArea(new Rect(x, y, width, height));
+		
+		GUILayout.Box("PAUSED\n Press 'P' or 'Pause|Break' to resume game.");
+		
+		GUILayout.EndArea();
+	}
+
 	private void renderSelectedUnitHealthbar() {
 		if (SelectedUnits.Count > 0) {
 			float width = 100f, height = 30f;
@@ -355,7 +358,7 @@ public class PlayerController : MonoBehaviour {
 		float width = screenWidth * 0.99f,
 			height = screenHeight * 0.05f;
 		float x = 1f,
-			y = 2f;
+			y = 5f;
 		
 		GUILayout.BeginArea(new Rect(x, y, width, height));		
 		GUILayout.BeginHorizontal();
@@ -415,6 +418,7 @@ public class PlayerController : MonoBehaviour {
 				if (selectedUnitController != null) { // Sell & Upgrade buttons if unit
 					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount() + "g",
 							sellLabel = "Sell (Cost: " + selectedUnitController.GoldCost + "g)";
+					sellTip += "\nSelling will remove the unit permanently.";
 					if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent(sellLabel, sellTip))) {
 						selectedUnitController.SellUnit();	
 					}
@@ -432,14 +436,11 @@ public class PlayerController : MonoBehaviour {
 			
 			// Health bar
 			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);		
-			//string hpTip = "Current Hitpoints: " + selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
 			string hpLabel = selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
 			GUI.BeginGroup(new Rect(0f, unitButtonsHeight, hpWidth, healthBarHeight));				
-				//GUI.Label(new Rect(0f, 0f, elementWidth, healthBarHeight), new GUIContent(healthBarHUD));			
 				GUI.DrawTexture(new Rect(0f, 0f, elementWidth, healthBarHeight), healthBarHUD, ScaleMode.StretchToFill);
 			GUI.EndGroup();
-			
-			//GUI.Label(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), new GUIContent(healthContainerHUD));
+
 			GUI.DrawTexture(new Rect(0f, unitButtonsHeight, elementWidth, healthBarHeight), healthContainerHUD, ScaleMode.StretchToFill);
 			GUI.Label(new Rect(elementWidth/2f, unitButtonsHeight+healthBarHeight/3f, elementWidth, healthBarHeight), new GUIContent(hpLabel));
 			
@@ -647,18 +648,89 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderTacticsInterface() {
-		Vector2 center = new Vector2(screenWidth/2f, screenHeight/2f);
-		float radius = 150f;
-		Rect rect = new Rect(0f, 0f, 130f, 25f);
 		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
-		
-		if (selectingTactic || selectingTarget || selectingCondition) {
-			GUI.depth = 1;
-			float bgRectSizeFactor = 3f;
-			GUI.Label(new Rect(center.x-(radius*(bgRectSizeFactor/2f)), center.y-(radius*(bgRectSizeFactor/2f)), radius*bgRectSizeFactor, radius*bgRectSizeFactor), TacticsCircleHUD);
-			GUI.depth = 0;
-			
-			if (GUI.Button(new Rect(center.x - (rect.width/2f), center.y - (rect.height/2f), rect.width, rect.height), "Confirm") || Input.GetKeyDown(KeyCode.Escape)) {
+
+		if (selectedUnit == null) {
+			Debug.LogWarning("Could not find selected unit in renderTacticsInterface");
+		}		
+		else if (selectingTactic || selectingTarget || selectingCondition) {
+			float width = screenWidth * 0.6f,
+			height = screenHeight * 0.3f;
+			float x = (screenWidth - width)/2f,
+			y = height/2f;
+
+			float elementWidth = width/3f, elementHeight = height/8f;
+
+			System.Array arr;
+			int count;
+
+			GUI.Box(new Rect(x, y, width, height), "");
+
+			GUILayout.BeginArea(new Rect(x, y, width, height));	
+			GUILayout.BeginHorizontal();
+
+			// Tactics
+			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
+				
+				GUILayout.Box("Current Tactic: " + selectedUnit.GetTacticsName(selectedUnit.currentTactic), GUILayout.Height(elementHeight));
+
+				arr = System.Enum.GetValues(typeof(UnitController.Tactics));				
+				count = arr.Length;				
+
+				for (int i = 0; i < count; i++) {
+					UnitController.Tactics tactic = (UnitController.Tactics) i;
+					string tacticName = selectedUnit.GetTacticsName(tactic);
+
+					if (GUILayout.Button(new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)))) {
+						selectedUnit.currentTactic = tactic;
+					}
+				}
+
+			GUILayout.EndVertical();
+
+			// Targets
+			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
+
+				GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
+
+				arr = System.Enum.GetValues(typeof(UnitController.Target));			
+				count = arr.Length;
+
+				for (int i = 0; i < count; i++) {
+					UnitController.Target target = (UnitController.Target) i;
+					string targetName = selectedUnit.GetTargetName(target);
+
+					if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)))) {
+						selectedUnit.currentTarget = target;
+					}
+				}
+
+			GUILayout.EndVertical();
+
+			// Conditions
+			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
+
+				GUILayout.Box("Current Condition: " + selectedUnit.GetConditionName(selectedUnit.currentCondition), GUILayout.Height(elementHeight));
+
+				arr = System.Enum.GetValues(typeof(UnitController.Condition));
+				count = arr.Length;
+
+				for (int i = 0; i < count; i++) {
+					UnitController.Condition condition = (UnitController.Condition) i;
+					string conditionName = selectedUnit.GetConditionName(condition);
+
+					if (GUILayout.Button(new GUIContent(conditionName))) {
+						selectedUnit.currentCondition = condition;
+					}
+				}
+
+			GUILayout.EndVertical();
+
+			GUILayout.EndHorizontal();
+
+			GUILayout.FlexibleSpace();
+
+			if (GUILayout.Button("Confirm ('Q' key)", GUILayout.Width(width), GUILayout.Height(elementHeight)) || Input.GetKeyDown(KeyCode.Q)) {
 				if (selectingTactic)
 					selectingTactic = false;	
 				
@@ -667,65 +739,10 @@ public class PlayerController : MonoBehaviour {
 				
 				if (selectingCondition)
 					selectingCondition = false;	
-			}	
-		}
-		
-		if (selectingTactic) {
-			System.Array arr = System.Enum.GetValues(typeof(UnitController.Tactics));	
+			}
 
-			int count = arr.Length;
-			float angleStep = Mathf.PI * 2.0f / count;		
-			
-			for (int i = 0; i < count; i++) {
-				UnitController.Tactics tactic = (UnitController.Tactics) i;
-				string tacticName = selectedUnit.GetTacticsName(tactic);
-				
-				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
-				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
-				
-				if (GUI.Button(rect, new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)))) {
-					selectedUnit.currentTactic = tactic;
-					selectingTactic = false;
-				}
-			}
+			GUILayout.EndArea();
 		}
-		else if (selectingTarget) {
-			System.Array arr = System.Enum.GetValues(typeof(UnitController.Target));
-			
-			int count = arr.Length;
-			float angleStep = Mathf.PI * 2.0f / count; 
-			
-			for (int i = 0; i < count; i++) {
-				UnitController.Target target = (UnitController.Target) i;
-				string targetName = selectedUnit.GetTargetName(target);
-				
-				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - rect.width/2f;
-				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - rect.height/2f;
-				
-				if (GUI.Button(rect, new GUIContent(targetName, selectedUnit.GetTargetTip(target)))) {
-					selectedUnit.currentTarget = target;
-					selectingTarget = false;
-				}
-			}
-		}
-		else if (selectingCondition) {
-			System.Array arr = System.Enum.GetValues(typeof(UnitController.Condition));
-			
-			int count = arr.Length;
-			float angleStep = Mathf.PI * 2.0f / count; 
-			for (int i = 0; i < count; i++) {
-				UnitController.Condition condition = (UnitController.Condition) i;
-				string conditionName = selectedUnit.GetConditionName(condition);
-				
-				rect.x = center.x + Mathf.Cos(angleStep * i) * radius - (rect.width/2f);
-				rect.y = center.y + Mathf.Sin(angleStep * i) * radius - (rect.height/2f);
-				
-				if (GUI.Button(rect, new GUIContent(conditionName))) {
-					selectedUnit.currentCondition = condition;
-					selectingTarget = false;
-				}
-			}				
-		}		
 	}
 	
 	private void createSpawnButton(int index, float elementWidth, float elementHeight) {
