@@ -353,8 +353,10 @@ public class UnitController : Unit {
 				healTarget = target;
 				this.currentUnitState = UnitController.UnitState.HEALING;
 			}
+
 		}
-		else {
+
+		if (!isHealer || (isHealer && healTarget == null)) {
 			if (target != null) {
 				if (currentTactic == Tactics.Guard) {
 					attackTarget = GuardOther(target);
