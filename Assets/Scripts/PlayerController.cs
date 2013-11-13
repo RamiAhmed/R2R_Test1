@@ -640,6 +640,57 @@ public class PlayerController : MonoBehaviour {
 			GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), GUI.tooltip);
 		}		
 	}
+
+	private Texture2D GetTacticsIcon(UnitController.Tactics tactic) {
+		Texture2D icon = null;
+		switch (tactic) {
+			case UnitController.Tactics.Attack: icon = playerFaction.TAISAttack; break;
+			case UnitController.Tactics.Follow: icon = playerFaction.TAISAssist; break;
+			case UnitController.Tactics.Guard: icon = playerFaction.TAISGuard; break;
+			case UnitController.Tactics.HoldTheLine: icon = playerFaction.TAISStandGuard; break;
+		}	
+
+		return icon;
+	}
+
+	private Texture2D GetTargetIcon(UnitController.Tactics tactic, UnitController.Target target) {
+		Texture2D icon = null;
+		bool bAlly = (tactic == UnitController.Tactics.Follow || tactic == UnitController.Tactics.Guard);
+
+		if (bAlly) {
+			switch (target) {
+				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ALLY; break;
+				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ALLY; break;
+				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ALLY; break;
+				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ALLY; break;
+				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ALLY; break;
+			}
+		}
+		else {
+			switch (target) {
+				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ENEMY; break;
+				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ENEMY; break;
+				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ENEMY; break;
+				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ENEMY; break;
+				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ENEMY; break;
+			}
+		}
+
+		return icon;
+	}
+
+	private Texture2D GetConditionIcon(UnitController.Condition condition) {
+		Texture2D icon = null;
+		switch (condition) {
+			case UnitController.Condition.Always: icon = playerFaction.TAISAlways; break;
+			case UnitController.Condition.HP_75: icon = playerFaction.TAIS75HP; break;
+			case UnitController.Condition.HP_50: icon = playerFaction.TAIS50HP; break;
+			case UnitController.Condition.HP_25: icon = playerFaction.TAIS25HP; break;
+			case UnitController.Condition.HP_less: icon = playerFaction.TAISLessHP; break;
+		}
+
+		return icon;
+	}
 	
 	private void renderTacticsInterface() {
 		UnitController selectedUnit = SelectedUnits[0].GetComponent<UnitController>();
@@ -675,9 +726,17 @@ public class PlayerController : MonoBehaviour {
 					UnitController.Tactics tactic = (UnitController.Tactics) i;
 					string tacticName = selectedUnit.GetTacticsName(tactic);
 
-					if (GUILayout.Button(new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)))) {
-						selectedUnit.currentTactic = tactic;
-					}
+					Texture2D icon = GetTacticsIcon(tactic);
+
+					GUILayout.BeginHorizontal();
+						if (icon != null) {
+							GUILayout.Space(elementWidth/5f);
+							GUI.DrawTexture(new Rect(0f,((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+						}
+						if (GUILayout.Button(new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)), GUILayout.Height(elementHeight))) {
+							selectedUnit.currentTactic = tactic;
+						}
+					GUILayout.EndHorizontal();
 				}
 
 			GUILayout.EndVertical();
@@ -694,9 +753,17 @@ public class PlayerController : MonoBehaviour {
 					UnitController.Target target = (UnitController.Target) i;
 					string targetName = selectedUnit.GetTargetName(target);
 
-					if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)))) {
-						selectedUnit.currentTarget = target;
-					}
+					Texture2D icon = GetTargetIcon(selectedUnit.currentTactic, target);
+
+					GUILayout.BeginHorizontal();
+						if (icon != null) {
+							GUILayout.Space(elementWidth/5f);
+							GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+						}
+						if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)), GUILayout.Height(elementHeight))) {
+							selectedUnit.currentTarget = target;
+						}
+					GUILayout.EndHorizontal();
 				}
 
 			GUILayout.EndVertical();
@@ -713,9 +780,17 @@ public class PlayerController : MonoBehaviour {
 					UnitController.Condition condition = (UnitController.Condition) i;
 					string conditionName = selectedUnit.GetConditionName(condition);
 
-					if (GUILayout.Button(new GUIContent(conditionName))) {
-						selectedUnit.currentCondition = condition;
-					}
+					Texture2D icon = GetConditionIcon(condition);
+
+					GUILayout.BeginHorizontal();
+						if (icon != null) {
+							GUILayout.Space(elementWidth/5f);
+							GUI.DrawTexture(new Rect(elementWidth*2f, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+						}
+						if (GUILayout.Button(new GUIContent(conditionName), GUILayout.Height(elementHeight))) {
+							selectedUnit.currentCondition = condition;
+						}
+					GUILayout.EndHorizontal();
 				}
 
 			GUILayout.EndVertical();
