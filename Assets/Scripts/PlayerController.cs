@@ -129,13 +129,18 @@ public class PlayerController : MonoBehaviour {
 			foreach (RaycastHit hit in hits) {
 				if (hit.collider.GetType() == typeof(TerrainCollider)) {
 					Vector3 clickedPos = new Vector3(hit.point.x, hit.point.y, hit.point.z);
-					
-					foreach (Entity ent in SelectedUnits) {
-						if (!ent.IsDead && ent.GetIsUnit() && ent.GetComponent<UnitController>().playerOwner == this) {
-							ent.MoveTo(clickedPos);
+
+					if (SelectedUnits[0].GetIsPosWalkable(clickedPos)) {
+						foreach (Entity ent in SelectedUnits) {
+							if (!ent.IsDead && ent.GetIsUnit() && ent.GetComponent<UnitController>().playerOwner == this) {
+								ent.MoveTo(clickedPos);
+							}
 						}
+						break;
 					}
-					break;
+					else {
+						DisplayFeedbackMessage("You cannot move units to that location.");
+					}
 				}
 			}
 		}

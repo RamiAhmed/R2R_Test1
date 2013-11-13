@@ -147,7 +147,7 @@ public class Entity : MonoBehaviour {
 	public float GetTotalScore() {
 		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + (MovementSpeed/10f) + PerceptionRange + AttackingRange);
 	}
-	
+
 	public bool GetIsAlly(Entity target) {
 		return (this.GetIsUnit() && target.GetIsUnit()) || (this.GetIsEnemy() && target.GetIsEnemy());
 	}
@@ -234,6 +234,11 @@ public class Entity : MonoBehaviour {
 			Vector3 direction = (this.transform.position - target).normalized * MovementSpeed;
 			MoveTo(direction);
 		}
+	}
+
+	public bool GetIsPosWalkable(Vector3 pos) {
+		Node node = (Node)AstarPath.active.GetNearest(pos);
+		return node.walkable && Vector3.Distance((Vector3)node.position, pos) < meleeDistance;
 	}
 
 	public void MoveTo(Transform target) {

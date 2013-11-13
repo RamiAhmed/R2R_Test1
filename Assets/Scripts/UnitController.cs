@@ -191,22 +191,23 @@ public class UnitController : Unit {
 	}
 
 	private bool buildUnit() {
-		if (allowedBuildLocation) {
+		bool buildResult = false;
+		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
 				playerOwner.PlayerGold -= this.GoldCost;
 				this.renderer.material.color = originalMaterialColor;
 				currentUnitState = UnitState.PLACED;
-				return true;
+				buildResult = true;
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You do not have enough gold.");
-				return false;
 			}
 		}
 		else {
 			playerOwner.DisplayFeedbackMessage("You cannot build at that location.");
-			return false;
 		}
+
+		return buildResult;
 	}
 
 	private void checkForCollisions() {
