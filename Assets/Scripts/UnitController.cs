@@ -201,7 +201,7 @@ public class UnitController : Unit {
 	private void activateTAIS() {
 		if (!playerOwner.bSelectingTactics) {
 			Select(playerOwner.SelectedUnits);
-			Debug.Log("Activate TAIS");
+			//Debug.Log("Activate TAIS");
 			playerOwner.bSelectingTactics = true;
 		}
 	}
@@ -310,11 +310,6 @@ public class UnitController : Unit {
 
 	protected virtual void PlacingBehaviour() {
 		if (this.playerOwner != null) {
-		/*	if (Input.GetMouseButtonDown(0)) {
-				if (BuildUnit())
-					return;
-			}
-*/
 			if (Input.GetMouseButtonDown(1)) {
 				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
@@ -367,12 +362,10 @@ public class UnitController : Unit {
 				else if (currentTactic == Tactics.Follow) {
 					attackTarget = FollowOther(target);
 				}
-				else if (currentTactic == Tactics.HoldTheLine) {					
+				else if (currentTactic == Tactics.HoldTheLine) {
+					target = GetNearestUnit(_gameController.enemies);
 					if (GetIsWithinAttackingRange(target)) {
 						attackTarget = target; 
-					}
-					else if (GetIsWithinAttackingRange(GetNearestUnit(_gameController.enemies))) {
-						attackTarget = GetNearestUnit(_gameController.enemies);
 					}
 					else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
 						attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
