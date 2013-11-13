@@ -84,7 +84,6 @@ public class PlayerController : MonoBehaviour {
 		
 		Vector2 mousePos = new Vector2(Input.mousePosition.x, screenHeight - Input.mousePosition.y);
 		bool disallowedClick = disallowedRect.Contains(mousePos) || disallowedRect2.Contains(mousePos);
-		//Debug.Log("disallowedRect: " + disallowedRect + ", disallowedClick: " + disallowedClick);
 		if (!disallowedClick && !selectingTactics) {
 			handleUnitSelection();
 		}

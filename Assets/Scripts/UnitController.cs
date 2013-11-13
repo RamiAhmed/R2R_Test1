@@ -66,7 +66,7 @@ public class UnitController : Unit {
 	public string GetTacticsTip(Tactics tactic) {
 		string tip = "";
 		switch (tactic) {
-			case Tactics.Attack: tip = "Attacking: Unit will attack target at will."; break;
+			case Tactics.Attack: tip = "Attack: Unit will attack target at will."; break;
 			case Tactics.Guard: tip = "Guard: Unit will attempt to protect target."; break;
 			case Tactics.Follow: tip = "Assist: Unit will attempt to follow and assist target."; break;
 			case Tactics.HoldTheLine: tip = "Stand Ground: Unit will attempt to stand ground and not move far."; break;
@@ -99,12 +99,20 @@ public class UnitController : Unit {
 	
 	public string GetTargetName(Target target) {
 		string name = "";
+
+		switch (currentTactic) {
+			case Tactics.Attack:
+			case Tactics.HoldTheLine: name += "(Enemy) "; break;
+			case Tactics.Follow:
+			case Tactics.Guard: name += "(Ally) "; break;
+		}
+
 		switch (target) {
-			case Target.Nearest: name = "Nearest"; break;
-			case Target.Strongest: name = "Strongest"; break;
-			case Target.Weakest: name = "Weakest"; break;
-			case Target.LowestHP: name = "Most Damaged"; break;
-			case Target.HighestHP: name = "Least Damaged"; break;
+			case Target.Nearest: name += "Nearest"; break;
+			case Target.Strongest: name += "Strongest"; break;
+			case Target.Weakest: name += "Weakest"; break;
+			case Target.LowestHP: name += "Most Damaged"; break;
+			case Target.HighestHP: name += "Least Damaged"; break;
 		}
 		return name;
 	}
