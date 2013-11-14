@@ -726,7 +726,7 @@ public class PlayerController : MonoBehaviour {
 		}		
 		else if (bSelectingTactics) {
 			float width = screenWidth * 0.6f,
-			height = screenHeight * 0.3f;
+			height = screenHeight * 0.35f;
 			float x = (screenWidth - width)/2f,
 			y = height/2f;
 
@@ -742,8 +742,18 @@ public class PlayerController : MonoBehaviour {
 
 			// Tactics
 			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
-				
-				GUILayout.Box("Current Tactic: " + selectedUnit.GetTacticsName(selectedUnit.currentTactic), GUILayout.Height(elementHeight));
+
+				GUILayout.BeginHorizontal();
+					Texture2D tacticsIcon = GetTacticsIcon(selectedUnit.currentTactic);
+					if (tacticsIcon != null) {
+						GUILayout.Space(elementWidth/5f);
+						GUI.DrawTexture(new Rect(0f, 2f, elementWidth/5f, elementHeight), tacticsIcon, ScaleMode.ScaleToFit);
+					}
+					
+					GUILayout.Box("Current Tactic: " + selectedUnit.GetTacticsName(selectedUnit.currentTactic), GUILayout.Height(elementHeight));
+
+				GUILayout.EndHorizontal();
+				GUILayout.Space(5f);
 
 				arr = selectedUnit.GetTacticsValues();;				
 				count = arr.Length;				
@@ -757,7 +767,7 @@ public class PlayerController : MonoBehaviour {
 					GUILayout.BeginHorizontal();
 						if (icon != null) {
 							GUILayout.Space(elementWidth/5f);
-							GUI.DrawTexture(new Rect(0f,((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+							GUI.DrawTexture(new Rect(0f,((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
 						if (GUILayout.Button(new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)), GUILayout.Height(elementHeight))) {
 							selectedUnit.currentTactic = tactic;
@@ -773,7 +783,16 @@ public class PlayerController : MonoBehaviour {
 				arr = selectedUnit.GetTargetsValues();						
 
 				if (arr != null) {
-					GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
+					GUILayout.BeginHorizontal();
+						Texture2D targetIcon = GetTargetIcon(selectedUnit.currentTactic, selectedUnit.currentTarget);
+						if (targetIcon != null) {
+							GUILayout.Space(elementWidth/5f);
+							GUI.DrawTexture(new Rect(elementWidth, 2f, elementWidth/5f, elementHeight), targetIcon, ScaleMode.ScaleToFit);
+						}
+						GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
+					GUILayout.EndHorizontal();
+					GUILayout.Space(5f);
+
 					count = arr.Length;
 					for (int i = 0; i < count; i++) {
 						UnitController.Target target = (UnitController.Target) i;
@@ -784,7 +803,7 @@ public class PlayerController : MonoBehaviour {
 						GUILayout.BeginHorizontal();
 							if (icon != null) {
 								GUILayout.Space(elementWidth/5f);
-								GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+								GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 							}
 							if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)), GUILayout.Height(elementHeight))) {
 								selectedUnit.currentTarget = target;
@@ -793,13 +812,20 @@ public class PlayerController : MonoBehaviour {
 					}
 				}
 				else {
-					GUILayout.Box("Current Target: Self", GUILayout.Height(elementHeight));
-
 					GUILayout.BeginHorizontal();
 						Texture2D icon = playerFaction.TAISSelf;
 						if (icon != null) {
 							GUILayout.Space(elementWidth/5f);
-							GUI.DrawTexture(new Rect(elementWidth, elementHeight+10f, elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+							GUI.DrawTexture(new Rect(elementWidth, 2f, elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+						}
+						GUILayout.Box("Current Target: Self", GUILayout.Height(elementHeight));
+					GUILayout.EndHorizontal();
+					GUILayout.Space(5f);
+
+					GUILayout.BeginHorizontal();						
+						if (icon != null) {
+							GUILayout.Space(elementWidth/5f);
+							GUI.DrawTexture(new Rect(elementWidth, elementHeight+5f, elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
 						GUILayout.Box(new GUIContent("Self", "Stand Guard tactic can only target self."), GUILayout.Height(elementHeight));				
 
@@ -810,7 +836,15 @@ public class PlayerController : MonoBehaviour {
 			// Conditions
 			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
 
-				GUILayout.Box("Current Condition: " + selectedUnit.GetConditionName(selectedUnit.currentCondition), GUILayout.Height(elementHeight));
+				GUILayout.BeginHorizontal();
+					Texture2D conditionIcon = GetConditionIcon(selectedUnit.currentCondition);
+					if (conditionIcon != null) {
+						GUILayout.Space(elementWidth/5f);
+						GUI.DrawTexture(new Rect(elementWidth*2f, 2f, elementWidth/5f, elementHeight), conditionIcon, ScaleMode.ScaleToFit);
+					}
+					GUILayout.Box("Current Condition: " + selectedUnit.GetConditionName(selectedUnit.currentCondition), GUILayout.Height(elementHeight));
+				GUILayout.EndHorizontal();
+				GUILayout.Space(5f);
 
 				arr = selectedUnit.GetConditionsValues();
 				count = arr.Length;
@@ -824,7 +858,7 @@ public class PlayerController : MonoBehaviour {
 					GUILayout.BeginHorizontal();
 						if (icon != null) {
 							GUILayout.Space(elementWidth/5f);
-							GUI.DrawTexture(new Rect(elementWidth*2f, ((i+1)*elementHeight+(5f*i)+5f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
+							GUI.DrawTexture(new Rect(elementWidth*2f, ((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
 						if (GUILayout.Button(new GUIContent(conditionName), GUILayout.Height(elementHeight))) {
 							selectedUnit.currentCondition = condition;
