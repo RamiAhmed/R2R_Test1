@@ -128,7 +128,6 @@ public class EnemyController : Enemy {
 		
 		if (currentEnemyState == EnemyState.DEAD) {
 			if (IsDead) {
-				PlayRandomDeathSound();
 				counterPlayer.PlayerGold += this.GoldReward;
 			}
 			Deselect(counterPlayer.SelectedUnits);
