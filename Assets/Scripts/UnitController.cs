@@ -25,13 +25,13 @@ public class UnitController : Unit {
 	[HideInInspector]
 	public Vector3 LastBuildLocation = Vector3.zero;
 
+	protected Vector3 lookAtPos = Vector3.zero;
+
 	private bool allowedBuildLocation = false;
 	private GameObject attackingCircle = null,
 					   perceptionCircle = null;
 	
 	private Entity healTarget = null;
-	
-	protected Vector3 lookAtPos = Vector3.zero;
 	
 	// Tactical AI System
 	public enum Tactics {
@@ -115,19 +115,6 @@ public class UnitController : Unit {
 			case Target.HighestHP: name += "Least Damaged"; break;
 		}
 		return name;
-	}
-	
-	public Entity GetTacticalTarget() {
-		List<Entity> list = null;
-		
-		switch (currentTactic) {
-			case Tactics.Attack: 
-			case Tactics.HoldTheLine: list = _gameController.enemies; break;
-			case Tactics.Follow:
-			case Tactics.Guard: list = playerOwner.unitsList; break;
-		}
-		
-		return list != null ? GetTacticalTarget(list) : null;
 	}
 	
 	public Entity GetTacticalTarget(List<Entity> list) {
@@ -340,9 +327,9 @@ public class UnitController : Unit {
 		}
 	}
 
-	private void RunTAIS(Entity target, Tactics currentTactic) {
+	private void RunTAIS(Tactics currentTactic) {
+		Entity target = GetTacticalTarget(playerOwner.unitsList);
 		if (isHealer) {
-			target = target == null || !target.GetIsUnit() ? GetTacticalTarget(playerOwner.unitsList) : target;
 			if (target == null || (target.CurrentHitPoints > target.MaxHitPoints * HealThreshold)) {
 				target = GetMostDamagedUnit(playerOwner.unitsList);
 			}
@@ -356,33 +343,25 @@ public class UnitController : Unit {
 		}
 
 		if (!isHealer || (isHealer && healTarget == null)) {
-			target = target == null || target.GetIsUnit() ? GetTacticalTarget(_gameController.enemies) : target;
-			if (target != null) {
-				if (currentTactic == Tactics.Guard) {
-					attackTarget = GuardOther(target);
+			if (currentTactic == Tactics.Guard) {				
+				attackTarget = GuardOther(target);
+			}
+			else if (currentTactic == Tactics.Follow) {
+				attackTarget = FollowOther(target);
+			}
+			else if (currentTactic == Tactics.HoldTheLine) {
+				attackTarget = StandGround(playerOwner);
+			}
+			else {
+				target = GetTacticalTarget(_gameController.enemies);
+				if (GetIsWithinPerceptionRange(target)) {
+					attackTarget = target;
 				}
-				else if (currentTactic == Tactics.Follow) {
-					attackTarget = FollowOther(target);
-				}
-				else if (currentTactic == Tactics.HoldTheLine) {
-					target = GetNearestUnit(_gameController.enemies);
-					if (GetIsWithinAttackingRange(target)) {
-						attackTarget = target; 
-					}
-					else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
-						attackTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
-					}
-				}
-				else {
-					if (GetIsWithinPerceptionRange(target)) {
-						attackTarget = target;
-					}
-				}
-				
-				// self defense fallback
-				if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
-					attackTarget = lastAttacker;
-				}
+			}
+			
+			// self defense fallback
+			if ((attackTarget == null && lastAttacker != null) && GetIsWithinPerceptionRange(lastAttacker)) {
+				attackTarget = lastAttacker;
 			}
 		}
 	}
@@ -401,7 +380,7 @@ public class UnitController : Unit {
 				GuardOther(gateRef);
 			}
 			else {
-				RunTAIS(GetTacticalTarget(), currentTactic);
+				RunTAIS(currentTactic);
 			}				
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {

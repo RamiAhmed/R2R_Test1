@@ -31,7 +31,7 @@ public class Entity : MonoBehaviour {
 	public List<AudioClip> AttackSounds = new List<AudioClip>(),
 	DeathSounds = new List<AudioClip>();
 
-	private AudioSource audioSource;
+	//private AudioSource audioSource;
 	
 	[HideInInspector]
 	public bool Selected = false,
@@ -64,6 +64,8 @@ public class Entity : MonoBehaviour {
 				  lastRepath = -1f;
 	
 	private Animation animation;	
+
+	private Dictionary<string, AudioSource> audioSources;
 	
 	void Awake() {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
@@ -77,8 +79,18 @@ public class Entity : MonoBehaviour {
 			animation = this.GetComponentInChildren<Animation>();
 		}
 
-		audioSource = this.GetComponent<AudioSource>() != null ? this.GetComponent<AudioSource>() : this.gameObject.AddComponent<AudioSource>();
-		audioSource.playOnAwake = false;
+		//audioSource = this.GetComponent<AudioSource>() != null ? this.GetComponent<AudioSource>() : this.gameObject.AddComponent<AudioSource>();
+		//audioSource.playOnAwake = false;
+
+		audioSources = new Dictionary<string, AudioSource>();
+		if (AttackSounds.Count > 0) {
+			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());
+			audioSources["Attack"].playOnAwake = false;
+		}
+		if (DeathSounds.Count > 0) {
+			audioSources.Add("Death", this.gameObject.AddComponent<AudioSource>());
+			audioSources["Death"].playOnAwake = false;
+		}
 	}
 
 	protected virtual void Start() {}
@@ -161,8 +173,8 @@ public class Entity : MonoBehaviour {
 	}
 	
 	public void Heal(Entity target, float healAmount) {
-		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in Heal method");
+		if (target == null) {
+			Debug.LogWarning("Could not find target in Heal method");
 		}
 		else {
 			float currentTime = Time.time;
@@ -187,8 +199,8 @@ public class Entity : MonoBehaviour {
 
 	public Entity GuardOther(Entity target) {
 		Entity newTarget = null;
-		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in GuardOther method");
+		if (target == null) {
+			Debug.LogWarning("Could not find target in GuardOther method");
 		}
 		else {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
@@ -211,7 +223,7 @@ public class Entity : MonoBehaviour {
 	public Entity FollowOther(Entity target) {
 		Entity newTarget = null;
 		if (target == null) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FollowOther method");	
+			Debug.LogWarning("Could not find target in FollowOther method");	
 		}
 		else {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
@@ -226,6 +238,18 @@ public class Entity : MonoBehaviour {
 					MoveTo(target.transform);
 				}
 			}
+		}
+
+		return newTarget;
+	}
+
+	public Entity StandGround(PlayerController playerOwner) {
+		Entity target = GetNearestUnit(_gameController.enemies), newTarget = null;
+		if (GetIsWithinAttackingRange(target)) {
+			newTarget = target; 
+		}
+		else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
+			newTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
 		}
 
 		return newTarget;
@@ -358,7 +382,7 @@ public class Entity : MonoBehaviour {
 		if (this.CurrentHitPoints <= 0f) {
 			//Debug.Log(this.ToString() + " is dead");
 			this.IsDead = true;
-			PlayRandomSong(DeathSounds);
+			PlayRandomDeathSound();
 		}
 	}
 	
@@ -391,6 +415,28 @@ public class Entity : MonoBehaviour {
 		}		
 	}
 
+	public void PlayRandomAttackSound() {
+		playRandomSound(AttackSounds, "Attack");
+	}
+
+	public void PlayRandomDeathSound() {
+		playRandomSound(DeathSounds, "Death");
+	}
+
+	private void playRandomSound(List<AudioClip> sounds, string type) {
+		if (audioSources.ContainsKey(type)) {
+			if (sounds.Count > 0) {
+				if (!audioSources[type].isPlaying) {
+					AudioClip sound = sounds.Count > 1 ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
+					audioSources[type].clip = sound;
+					audioSources[type].Play();
+				}
+			}
+		}
+	}
+
+
+	/*
 	public void PlayRandomSong(List<AudioClip> sounds) {
 		if (audioSource != null) {
 			if (sounds.Count > 0) {
@@ -405,7 +451,7 @@ public class Entity : MonoBehaviour {
 		else {
 			Debug.LogWarning("Could not find audio source for " + this.Name);
 		}
-	}
+	}*/
 
 	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
@@ -414,6 +460,10 @@ public class Entity : MonoBehaviour {
 		if (opponent.IsDead || opponent == null) {
 			attackTarget = null;
 			this.killCount += 1;
+		}
+		else if (GetIsAlly(opponent)) {
+			attackTarget = null;
+			Debug.LogWarning(this.Name + " tried to attack ally " + opponent);
 		}
 		else {
 			float currentTime = Time.time;
@@ -426,7 +476,7 @@ public class Entity : MonoBehaviour {
 					ShootBullet(opponent);
 				}
 
-				PlayRandomSong(AttackSounds);
+				PlayRandomAttackSound();
 
 				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 					float damage = (this.Damage - opponent.Armor) + fGetD20();

@@ -25,7 +25,9 @@ public class GameController : MonoBehaviour {
 
 	public AudioClip BuildMusic, CombatMusic, BackgroundMusic;
 
-	public AudioSource audioSource;
+	//public AudioSource audioSource;
+
+	private Dictionary<string, AudioSource> audioSources;
 	
 	public enum GameState {
 		LOADING,
@@ -70,8 +72,49 @@ public class GameController : MonoBehaviour {
 	
 		miniMapCam = GameObject.FindGameObjectWithTag("MiniMapCam");
 
-		audioSource = audioSource == null ? (this.GetComponent<AudioSource>() == null ? this.gameObject.AddComponent<AudioSource>() : this.GetComponent<AudioSource>()) : audioSource;
-		audioSource.playOnAwake = false;
+		//audioSource = audioSource == null ? (this.GetComponent<AudioSource>() == null ? this.gameObject.AddComponent<AudioSource>() : this.GetComponent<AudioSource>()) : audioSource;
+		//audioSource.playOnAwake = false;
+
+		audioSources = new Dictionary<string, AudioSource>();
+
+		addAudioSource("Background", BackgroundMusic);
+		addAudioSource("Build", BuildMusic, 0.75f);
+		addAudioSource("Combat", CombatMusic, 0.25f);
+	}
+
+	private void addAudioSource(string type, AudioClip audioClip) {
+		addAudioSource(type, audioClip, 1.0f);
+	}
+
+	private void addAudioSource(string type, AudioClip audioClip, float volume) {
+		if (audioClip != null) {
+			audioSources.Add(type, this.gameObject.AddComponent<AudioSource>());
+			audioSources[type].playOnAwake = false;
+			audioSources[type].clip = audioClip;
+			audioSources[type].volume = volume;
+		}
+	}
+
+	private void playBackgroundMusic() {
+		playAudioClip("Background");
+	}
+
+	private void playCombatMusic() {
+		playAudioClip("Combat");
+	}
+
+	private void playBuildMusic() {
+		playAudioClip("Build");
+	}
+
+	private void playAudioClip(string type) {
+		if (audioSources.ContainsKey(type)) {
+			if (audioSources[type].clip != null) {
+				if (!audioSources[type].isPlaying) {
+					audioSources[type].Play();
+				}
+			}
+		}
 	}
 	
 	public float GetMaxBuildTime() {
@@ -106,10 +149,7 @@ public class GameController : MonoBehaviour {
 			}
 			
 			if (CurrentPlayState == PlayState.BUILD) {
-				if (!audioSource.isPlaying) {
-					//audioSource.loop = true;
-					audioSource.PlayOneShot(BuildMusic);
-				}
+				playBuildMusic();
 
 				BuildTime += Time.deltaTime;
 				
@@ -120,21 +160,16 @@ public class GameController : MonoBehaviour {
 					WaveCount++;
 					BuildTime = 0f;
 					CurrentPlayState = PlayState.COMBAT;
-					audioSource.Stop();
 				}
 			}
 			else if (CurrentPlayState == PlayState.COMBAT) {
-				if (!audioSource.isPlaying) {
-					//audioSource.loop = true;
-					audioSource.PlayOneShot(CombatMusic);
-				}
+				playCombatMusic();
 
 				if (!hasSpawnedThisWave) {
 					hasSpawnedThisWave = true;
 					SpawnWave();
 				}				
 				else if (CheckForWaveEnd()) {
-					audioSource.Stop();
 					CurrentPlayState = PlayState.BUILD;
 					hasSpawnedThisWave = false;
 				}
