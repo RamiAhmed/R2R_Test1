@@ -82,6 +82,20 @@ public class GameController : MonoBehaviour {
 		addAudioSource("Combat", CombatMusic, 0.25f);
 	}
 
+	private void stopBuildMusic() {
+		stopAudioSource("Build");
+	}
+
+	private void stopCombatMusic() {
+		stopAudioSource("Combat");
+	}
+
+	private void stopAudioSource(string type) {
+		if (audioSources.ContainsKey(type)) {
+			audioSources[type].Stop();
+		}
+	}
+
 	private void addAudioSource(string type, AudioClip audioClip) {
 		addAudioSource(type, audioClip, 1.0f);
 	}
@@ -160,6 +174,7 @@ public class GameController : MonoBehaviour {
 					WaveCount++;
 					BuildTime = 0f;
 					CurrentPlayState = PlayState.COMBAT;
+					stopBuildMusic();
 				}
 			}
 			else if (CurrentPlayState == PlayState.COMBAT) {
@@ -172,6 +187,7 @@ public class GameController : MonoBehaviour {
 				else if (CheckForWaveEnd()) {
 					CurrentPlayState = PlayState.BUILD;
 					hasSpawnedThisWave = false;
+					stopCombatMusic();
 				}
 			}
 		}

@@ -382,7 +382,6 @@ public class Entity : MonoBehaviour {
 		if (this.CurrentHitPoints <= 0f) {
 			//Debug.Log(this.ToString() + " is dead");
 			this.IsDead = true;
-			PlayRandomDeathSound();
 		}
 	}
 	
