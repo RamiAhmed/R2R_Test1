@@ -745,7 +745,7 @@ public class PlayerController : MonoBehaviour {
 				
 				GUILayout.Box("Current Tactic: " + selectedUnit.GetTacticsName(selectedUnit.currentTactic), GUILayout.Height(elementHeight));
 
-				arr = System.Enum.GetValues(typeof(UnitController.Tactics));				
+				arr = selectedUnit.GetTacticsValues();;				
 				count = arr.Length;				
 
 				for (int i = 0; i < count; i++) {
@@ -769,13 +769,12 @@ public class PlayerController : MonoBehaviour {
 
 			// Targets
 			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
-				
-				if (selectedUnit.currentTactic != UnitController.Tactics.HoldTheLine) {
+
+				arr = selectedUnit.GetTargetsValues();						
+
+				if (arr != null) {
 					GUILayout.Box("Current Target: " + selectedUnit.GetTargetName(selectedUnit.currentTarget), GUILayout.Height(elementHeight));
-
-					arr = System.Enum.GetValues(typeof(UnitController.Target));			
 					count = arr.Length;
-
 					for (int i = 0; i < count; i++) {
 						UnitController.Target target = (UnitController.Target) i;
 						string targetName = selectedUnit.GetTargetName(target);
@@ -813,7 +812,7 @@ public class PlayerController : MonoBehaviour {
 
 				GUILayout.Box("Current Condition: " + selectedUnit.GetConditionName(selectedUnit.currentCondition), GUILayout.Height(elementHeight));
 
-				arr = System.Enum.GetValues(typeof(UnitController.Condition));
+				arr = selectedUnit.GetConditionsValues();
 				count = arr.Length;
 
 				for (int i = 0; i < count; i++) {

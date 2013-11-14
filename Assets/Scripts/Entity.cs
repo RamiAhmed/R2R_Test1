@@ -79,9 +79,6 @@ public class Entity : MonoBehaviour {
 			animation = this.GetComponentInChildren<Animation>();
 		}
 
-		//audioSource = this.GetComponent<AudioSource>() != null ? this.GetComponent<AudioSource>() : this.gameObject.AddComponent<AudioSource>();
-		//audioSource.playOnAwake = false;
-
 		audioSources = new Dictionary<string, AudioSource>();
 		if (AttackSounds.Count > 0) {
 			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());

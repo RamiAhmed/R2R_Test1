@@ -62,6 +62,18 @@ public class UnitController : Unit {
 	};
 	
 	public Condition currentCondition = Condition.Always;
+
+	public System.Array GetTacticsValues() {
+		return System.Enum.GetValues(typeof(Tactics));		
+	}
+
+	public System.Array GetTargetsValues() {
+		return currentTactic != Tactics.HoldTheLine ? System.Enum.GetValues(typeof(Target)) : null;
+	}
+
+	public System.Array GetConditionsValues() {
+		return System.Enum.GetValues(typeof(Condition));
+	}
 	
 	public string GetTacticsTip(Tactics tactic) {
 		string tip = "";

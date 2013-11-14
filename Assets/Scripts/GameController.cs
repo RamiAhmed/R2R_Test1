@@ -72,9 +72,6 @@ public class GameController : MonoBehaviour {
 	
 		miniMapCam = GameObject.FindGameObjectWithTag("MiniMapCam");
 
-		//audioSource = audioSource == null ? (this.GetComponent<AudioSource>() == null ? this.gameObject.AddComponent<AudioSource>() : this.GetComponent<AudioSource>()) : audioSource;
-		//audioSource.playOnAwake = false;
-
 		audioSources = new Dictionary<string, AudioSource>();
 
 		addAudioSource("Background", BackgroundMusic);
