@@ -83,11 +83,11 @@ public class Entity : MonoBehaviour {
 		if (AttackSounds.Count > 0) {
 			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());
 			audioSources["Attack"].playOnAwake = false;
-		}
+		}/*
 		if (DeathSounds.Count > 0) {
 			audioSources.Add("Death", this.gameObject.AddComponent<AudioSource>());
 			audioSources["Death"].playOnAwake = false;
-		}
+		}*/
 	}
 
 	protected virtual void Start() {}
@@ -378,6 +378,7 @@ public class Entity : MonoBehaviour {
 		this.CurrentHitPoints -= damage;
 		if (this.CurrentHitPoints <= 0f) {
 			//Debug.Log(this.ToString() + " is dead");
+			PlayRandomDeathSound();
 			this.IsDead = true;
 		}
 	}
@@ -416,7 +417,11 @@ public class Entity : MonoBehaviour {
 	}
 
 	public void PlayRandomDeathSound() {
-		playRandomSound(DeathSounds, "Death");
+		//playRandomSound(DeathSounds, "Death");
+		if (DeathSounds.Count > 0) {
+			AudioClip sound = DeathSounds.Count > 1 ? DeathSounds[Random.Range(1, DeathSounds.Count)-1] : DeathSounds[0];
+			AudioSource.PlayClipAtPoint(sound, this.transform.position);
+		}
 	}
 
 	private void playRandomSound(List<AudioClip> sounds, string type) {

@@ -75,8 +75,8 @@ public class GameController : MonoBehaviour {
 		audioSources = new Dictionary<string, AudioSource>();
 
 		addAudioSource("Background", BackgroundMusic);
-		addAudioSource("Build", BuildMusic, 0.75f);
-		addAudioSource("Combat", CombatMusic, 0.25f);
+		addAudioSource("Build", BuildMusic, 0.5f);
+		addAudioSource("Combat", CombatMusic, 0.1f);
 	}
 
 	private void stopBuildMusic() {
