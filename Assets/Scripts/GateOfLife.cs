@@ -13,9 +13,9 @@ public class GateOfLife : Entity {
 		Armor = 15f;
 		
 		MovementSpeed = 0f;
-//		MaxForce = 0f;
 		AttacksPerSecond = 0.5f;
-		Damage = 10f;		
+		MinimumDamage = 5f;		
+		MaximumDamage = 30f;
 		Evasion = 0f;
 		Accuracy = 5f;
 		PerceptionRange = 5f;

@@ -7,7 +7,9 @@ public class Entity : MonoBehaviour {
 
 	public string Name = "Entity",
 				Class = "Entity";
-	public float Damage = 1f,
+	public float //Damage = 1f,
+				MinimumDamage = 0f,
+				MaximumDamage = 1f,
 				Accuracy = 1f,
 				Evasion = 1f,
 				Armor = 1f,
@@ -157,8 +159,16 @@ public class Entity : MonoBehaviour {
 		}
 	}
 
+	public float GetDamage(bool bAverage) {
+		return (MaximumDamage - MinimumDamage)/2f + MinimumDamage;
+	}
+
+	public float GetDamage() {
+		return Random.Range(MinimumDamage, MaximumDamage);
+	}
+
 	public float GetTotalScore() {
-		return (Damage + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + (MovementSpeed/10f) + PerceptionRange + AttackingRange);
+		return (GetDamage(true) + Accuracy + Evasion + Armor + (MaxHitPoints/10f) + (MovementSpeed/10f) + PerceptionRange + AttackingRange);
 	}
 
 	public bool GetIsAlly(Entity target) {
@@ -361,8 +371,7 @@ public class Entity : MonoBehaviour {
 	}
 	
 	public float GetDamagePerSecond() {
-		return (this.Damage + 9f) * AttacksPerSecond;
-		// +9 = assumed mean value of d20
+		return this.GetDamage(true) * AttacksPerSecond;
 	}
 
 	public void ReceiveDamage(float damage) {
@@ -476,7 +485,8 @@ public class Entity : MonoBehaviour {
 				PlayRandomAttackSound();
 
 				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
-					float damage = (this.Damage - opponent.Armor) + fGetD20();
+					float damage = (GetDamage() - opponent.Armor);
+					damage = damage < 0f ? 0f : damage;
 					opponent.ReceiveDamage(damage);
 					hitResult = true;
 					Debug.Log(_gameController.GameTime + ": " + this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");

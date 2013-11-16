@@ -566,7 +566,7 @@ public class PlayerController : MonoBehaviour {
 				}			
 			
 				// Sword
-				string swordTip = "Damage: " + selectedUnit.Damage + "\n";
+				string swordTip = "Damage: " + selectedUnit.MinimumDamage + "-" + selectedUnit.MaximumDamage + "\n";
 				swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
 				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond + "\n";
 				swordTip += "Attacking Range: " + selectedUnit.AttackingRange;

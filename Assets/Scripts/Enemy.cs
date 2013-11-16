@@ -33,7 +33,8 @@ public class Enemy : Entity {
 		MaxHitPoints += (wave*HitPointsScaleFactor);
 		CurrentHitPoints = MaxHitPoints;
 		
-		Damage += wave*DamageScaleFactor;
+		MinimumDamage += wave*DamageScaleFactor;
+		MaximumDamage += wave*DamageScaleFactor;
 		Accuracy += wave*AccuracyScaleFactor;
 		Evasion += wave*EvasionScaleFactor;
 		Armor += wave*ArmorScaleFactor;

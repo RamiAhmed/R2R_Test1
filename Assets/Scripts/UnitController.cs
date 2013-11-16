@@ -289,7 +289,7 @@ public class UnitController : Unit {
 		else if (healTarget != null && !healTarget.IsDead && healTarget.CurrentHitPoints < healTarget.MaxHitPoints) {
 			if (GetIsWithinAttackingRange(healTarget)) {
 				StopMoving();
-				Heal(healTarget, this.Damage + fGetD20()/10f);	
+				Heal(healTarget, this.GetDamage());	
 			}
 			else {
 				if (!GetIsWithinRange(healTarget, meleeDistance)) {
