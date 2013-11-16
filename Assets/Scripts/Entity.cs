@@ -83,11 +83,7 @@ public class Entity : MonoBehaviour {
 		if (AttackSounds.Count > 0) {
 			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());
 			audioSources["Attack"].playOnAwake = false;
-		}/*
-		if (DeathSounds.Count > 0) {
-			audioSources.Add("Death", this.gameObject.AddComponent<AudioSource>());
-			audioSources["Death"].playOnAwake = false;
-		}*/
+		}
 	}
 
 	protected virtual void Start() {}
@@ -208,7 +204,7 @@ public class Entity : MonoBehaviour {
 				newTarget = nearestEnemy;
 			}
 			else {
-				if (!GetIsWithinRange(target, meleeDistance)) {
+				if (!GetIsWithinAttackingRange(target)) {
 					MoveTo(target.transform);
 				}
 			}
@@ -231,7 +227,7 @@ public class Entity : MonoBehaviour {
 				newTarget = nearestEnemy;
 			}
 			else {
-				if (!GetIsWithinRange(target, meleeDistance)) {
+				if (!GetIsWithinAttackingRange(target)) {
 					MoveTo(target.transform);
 				}
 			}

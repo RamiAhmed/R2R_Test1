@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour {
 	
 	public List<Entity> unitsList = null, deadUnitsList = null, SelectedUnits = null;
+
+	public UnitController currentlyPlacingUnit = null;
 	
 	public bool isDebugging = false;
 	
@@ -47,10 +49,9 @@ public class PlayerController : MonoBehaviour {
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		SelectedUnits = new List<Entity>();		
 	}
-	
+
 	// Update is called once per frame
-	void Update () {
-		
+	void Update () {		
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
 		}		
@@ -83,10 +84,12 @@ public class PlayerController : MonoBehaviour {
 		if (SelectedUnits.Count > 0) {
 			if (Input.GetMouseButtonDown(1)) {
 				if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-					moveUnit();
+					if (!ClearPlacingUnit()) {
+						moveUnit();
+					}
 				}
 				else if (SelectedUnits[0].GetIsUnit()) {
-					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.");	
+					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.");
 				}
 			}
 
@@ -101,21 +104,44 @@ public class PlayerController : MonoBehaviour {
 					currentlySelectedUnit.BuildUnit();
 				}
 			}
+
+			if (Input.GetMouseButtonDown(1)) {
+				ClearPlacingUnit();
+			}
 		}
 		
-		float yMarginFactor = 0.25f,
-			  xMarginFactor = 0.3f;
-		Rect disallowedRect = new Rect((xMarginFactor/2f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
-		Rect disallowedRect2 = new Rect((xMarginFactor*1.5f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
+		float yMarginFactor = 0.25f;
+		Rect disallowedRect = new Rect(0f, screenHeight - (screenHeight * yMarginFactor), screenWidth, screenHeight * yMarginFactor);
 
 		Vector2 mousePos = new Vector2(Input.mousePosition.x, screenHeight - Input.mousePosition.y);
-		bool disallowedClick = disallowedRect.Contains(mousePos) || disallowedRect2.Contains(mousePos);
-		if (SelectedUnits.Count == 0 || _gameController.CurrentPlayState == GameController.PlayState.COMBAT || (!disallowedClick && !bSelectingTactics)) {
+
+		bool selectionBool = 
+			SelectedUnits.Count == 0 || 
+			_gameController.CurrentPlayState == GameController.PlayState.COMBAT || 
+			getCurrentlyPlacingUnit() != null || 
+			(!disallowedRect.Contains(mousePos) && !bSelectingTactics);
+
+		if (selectionBool) {
 			handleUnitSelection();
 		}
 		else {
 			clearMarqueeRect();
 		}
+	}
+
+	public bool ClearPlacingUnit() {
+		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
+		if (currentlyPlacing != null) {
+			//unitsList.Remove(currentlyPlacing);
+			if (currentlyPlacing.GetIsPlacing()) {
+				Destroy(currentlyPlacing.gameObject);
+			}
+			SetCurrentlyPlacingUnit(null);
+
+			return true;
+		}
+
+		return false;
 	}
 	
 	private void respawnUnits() {
@@ -916,22 +942,24 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private UnitController getCurrentlyPlacingUnit() {
-		UnitController unit = null;
+		/*UnitController unit = null;
 		foreach (Entity go in unitsList) {
 			if ((go != null) && go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
 				unit = go.GetComponent<UnitController>();
 				break;
 			}
-		}		
+		}	
 		
-		return unit;
+		return unit;*/
+		return currentlyPlacingUnit;
+	}
+
+	public void SetCurrentlyPlacingUnit(UnitController unit) {
+		currentlyPlacingUnit = unit;
 	}
 	
 	private void spawnUnit(int index) {
-		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
-		if (currentlyPlacing != null) {
-			currentlyPlacing.DestroySelf();
-		}
+		ClearPlacingUnit();
 		
 		GameObject newUnit = Instantiate(playerFaction.FactionUnits[index].gameObject) as GameObject;
 		newUnit.SetActive(true);
@@ -942,8 +970,11 @@ public class PlayerController : MonoBehaviour {
 			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}
 		else if (PlayerGold >= cost) {
-			newUnit.GetComponent<UnitController>().playerOwner = this;
-			unitsList.Add(newUnit.GetComponent<Entity>());		
+			//newUnit.GetComponent<UnitController>().playerOwner = this;
+			//unitsList.Add(newUnit.GetComponent<Entity>());		
+
+			SetCurrentlyPlacingUnit(newUnit.GetComponent<UnitController>());
+			getCurrentlyPlacingUnit().playerOwner = this;
 		}
 		else {
 			Destroy(newUnit);

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class GameController : MonoBehaviour {
 	
 	public List<Entity> enemies;
-	public List<GameObject> players;
+	public List<PlayerController> players;
 	
 	public float GameTime = 0f;
 	public float BuildTime = 0f;
@@ -56,9 +56,9 @@ public class GameController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		enemies = new List<Entity>();
-		players = new List<GameObject>();
+		players = new List<PlayerController>();
 		
-		GameObject player = Instantiate(Resources.Load("Player/PlayerObject")) as GameObject;
+		PlayerController player = (Instantiate(Resources.Load("Player/PlayerObject")) as GameObject).GetComponent<PlayerController>();
 		GameObject[] points = GameObject.FindGameObjectsWithTag("Waypoint");
 		foreach (GameObject point in points) {
 			if (point.transform.name.Contains("End")) {
@@ -167,11 +167,7 @@ public class GameController : MonoBehaviour {
 				float maxTime = GetMaxBuildTime();
 				
 				if (BuildTime >= maxTime || ForceSpawn) {
-					ForceSpawn = false;
-					WaveCount++;
-					BuildTime = 0f;
-					CurrentPlayState = PlayState.COMBAT;
-					stopBuildMusic();
+					OnCombatStart();
 				}
 			}
 			else if (CurrentPlayState == PlayState.COMBAT) {
@@ -182,9 +178,7 @@ public class GameController : MonoBehaviour {
 					SpawnWave();
 				}				
 				else if (CheckForWaveEnd()) {
-					CurrentPlayState = PlayState.BUILD;
-					hasSpawnedThisWave = false;
-					stopCombatMusic();
+					OnBuildStart();
 				}
 			}
 		}
@@ -195,6 +189,28 @@ public class GameController : MonoBehaviour {
 			if (miniMapCam.activeSelf) {
 				miniMapCam.SetActive(false);
 			}
+		}
+	}
+
+	private void OnBuildStart() {
+		CurrentPlayState = PlayState.BUILD;
+		hasSpawnedThisWave = false;
+		stopCombatMusic();
+
+		foreach (PlayerController player in players) {
+			player.DisplayFeedbackMessage("Build Phase is starting.", Color.white);
+		}
+	}
+
+	private void OnCombatStart() {
+		ForceSpawn = false;
+		WaveCount++;
+		BuildTime = 0f;
+		CurrentPlayState = PlayState.COMBAT;
+		stopBuildMusic();
+
+		foreach (PlayerController player in players) {
+			player.DisplayFeedbackMessage("Combat Phase is starting.", Color.white);
 		}
 	}
 	

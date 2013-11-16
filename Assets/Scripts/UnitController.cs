@@ -32,7 +32,7 @@ public class UnitController : Unit {
 					   perceptionCircle = null;
 	
 	private Entity healTarget = null;
-	
+
 	// Tactical AI System
 	public enum Tactics {
 		Attack,
@@ -207,9 +207,11 @@ public class UnitController : Unit {
 		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
 				playerOwner.PlayerGold -= this.GoldCost;
+				playerOwner.unitsList.Add(this);
 				currentUnitState = UnitState.PLACED;
 				Invoke("activateTAIS", 0.25f);
 				buildResult = true;
+				playerOwner.ClearPlacingUnit();
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You do not have enough gold.");
@@ -229,28 +231,25 @@ public class UnitController : Unit {
 		foreach (Collider coll in colliderHits) {
 			if (coll.GetType() != typeof(TerrainCollider) && coll.gameObject != this.gameObject) {
 				//Debug.Log("Colliding with: " + coll);
-				toggleRenderMaterial(true);
+				allowBuildLocation(false);
 				collisions = true;
 				break;
 			}
 		}
 
 		if (!collisions) {
-			toggleRenderMaterial(false);
+			allowBuildLocation(true);
 		}
 	}
 
-	private void toggleRenderMaterial(bool bToggle) {
-		if (bToggle) {
-			if (allowedBuildLocation) {
-				allowedBuildLocation = false;
-			}
+	private void allowBuildLocation(bool bToggle) {
+		if (allowedBuildLocation != bToggle) {
+			allowedBuildLocation = bToggle;
 		}
-		else {
-			if (!allowedBuildLocation) {
-				allowedBuildLocation = true;
-			}
-		}
+	}
+
+	public bool GetIsPlacing() {
+		return currentUnitState == UnitState.PLACING;
 	}
 
 	protected override void FixedUpdate() {
@@ -306,16 +305,8 @@ public class UnitController : Unit {
 
 	protected virtual void PlacingBehaviour() {
 		if (this.playerOwner != null) {
-			if (Input.GetMouseButtonDown(1)) {
-				playerOwner.unitsList.Remove(this);
-				Destroy(this.gameObject);
-				return;
-			}
-
 			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-				playerOwner.unitsList.Remove(this);
-				Destroy(this.gameObject);
-				return;
+				playerOwner.ClearPlacingUnit();
 			}
 
 			if (this.name != this.Name) {
