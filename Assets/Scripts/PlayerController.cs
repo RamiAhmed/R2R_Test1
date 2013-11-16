@@ -64,6 +64,20 @@ public class PlayerController : MonoBehaviour {
 			if (_gameController.BuildTime <= 0f) {
 				respawnUnits();
 			}
+			else {
+				createSpawnShortcuts();
+
+				if (Input.GetKeyDown(KeyCode.Space)) {
+					if (!_gameController.ForceSpawn) {
+						_gameController.ForceSpawn = true;
+					}
+				}
+			}
+		}
+		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			if (bSelectingTactics) {
+				bSelectingTactics = false;
+			}
 		}
 		
 		if (SelectedUnits.Count > 0) {
@@ -74,6 +88,10 @@ public class PlayerController : MonoBehaviour {
 				else if (SelectedUnits[0].GetIsUnit()) {
 					DisplayFeedbackMessage("You cannot move units, unless in the Build Phase.");	
 				}
+			}
+
+			if (Input.GetKeyUp(KeyCode.Q)) {
+				bSelectingTactics = !bSelectingTactics;	
 			}
 		}
 		else {
@@ -89,10 +107,10 @@ public class PlayerController : MonoBehaviour {
 			  xMarginFactor = 0.3f;
 		Rect disallowedRect = new Rect((xMarginFactor/2f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
 		Rect disallowedRect2 = new Rect((xMarginFactor*1.5f) * screenWidth, screenHeight - (screenHeight * yMarginFactor), xMarginFactor * screenWidth, screenHeight * yMarginFactor);
-		
+
 		Vector2 mousePos = new Vector2(Input.mousePosition.x, screenHeight - Input.mousePosition.y);
 		bool disallowedClick = disallowedRect.Contains(mousePos) || disallowedRect2.Contains(mousePos);
-		if (!disallowedClick && !bSelectingTactics) {
+		if (SelectedUnits.Count == 0 || _gameController.CurrentPlayState == GameController.PlayState.COMBAT || (!disallowedClick && !bSelectingTactics)) {
 			handleUnitSelection();
 		}
 		else {
@@ -258,10 +276,6 @@ public class PlayerController : MonoBehaviour {
 	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
 		 if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
-			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-				createSpawnShortcuts();
-			}
-			
 			renderTopHUD();
 			renderBottomHUD();
 			
@@ -380,7 +394,7 @@ public class PlayerController : MonoBehaviour {
 			float maxBuildTime = _gameController.GetMaxBuildTime();
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
 			
-			if (GUILayout.Button(new GUIContent("Spawn Now (Space)"), GUILayout.Height(height)) || Input.GetKeyDown(KeyCode.Space)) {
+			if (GUILayout.Button(new GUIContent("Spawn Now (Space)"), GUILayout.Height(height))) {
 				_gameController.ForceSpawn = true;	
 			}
 		}
@@ -872,7 +886,7 @@ public class PlayerController : MonoBehaviour {
 
 			GUILayout.FlexibleSpace();
 
-			if (GUILayout.Button("Confirm ('Q' key)", GUILayout.Width(width), GUILayout.Height(elementHeight)) || Input.GetKeyDown(KeyCode.Q)) {
+			if (GUILayout.Button("Confirm ('Q' key)", GUILayout.Width(width), GUILayout.Height(elementHeight))) {
 				if (bSelectingTactics)
 					bSelectingTactics = false;	
 			}
