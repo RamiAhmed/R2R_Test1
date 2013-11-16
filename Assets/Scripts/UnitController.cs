@@ -413,8 +413,11 @@ public class UnitController : Unit {
 			lastAttacker = null;
 		}
 		else if (attackTarget != null) {
-			if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
+			/*if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 				// Flee by chance
+				this.currentUnitState = UnitState.FLEEING;
+			}*/
+			if (this.GetShouldFlee()) {
 				this.currentUnitState = UnitState.FLEEING;
 			}
 			else if (GetIsWithinAttackingRange(attackTarget)) {
@@ -444,7 +447,8 @@ public class UnitController : Unit {
 			lastAttacker = null;
 		}
 		else if (attackTarget != null) {
-			if (this.MaxHitPoints - this.CurrentHitPoints > this.FleeThreshold * this.MaxHitPoints) {
+			//if (this.MaxHitPoints - this.CurrentHitPoints > this.FleeThreshold * this.MaxHitPoints) {
+			if (!this.GetShouldFlee()) {
 				this.currentUnitState = UnitState.PLACED;
 				this.FleeThreshold /= 2f;
 				attackTarget = null;

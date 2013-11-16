@@ -19,7 +19,8 @@ public class Entity : MonoBehaviour {
 				PerceptionRange = 10f,
 				AttackingRange = 2f,
 				AttacksPerSecond = 1f,
-				FleeThreshold = 0.1f; // = 10 % health
+				FleeThreshold = 0.1f,
+				MoralePointsPerSecond = 0.01f; // = 10 % health
 	public Texture2D ProfilePicture = null;
 
 	public GameObject Bullet = null,
@@ -50,8 +51,11 @@ public class Entity : MonoBehaviour {
 	protected bool isMoving = false;
 	protected Color originalMaterialColor = Color.white;
 	protected float lastAttack = 0f;
+	protected float moraleLevel = 100f;
 
 	protected float meleeDistance = 5f;
+
+	private float lastMoraleRegenerate = 0f;
 
 	private float killY = -100f;
 
@@ -87,11 +91,6 @@ public class Entity : MonoBehaviour {
 
 		addAudioSource("Attack", AttackSounds);
 		addAudioSource("BeingHit", BeingHitSounds);
-
-		/*if (AttackSounds.Count > 0) {
-			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());
-			audioSources["Attack"].playOnAwake = false;
-		}*/
 	}
 
 	private void addAudioSource(string type, List<AudioClip> sounds) {
@@ -108,6 +107,15 @@ public class Entity : MonoBehaviour {
 			if (isMoving) {				
 				if (!animation.IsPlaying(GetWalkAnimation())) {
 					animation.Play(GetWalkAnimation());
+				}
+			}
+		}
+
+		if (_gameController.CurrentGameState == GameController.GameState.PLAY) {
+			if (this.moraleLevel < 100f) {
+				if (_gameController.GameTime - this.lastMoraleRegenerate > 1f) {
+					this.lastMoraleRegenerate = _gameController.GameTime;
+					this.moraleLevel += this.MoralePointsPerSecond;
 				}
 			}
 		}
@@ -173,7 +181,7 @@ public class Entity : MonoBehaviour {
 	}
 
 	public float GetDamage(bool bAverage) {
-		return (MaximumDamage - MinimumDamage)/2f + MinimumDamage;
+		return bAverage ? (MaximumDamage - MinimumDamage)/2f + MinimumDamage : GetDamage();
 	}
 
 	public float GetDamage() {
@@ -189,10 +197,7 @@ public class Entity : MonoBehaviour {
 	}
 	
 	public void Heal(Entity target, float healAmount) {
-		if (target == null) {
-			Debug.LogWarning("Could not find target in Heal method");
-		}
-		else {
+		if (target != null) {
 			float currentTime = Time.time;
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
@@ -254,31 +259,28 @@ public class Entity : MonoBehaviour {
 	}
 
 	public Entity StandGround(PlayerController playerOwner) {
-		Entity target = GetNearestUnit(_gameController.enemies), newTarget = null;
-		if (GetIsWithinAttackingRange(target)) {
-			newTarget = target; 
-		}
-		else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
-			newTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
+		Entity target = GetNearestUnit(_gameController.enemies), 
+				newTarget = null;
+		if (target != null) {
+			if (GetIsWithinAttackingRange(target)) {
+				newTarget = target; 
+			}
+			else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
+				newTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
+			}
 		}
 
 		return newTarget;
 	}
 
 	public void FleeFrom(Transform target) {
-		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
-		}
-		else {
+		if (target != null) {
 			FleeFrom(target.position);
 		}
 	}
 
 	public void FleeFrom(Vector3 target) {
-		if (target == Vector3.zero || target.sqrMagnitude <= 0f) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in FleeFrom method");
-		}
-		else {
+		if (target.sqrMagnitude > 0f) {
 			Vector3 direction = (this.transform.position - target).normalized * MovementSpeed;
 			MoveTo(direction);
 		}
@@ -290,19 +292,13 @@ public class Entity : MonoBehaviour {
 	}
 
 	public void MoveTo(Transform target) {
-		if (target == null || !target) {
-			Debug.LogWarning("Could not find target (" + target.ToString() + ") in MoveTo method");
-		}
-		else {
+		if (target != null) {
 			MoveTo(target.position);
 		}
 	}
 
 	public void MoveTo(Vector3 position) {
-		if (position == Vector3.zero || position.sqrMagnitude <= 0f) {
-			Debug.LogWarning("Could not find target (" + position.ToString() + ") in MoveTo method");
-		}
-		else {
+		if (position.sqrMagnitude > 0f) {
 			if (Time.time - lastRepath > repathRate) {
 				if (!seeker.IsDone()) {
 					StopMoving();
@@ -341,20 +337,18 @@ public class Entity : MonoBehaviour {
 		}
 
 		List<Vector3> vectorPath = path.vectorPath;
-
         if (currentWaypoint >= vectorPath.Count) {
             StopMoving();
-            return;
         }
+		else {
+	        Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
+	        direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
+	        controller.SimpleMove(direction);
 
-        Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
-        direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
-        controller.SimpleMove(direction);
-
-		if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
-            currentWaypoint++;
-            return;
-        }
+			if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
+	            currentWaypoint++;
+	        }
+		}
 	}
 
 	public void StopMoving() {
@@ -387,12 +381,21 @@ public class Entity : MonoBehaviour {
 			return;
 		}
 
+		this.moraleLevel -= (this.GetD20()/20f) < FleeThreshold ? damage : 0f;
+		if (this.moraleLevel < 0f) {
+			this.moraleLevel = 0f;
+		}
+
 		this.CurrentHitPoints -= damage;
 		if (this.CurrentHitPoints <= 0f) {
 			//Debug.Log(this.ToString() + " is dead");
 			PlayRandomDeathSound();
 			this.IsDead = true;
 		}
+	}
+
+	public bool GetShouldFlee() {
+		return this.moraleLevel / 100f < FleeThreshold;
 	}
 	
 	public void StopAllAnimations() {
@@ -428,16 +431,15 @@ public class Entity : MonoBehaviour {
 		playRandomSound(AttackSounds, "Attack");
 	}
 
+	public void PlayRandomBeingHitSound() {
+		playRandomSound(BeingHitSounds, "BeingHit");
+	}
+
 	public void PlayRandomDeathSound() {
-		//playRandomSound(DeathSounds, "Death");
 		if (DeathSounds.Count > 0) {
 			AudioClip sound = DeathSounds.Count > 1 ? DeathSounds[Random.Range(1, DeathSounds.Count)-1] : DeathSounds[0];
 			AudioSource.PlayClipAtPoint(sound, this.transform.position);
 		}
-	}
-
-	public void PlayRandomBeingHitSound() {
-		playRandomSound(BeingHitSounds, "BeingHit");
 	}
 
 	private void playRandomSound(List<AudioClip> sounds, string type) {
@@ -451,24 +453,6 @@ public class Entity : MonoBehaviour {
 			}
 		}
 	}
-
-
-	/*
-	public void PlayRandomSong(List<AudioClip> sounds) {
-		if (audioSource != null) {
-			if (sounds.Count > 0) {
-				AudioClip sound = sounds.Count > 1 ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
-				audioSource.PlayOneShot(sound);
-				Debug.Log("Playing sound: " + sound.ToString());
-			}		
-			else {
-				Debug.LogWarning("Could not find audio clips " + sounds.ToString() + " (count: " + sounds.Count + ") for " + this.Name);
-			}
-		}
-		else {
-			Debug.LogWarning("Could not find audio source for " + this.Name);
-		}
-	}*/
 
 	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
@@ -493,8 +477,6 @@ public class Entity : MonoBehaviour {
 					ShootBullet(opponent);
 				}
 
-				PlayRandomAttackSound();
-
 				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 					float damage = (GetDamage() - opponent.Armor);
 					damage = damage < 0f ? 0f : damage;
@@ -516,7 +498,9 @@ public class Entity : MonoBehaviour {
 				
 				if (animation != null) {
 					animation.Play(GetAttackAnimation());
-				}					
+				}		
+								
+				PlayRandomAttackSound();
 			}
 		}
 		return hitResult;
