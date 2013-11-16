@@ -30,8 +30,10 @@ public class Entity : MonoBehaviour {
 	public string WalkAnimation = "", 
 				  AttackAnimation = "";
 
-	public List<AudioClip> AttackSounds = new List<AudioClip>(),
-	DeathSounds = new List<AudioClip>();
+	public List<AudioClip> 
+		AttackSounds = new List<AudioClip>(), 
+		DeathSounds = new List<AudioClip>(), 
+		BeingHitSounds = new List<AudioClip>();
 
 	//private AudioSource audioSource;
 	
@@ -82,9 +84,20 @@ public class Entity : MonoBehaviour {
 		}
 
 		audioSources = new Dictionary<string, AudioSource>();
-		if (AttackSounds.Count > 0) {
+
+		addAudioSource("Attack", AttackSounds);
+		addAudioSource("BeingHit", BeingHitSounds);
+
+		/*if (AttackSounds.Count > 0) {
 			audioSources.Add("Attack", this.gameObject.AddComponent<AudioSource>());
 			audioSources["Attack"].playOnAwake = false;
+		}*/
+	}
+
+	private void addAudioSource(string type, List<AudioClip> sounds) {
+		if (sounds.Count > 0) {
+			audioSources.Add(type, this.gameObject.AddComponent<AudioSource>());
+			audioSources[type].playOnAwake = false;
 		}
 	}
 
@@ -202,10 +215,7 @@ public class Entity : MonoBehaviour {
 
 	public Entity GuardOther(Entity target) {
 		Entity newTarget = null;
-		if (target == null) {
-			Debug.LogWarning("Could not find target in GuardOther method");
-		}
-		else {
+		if (target != null) {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.lastAttacker != null) {
 				newTarget = target.lastAttacker;
@@ -225,10 +235,7 @@ public class Entity : MonoBehaviour {
 	
 	public Entity FollowOther(Entity target) {
 		Entity newTarget = null;
-		if (target == null) {
-			Debug.LogWarning("Could not find target in FollowOther method");	
-		}
-		else {
+		if (target != null) {
 			Entity nearestEnemy = GetNearestUnit(_gameController.enemies);
 			if (target.attackTarget != null) {
 				newTarget = target.attackTarget;	
@@ -429,6 +436,10 @@ public class Entity : MonoBehaviour {
 		}
 	}
 
+	public void PlayRandomBeingHitSound() {
+		playRandomSound(BeingHitSounds, "BeingHit");
+	}
+
 	private void playRandomSound(List<AudioClip> sounds, string type) {
 		if (audioSources.ContainsKey(type)) {
 			if (sounds.Count > 0) {
@@ -488,6 +499,7 @@ public class Entity : MonoBehaviour {
 					float damage = (GetDamage() - opponent.Armor);
 					damage = damage < 0f ? 0f : damage;
 					opponent.ReceiveDamage(damage);
+					opponent.PlayRandomBeingHitSound();
 					hitResult = true;
 					Debug.Log(_gameController.GameTime + ": " + this.Name + " hit " + opponent.Name + " with " + damage.ToString() + " damage");
 				}

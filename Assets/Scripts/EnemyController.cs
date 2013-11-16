@@ -37,8 +37,7 @@ public class EnemyController : Enemy {
 		
 			currentEnemyState = EnemyState.MOVING;	
 			
-			lookAtTarget(gateRef.transform.position);
-			
+			lookAtTarget(gateRef.transform.position);			
 		}
 		
 	}
