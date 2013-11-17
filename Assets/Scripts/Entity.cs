@@ -205,6 +205,10 @@ public class Entity : MonoBehaviour {
 				if (GetIsAlly(target)) {
 					target.CurrentHitPoints = target.CurrentHitPoints + healAmount > target.MaxHitPoints ? target.MaxHitPoints : target.CurrentHitPoints + healAmount;
 					ShootBullet(target, true);
+					target.moraleLevel += healAmount;
+					if (target.moraleLevel > 100) 
+						target.moraleLevel = 100;
+
 					if (animation != null) {
 						animation.Play(GetAttackAnimation());	
 					}

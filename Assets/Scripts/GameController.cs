@@ -144,14 +144,14 @@ public class GameController : MonoBehaviour {
 	void Update () {
 
 		if (CurrentGameState != GameState.QUESTIONNAIRE && CurrentGameState != GameState.ENDING) {
-			if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
+			/*if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				if (CurrentGameState == GameState.PAUSED) {
 					CurrentGameState = GameState.PLAY;
 				}
 				else if (CurrentGameState == GameState.PLAY) {
 					CurrentGameState = GameState.PAUSED;					
 				}
-			}
+			}*/
 			
 			if (Input.GetKeyUp(KeyCode.Escape)) {
 				if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.PAUSED) {
@@ -173,11 +173,11 @@ public class GameController : MonoBehaviour {
 			if (CurrentPlayState == PlayState.BUILD) {
 				playBuildMusic();
 
-				BuildTime += Time.deltaTime;
-
-				if (qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.STARTING) { 
+				if (qHandler.QuestionnaireEnabled && qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.STARTING) { 
 					CurrentGameState = GameState.QUESTIONNAIRE;
 				}
+
+				BuildTime += Time.deltaTime;
 
 				if (BuildTime >= GetMaxBuildTime() || ForceSpawn) {
 					OnCombatStart();
@@ -200,7 +200,7 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		else if (CurrentGameState == GameState.ENDING) {
-			if (qHandler.QuestionnaireEnabled) {
+			if (qHandler.QuestionnaireEnabled && !isRestarting) {
 				this.CurrentGameState = GameState.QUESTIONNAIRE;
 			}
 			else {
@@ -266,13 +266,15 @@ public class GameController : MonoBehaviour {
 	public void RestartGame() {
 		isRestarting = true;
 		this.CurrentGameState = GameState.ENDING;
-		Application.LoadLevel(0);	
 	}
 	
 	public void EndGame(bool bRestarting) {
 		if (!bRestarting) {
 			//Application.Quit();	
 			GameEnded = true;
+		}
+		else {
+			Application.LoadLevel(0);	
 		}
 	}
 	
