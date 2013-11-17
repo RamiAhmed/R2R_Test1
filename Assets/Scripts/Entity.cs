@@ -460,7 +460,7 @@ public class Entity : MonoBehaviour {
 
 		if (opponent.IsDead || opponent == null) {
 			attackTarget = null;
-			this.killCount += 1;
+			//this.killCount += 1;
 		}
 		else if (GetIsAlly(opponent)) {
 			attackTarget = null;

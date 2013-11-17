@@ -129,6 +129,9 @@ public class EnemyController : Enemy {
 		if (currentEnemyState == EnemyState.DEAD) {
 			if (IsDead) {
 				counterPlayer.PlayerGold += this.GoldReward;
+				StatsCollector.TotalGoldEarned += this.GoldReward;
+				lastAttacker.killCount++;
+				StatsCollector.TotalEnemiesKilled++;
 			}
 			Deselect(counterPlayer.SelectedUnits);
 			_gameController.enemies.Remove(this);

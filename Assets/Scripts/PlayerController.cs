@@ -73,6 +73,7 @@ public class PlayerController : MonoBehaviour {
 				if (Input.GetKeyDown(KeyCode.Space)) {
 					if (!_gameController.ForceSpawn) {
 						_gameController.ForceSpawn = true;
+						StatsCollector.AmountOfForceSpawns++;
 					}
 				}
 			}
@@ -188,6 +189,7 @@ public class PlayerController : MonoBehaviour {
 						foreach (Entity ent in SelectedUnits) {
 							if (!ent.IsDead && ent.GetIsUnit() && ent.GetComponent<UnitController>().playerOwner == this) {
 								ent.MoveTo(clickedPos);
+								StatsCollector.AmountOfUnitsMoved++;
 							}
 						}
 					}
@@ -217,6 +219,17 @@ public class PlayerController : MonoBehaviour {
 			marqueeOrigin = new Vector2(Input.mousePosition.x, _invertedY);
 			
 			selectUnit();
+
+			if (SelectedUnits.Count > 0) {
+				StatsCollector.AmountOfSelections++;
+
+				if (SelectedUnits[0].GetIsUnit()) {
+					StatsCollector.AmountOfUnitSelections++;
+				}
+				else if (SelectedUnits[0].GetIsEnemy()) {
+					StatsCollector.AmountOfEnemySelections++;
+				}
+			}
 		}
 		
 		if (Input.GetMouseButton(0)) {
@@ -247,6 +260,8 @@ public class PlayerController : MonoBehaviour {
 				    
 					if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
 						unit.Select(SelectedUnits);
+						StatsCollector.AmountOfUnitSelections++;
+						StatsCollector.AmountOfSelections++;
 						if (!unitFound) {
 							unitFound = true;
 						}
@@ -265,12 +280,14 @@ public class PlayerController : MonoBehaviour {
 					    
 						if (marqueeRect.Contains(_screenPoint) || backupRect.Contains(_screenPoint)) {
 							enemy.Select(SelectedUnits);
+							StatsCollector.AmountOfEnemySelections++;
+							StatsCollector.AmountOfSelections++;
 					    }							
 					}
 				}
 				else {
 					foreach (Entity entity in SelectedUnits) {
-						if (entity.GetIsEnemy() || (entity.GetIsUnit() && entity.GetComponent<UnitController>().playerOwner != this)) {
+						if (entity.GetIsEnemy() || (entity.GetIsUnit() && entity.IsDead)) {
 							entity.Deselect(SelectedUnits);
 						}
 					}
@@ -428,6 +445,7 @@ public class PlayerController : MonoBehaviour {
 			
 			if (GUILayout.Button(new GUIContent("Spawn Now (Space)"), GUILayout.Height(height))) {
 				_gameController.ForceSpawn = true;	
+				StatsCollector.AmountOfForceSpawns++;
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
@@ -816,7 +834,11 @@ public class PlayerController : MonoBehaviour {
 							GUI.DrawTexture(new Rect(0f,((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
 						if (GUILayout.Button(new GUIContent(tacticName, selectedUnit.GetTacticsTip(tactic)), GUILayout.Height(elementHeight))) {
-							selectedUnit.currentTactic = tactic;
+							if (selectedUnit.currentTactic != tactic) {
+								selectedUnit.currentTactic = tactic;
+								StatsCollector.TotalTacticalChanges++;
+								StatsCollector.AmountOfTacticsChanges++;
+							}
 						}
 					GUILayout.EndHorizontal();
 				}
@@ -852,7 +874,11 @@ public class PlayerController : MonoBehaviour {
 								GUI.DrawTexture(new Rect(elementWidth, ((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 							}
 							if (GUILayout.Button(new GUIContent(targetName, selectedUnit.GetTargetTip(target)), GUILayout.Height(elementHeight))) {
-								selectedUnit.currentTarget = target;
+								if (selectedUnit.currentTarget != target) {
+									selectedUnit.currentTarget = target;
+									StatsCollector.TotalTacticalChanges++;
+									StatsCollector.AmountOfTargetsChanges++;
+								}
 							}
 						GUILayout.EndHorizontal();
 					}
@@ -907,8 +933,12 @@ public class PlayerController : MonoBehaviour {
 							GUI.DrawTexture(new Rect(elementWidth*2f, ((i+1)*elementHeight+(5f*i)+10f), elementWidth/5f, elementHeight), icon, ScaleMode.ScaleToFit);
 						}
 						if (GUILayout.Button(new GUIContent(conditionName), GUILayout.Height(elementHeight))) {
-							selectedUnit.currentCondition = condition;
-						}
+							if (selectedUnit.currentCondition != condition) {
+								selectedUnit.currentCondition = condition;
+								StatsCollector.TotalTacticalChanges++;
+								StatsCollector.AmountOfConditionChanges++;
+							}	
+					}
 					GUILayout.EndHorizontal();
 				}
 
@@ -948,15 +978,6 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private UnitController getCurrentlyPlacingUnit() {
-		/*UnitController unit = null;
-		foreach (Entity go in unitsList) {
-			if ((go != null) && go.GetComponent<UnitController>().currentUnitState == UnitController.UnitState.PLACING) {
-				unit = go.GetComponent<UnitController>();
-				break;
-			}
-		}	
-		
-		return unit;*/
 		return currentlyPlacingUnit;
 	}
 
@@ -976,9 +997,6 @@ public class PlayerController : MonoBehaviour {
 			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}
 		else if (PlayerGold >= cost) {
-			//newUnit.GetComponent<UnitController>().playerOwner = this;
-			//unitsList.Add(newUnit.GetComponent<Entity>());		
-
 			SetCurrentlyPlacingUnit(newUnit.GetComponent<UnitController>());
 			getCurrentlyPlacingUnit().playerOwner = this;
 		}

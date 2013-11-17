@@ -207,11 +207,13 @@ public class UnitController : Unit {
 		if (allowedBuildLocation && GetIsPosWalkable(this.transform.position)) {
 			if (playerOwner.PlayerGold >= this.GoldCost) {
 				playerOwner.PlayerGold -= this.GoldCost;
+				StatsCollector.TotalGoldSpent += this.GoldCost;
 				playerOwner.unitsList.Add(this);
 				currentUnitState = UnitState.PLACED;
 				Invoke("activateTAIS", 0.25f);
 				buildResult = true;
 				playerOwner.ClearPlacingUnit();
+				StatsCollector.AmountOfUnitsBought++;
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You do not have enough gold.");
@@ -541,6 +543,7 @@ public class UnitController : Unit {
 			if (playerOwner.PlayerGold >= UpgradesInto.GoldCost) {
 				Debug.Log(_gameController.GameTime + ": Upgraded Unit");
 				playerOwner.PlayerGold -= UpgradesInto.GoldCost;
+				StatsCollector.TotalGoldSpent += UpgradesInto.GoldCost;
 
 				GameObject newUnit = Instantiate(UpgradesInto.gameObject) as GameObject;
 
@@ -562,6 +565,8 @@ public class UnitController : Unit {
 
 				playerOwner.unitsList.Remove(this);
 				Destroy(this.gameObject);
+
+				StatsCollector.AmountOfUnitUpgrades++;
 			}
 			else {
 				playerOwner.DisplayFeedbackMessage("You cannot afford to upgrade " + this.Name);
@@ -586,6 +591,8 @@ public class UnitController : Unit {
 		playerOwner.PlayerGold += goldReturned;
 
 		DestroySelf();
+
+		StatsCollector.AmountOfUnitsSold++;
 	}
 
 	public override void Select(List<Entity> list) {
@@ -622,6 +629,9 @@ public class UnitController : Unit {
 		Deselect(playerOwner.SelectedUnits);
 		playerOwner.unitsList.Remove(this);
 		playerOwner.deadUnitsList.Add(this);
+	
+		lastAttacker.killCount++;
+		StatsCollector.TotalUnitsDied++;
 
 		this.gameObject.SetActive(false);		
 	}

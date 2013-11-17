@@ -42,8 +42,26 @@ public class DatabaseHandler : MonoBehaviour {
 	}
 
 	public void SubmitAllData() {
-		answersForm.AddField("raw_time_played", Mathf.RoundToInt(_gameController.GameTime));
+		answersForm.AddField("raw_time_played", Mathf.RoundToInt(StatsCollector.TotalTimePlayed));
+		answersForm.AddField("raw_time_spent", Mathf.RoundToInt(StatsCollector.TotalTimeSpent));
 		answersForm.AddField("raw_wave_count", _gameController.WaveCount);
+		answersForm.AddField("raw_total_tactics_changes", StatsCollector.TotalTacticalChanges);
+		answersForm.AddField("raw_tactics_changes", StatsCollector.AmountOfTacticsChanges);
+		answersForm.AddField("raw_targets_changes", StatsCollector.AmountOfTargetsChanges);
+		answersForm.AddField("raw_condition_changes", StatsCollector.AmountOfConditionChanges);
+		answersForm.AddField("raw_gold_spent", StatsCollector.TotalGoldSpent);
+		answersForm.AddField("raw_gold_earned", StatsCollector.TotalGoldEarned);
+		answersForm.AddField("raw_units_died", StatsCollector.TotalUnitsDied);
+		answersForm.AddField("raw_enemies_killed", StatsCollector.TotalEnemiesKilled);
+		answersForm.AddField("raw_gold_deposit_left", StatsCollector.GoldDepositLeft);
+		answersForm.AddField("raw_units_bought", StatsCollector.AmountOfUnitsBought);
+		answersForm.AddField("raw_unit_upgrades", StatsCollector.AmountOfUnitUpgrades);
+		answersForm.AddField("raw_units_sold", StatsCollector.AmountOfUnitsSold);
+		answersForm.AddField("raw_units_moved", StatsCollector.AmountOfUnitsMoved);
+		answersForm.AddField("raw_total_selections", StatsCollector.AmountOfSelections);
+		answersForm.AddField("raw_units_selected", StatsCollector.AmountOfUnitSelections);
+		answersForm.AddField("raw_enemies_selected", StatsCollector.AmountOfEnemySelections);
+		answersForm.AddField("raw_force_spawns", StatsCollector.AmountOfForceSpawns);
 
 		StartCoroutine(SendForm());
 	}
