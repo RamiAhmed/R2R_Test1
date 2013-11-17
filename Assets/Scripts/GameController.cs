@@ -81,6 +81,10 @@ public class GameController : MonoBehaviour {
 		if (qHandler == null) {
 			qHandler = this.GetComponentInChildren<QuestionnaireHandler>();
 		}
+
+		if (!qHandler.bQuestionnaireEnabled) {
+			CurrentGameState = GameState.MENU;
+		}
 	}
 
 	private void stopBuildMusic() {
@@ -187,9 +191,17 @@ public class GameController : MonoBehaviour {
 					OnBuildStart();
 				}
 			}
+			else {
+				CurrentGameState = GameState.MENU;
+			}
 		}
 		else if (CurrentGameState == GameState.ENDING) {
-			EndGame(isRestarting);
+			if (qHandler.bQuestionnaireEnabled) {
+				this.CurrentGameState = GameState.QUESTIONNAIRE;
+			}
+			else {
+				EndGame(isRestarting);
+			}
 		}
 		else {
 			if (miniMapCam.activeSelf) {
@@ -199,6 +211,9 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void OnBuildStart() {
+		if (qHandler.bQuestionnaireEnabled) {
+			CurrentGameState = GameState.QUESTIONNAIRE;
+		}
 		CurrentPlayState = PlayState.BUILD;
 		hasSpawnedThisWave = false;
 		stopCombatMusic();

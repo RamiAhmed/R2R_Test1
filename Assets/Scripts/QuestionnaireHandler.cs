@@ -33,8 +33,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 	private Rect questionnaireRect;
 
 	private float verticalSpacing = 15f,
-				textAreaHeight = 40f,
-				elementHeight = 30f;
+				textAreaHeight = 50f,
+				elementHeight = 40f;
 	
 	void Start () {
 		if (bQuestionnaireEnabled) {
@@ -74,7 +74,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 					if (questionsDict == null && dbHandler.questionsDict != null) {
 						questionsDict = dbHandler.questionsDict;
 					}
-					else {
+
+					if (questionsDict == null) {
 						showingQuestionnaire = false;
 					}
 				}
@@ -127,14 +128,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 					else {
 						currentState++;
 					}
-					/*
-					if (currentState-1 != QuestionnaireState.DEMOGRAPHICS) {
-						_gameController.CurrentGameState = GameController.GameState.PLAY;
-					}
-					else {
-						_gameController.CurrentGameState = GameController.GameState.MENU;
-					}
-					*/
+
+					_gameController.CurrentGameState = GameController.GameState.PLAY;
 				}
 			}
 			else {
@@ -216,10 +211,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	private int addMultipleChoices(string id, string question, string[] options, string helperText, int selection) {
-		GUILayout.Box(question, GUILayout.Height(elementHeight));
-		if (helperText != "") {
-			GUILayout.Box(helperText, GUILayout.Height(elementHeight));
-		}
+		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(elementHeight));
 
 		selection = GUILayout.Toolbar(selection, options, GUILayout.Height(elementHeight));
 		if (selection > -1) {
@@ -232,10 +224,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	private string addTextQuestion(string id, string question, string helperText, string returnText) {
-		GUILayout.Box(question, GUILayout.Height(elementHeight));
-		if (helperText != "") {
-			GUILayout.Box(helperText, GUILayout.Height(elementHeight));
-		}
+		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(elementHeight));
 
 		returnText = GUILayout.TextArea(returnText, GUILayout.Height(textAreaHeight));
 		if (returnText.Length > 0) {

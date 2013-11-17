@@ -24,7 +24,7 @@ public class MenuController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (_gameController.CurrentGameState == GameController.GameState.MENU || _gameController.CurrentGameState == GameController.GameState.ENDING) {
+		if (_gameController.CurrentGameState == GameController.GameState.MENU) {
 			if (MenuSkin != null && GUI.skin != MenuSkin) {
 				GUI.skin = MenuSkin;
 			}
@@ -38,7 +38,7 @@ public class MenuController : MonoBehaviour {
 			
 			string playText = "Play Game",
 				playTip = "Click to start playing the game";
-			if (_gameController.GameTime > 0f) {
+			if (_gameController.GameTime > 1f) {
 				playText = "Resume Game";
 				playTip = "Click to resume playing the game";
 			}

@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour {
 	private Rect marqueeRect, backupRect;
 	
 	private Color feedbackColor = Color.white;
+
+	private bool hasRespawnedUnits = true;
 	
 	// Tactical AI system
 	public bool bSelectingTactics = false;
@@ -62,7 +64,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			if (_gameController.BuildTime <= 0f) {
+			if (!hasRespawnedUnits) {
 				respawnUnits();
 			}
 			else {
@@ -79,6 +81,8 @@ public class PlayerController : MonoBehaviour {
 			if (bSelectingTactics) {
 				bSelectingTactics = false;
 			}
+
+			hasRespawnedUnits = false;
 		}
 		
 		if (SelectedUnits.Count > 0) {
@@ -168,6 +172,8 @@ public class PlayerController : MonoBehaviour {
 				unit.SetIsNotDead();
 			}
 		}
+
+		hasRespawnedUnits = true;
 	}
 					
 	private void moveUnit() {
