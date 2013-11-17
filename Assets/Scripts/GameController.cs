@@ -219,7 +219,7 @@ public class GameController : MonoBehaviour {
 	private void OnBuildStart() {
 		if (qHandler.QuestionnaireEnabled) {
 			if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
-			    && (WaveCount+1 % qHandler.QuestionnaireWaveFrequency) == 0) {
+			    && ((WaveCount+1) % qHandler.QuestionnaireWaveFrequency) == 0) {
 				CurrentGameState = GameState.QUESTIONNAIRE;
 			}
 		}

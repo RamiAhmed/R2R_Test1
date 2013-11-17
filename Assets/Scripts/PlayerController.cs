@@ -590,9 +590,9 @@ public class PlayerController : MonoBehaviour {
 				}			
 			
 				// Sword
-				string swordTip = "Damage: " + selectedUnit.MinimumDamage + "-" + selectedUnit.MaximumDamage + "\n";
-				swordTip += "Accuracy: " + selectedUnit.Accuracy + "\n";
-				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond + "\n";
+				string swordTip = "Damage: " + selectedUnit.MinimumDamage.ToString("F2") + "-" + selectedUnit.MaximumDamage.ToString("F2") + "\n";
+				swordTip += "Accuracy: " + selectedUnit.Accuracy.ToString("F2") + "\n";
+				swordTip += "Attacks per Second: " + selectedUnit.AttacksPerSecond.ToString("F2") + "\n";
 				swordTip += "Attacking Range: " + selectedUnit.AttackingRange;
 				GUI.BeginGroup(new Rect(detailsWidth, 0f, elementWidth, detailsHeight));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), new GUIContent(swordHUD, swordTip));
@@ -602,23 +602,23 @@ public class PlayerController : MonoBehaviour {
 				GUI.EndGroup();		
 			
 				// Shield
-				string shieldTip = "Armor: " + selectedUnit.Armor + "\n";
-				shieldTip += "Evasion: " + selectedUnit.Evasion;
+				string shieldTip = "Armor: " + selectedUnit.Armor.ToString("F2") + "\n";
+				shieldTip += "Evasion: " + selectedUnit.Evasion.ToString("F2");
 				GUI.BeginGroup(new Rect(detailsWidth*2f, 0f, elementWidth, detailsHeight/2f));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight/2f), new GUIContent(shieldHUD, shieldTip));
 			
-					string defenseLabel = "Armor: " + selectedUnit.Armor;
+					string defenseLabel = "Armor: " + selectedUnit.Armor.ToString("F0");
 					GUI.Label(new Rect(5f, 5f, detailsWidth, detailsHeight), new GUIContent(defenseLabel));				
 				GUI.EndGroup();
 				
 				// Boot
-				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed + "\n";
-				bootTip += "Flee Chance: " + (selectedUnit.FleeThreshold*100f) + "%\n";
-				bootTip += "Perception Range: " + selectedUnit.PerceptionRange;
+				string bootTip = "Movement Speed: " + selectedUnit.MovementSpeed.ToString("F0") + "\n";
+				bootTip += "Flee Chance: " + (selectedUnit.FleeThreshold*100f).ToString("F0") + "%\n";
+				bootTip += "Perception Range: " + selectedUnit.PerceptionRange.ToString("F2");
 				GUI.BeginGroup(new Rect(detailsWidth*2f, detailsHeight/2f, detailsWidth, detailsHeight/2f));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight/2f), new GUIContent(bootHUD, bootTip));
 			
-					string moveLabel = "Speed: " + selectedUnit.MovementSpeed;
+					string moveLabel = "Speed: " + selectedUnit.MovementSpeed.ToString("F0");
 					GUI.Label(new Rect(5f, 5f, detailsWidth, detailsHeight), new GUIContent(moveLabel));
 				GUI.EndGroup();
 				
