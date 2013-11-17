@@ -456,7 +456,7 @@ public class UnitController : Unit {
 				attackTarget = null;
 				StopMoving();
 			}
-			else if (GetIsWithinPerceptionRange(attackTarget)) {
+			else if (this.GetShouldFlee() || GetIsWithinPerceptionRange(attackTarget)) {
 				FleeFrom(attackTarget.transform);
 			}
 			else {
