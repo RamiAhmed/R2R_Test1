@@ -44,7 +44,7 @@ public class DatabaseHandler : MonoBehaviour {
 	public void SubmitAllData() {
 		answersForm.AddField("raw_time_played", Mathf.RoundToInt(StatsCollector.TotalTimePlayed));
 		answersForm.AddField("raw_time_spent", Mathf.RoundToInt(StatsCollector.TotalTimeSpent));
-		answersForm.AddField("raw_wave_count", _gameController.WaveCount);
+		answersForm.AddField("raw_wave_count", StatsCollector.WaveCount);
 		answersForm.AddField("raw_total_tactics_changes", StatsCollector.TotalTacticalChanges);
 		answersForm.AddField("raw_tactics_changes", StatsCollector.AmountOfTacticsChanges);
 		answersForm.AddField("raw_targets_changes", StatsCollector.AmountOfTargetsChanges);
