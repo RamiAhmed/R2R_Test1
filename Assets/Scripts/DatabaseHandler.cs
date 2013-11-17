@@ -6,8 +6,8 @@ using MiniJSON;
 
 public class DatabaseHandler : MonoBehaviour {
 
-	string getURL = "www.alphastagestudios.com/test/questions.json";
-	string postURL = "www.alphastagestudios.com/test/answers.php";
+	public string getURL = "";
+	public string postURL = "";
 	private WWW www, requestWWW;
 
 	public IDictionary questionsDict = null;

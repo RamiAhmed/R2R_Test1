@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class QuestionnaireHandler : MonoBehaviour {
 
-	public bool bQuestionnaireEnabled = true;
+	public bool QuestionnaireEnabled = true;
 
 	public enum QuestionnaireState {
 		NONE = 0,
@@ -14,12 +14,17 @@ public class QuestionnaireHandler : MonoBehaviour {
 		AFTER
 	};
 
-	public QuestionnaireState currentState = QuestionnaireState.NONE;
+	public QuestionnaireState CurrentState = QuestionnaireState.NONE;
 
 	public int QuestionnaireWaveFrequency = 3;
 
-	private int currentDuring = 1,
-				maxDuring = 3;
+	public float VerticalSpacing = 15f,
+				TextAreaHeight = 50f,
+				GUIElementHeight = 40f;
+	 
+	public int MaxDuringInterrupts = 3;
+
+	private int currentDuring = 1;
 
 	private DatabaseHandler dbHandler = null;
 	private GameController _gameController = null;
@@ -33,13 +38,9 @@ public class QuestionnaireHandler : MonoBehaviour {
 	private Dictionary<string,string> textDict = null;
 
 	private Rect questionnaireRect;
-
-	private float verticalSpacing = 15f,
-				textAreaHeight = 50f,
-				elementHeight = 40f;
 	
 	void Start () {
-		if (bQuestionnaireEnabled) {
+		if (QuestionnaireEnabled) {
 			dbHandler = this.GetComponent<DatabaseHandler>();
 			if (dbHandler == null) {
 				dbHandler = this.GetComponentInChildren<DatabaseHandler>();
@@ -54,7 +55,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 			selectionDict = new Dictionary<string,int>();
 			textDict = new Dictionary<string,string>();
 
-			float width = 600f, height = 400f,
+			float width = 300f, height = 150f,
 				screenWidth = Screen.width * 0.9f,
 				screenHeight = Screen.height * 0.9f;
 
@@ -63,12 +64,12 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 			questionnaireRect = new Rect((Screen.width/2f) - (width/2f), (Screen.height/2f) - (height/2f), width, height);
 
-			currentState++;
+			CurrentState++;
 		}
 	}
 
 	void Update () {
-		if (bQuestionnaireEnabled) {
+		if (QuestionnaireEnabled) {
 			if (_gameController.CurrentGameState == GameController.GameState.QUESTIONNAIRE) {
 				if (!showingQuestionnaire) {
 					showingQuestionnaire = true;
@@ -91,7 +92,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		if (bQuestionnaireEnabled) {
+		if (QuestionnaireEnabled) {
 			if (showingQuestionnaire) {
 				questionnaireRect = GUILayout.Window(0, questionnaireRect, DrawQuestionnaire, "");
 				GUI.BringWindowToFront(0);
@@ -106,7 +107,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 		GUILayout.BeginVertical();
 
-		switch (currentState) {
+		switch (CurrentState) {
 			case QuestionnaireState.DEMOGRAPHICS: buildDemographics(); break;
 			case QuestionnaireState.STARTING: buildStarting(); break;
 			case QuestionnaireState.DURING: buildDuring(); break;
@@ -116,31 +117,31 @@ public class QuestionnaireHandler : MonoBehaviour {
 		if (GetQuestionsAnswered()) {
 			GUILayout.FlexibleSpace();
 
-			if (currentState != QuestionnaireState.AFTER) {
-				if (GUILayout.Button("Continue", GUILayout.Height(elementHeight))) {
+			if (CurrentState != QuestionnaireState.AFTER) {
+				if (GUILayout.Button("Continue", GUILayout.Height(GUIElementHeight))) {
 					dbHandler.ReadyData(answersDict);
 					answersDict.Clear();
 
-					if (currentState == QuestionnaireState.DURING) {
+					if (CurrentState == QuestionnaireState.DURING) {
 						currentDuring++;
-						if (currentDuring > maxDuring) {
-							currentState++;
+						if (currentDuring > MaxDuringInterrupts) {
+							CurrentState++;
 						}
 					}
 					else {
-						currentState++;
+						CurrentState++;
 					}
 
 					_gameController.CurrentGameState = GameController.GameState.PLAY;
 				}
 			}
 			else {
-				if (GUILayout.Button("Submit Answers", GUILayout.Height(elementHeight))) {
+				if (GUILayout.Button("Submit Answers", GUILayout.Height(GUIElementHeight))) {
 					dbHandler.ReadyData(answersDict);
 					answersDict.Clear();
 
 					dbHandler.SubmitAllData();
-					bQuestionnaireEnabled = false;
+					QuestionnaireEnabled = false;
 
 					_gameController.CurrentGameState = GameController.GameState.PLAY;
 				}
@@ -151,25 +152,25 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	private void buildDemographics() {
-		GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(elementHeight));
+		GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(GUIElementHeight));
 
 		buildSection("Demographics");
 	}
 
 	private void buildStarting() {
-		GUILayout.Box("BEFORE STARTING", GUILayout.Height(elementHeight));
+		GUILayout.Box("BEFORE STARTING", GUILayout.Height(GUIElementHeight));
 
 		buildSection("Starting");
 	}
 
 	private void buildDuring() {
-		GUILayout.Box("DURING " + currentDuring.ToString(), GUILayout.Height(elementHeight));
+		GUILayout.Box("DURING " + currentDuring.ToString(), GUILayout.Height(GUIElementHeight));
 
 		buildSection("During");
 	}
 
 	private void buildAfter() {
-		GUILayout.Box("AFTER", GUILayout.Height(elementHeight));
+		GUILayout.Box("AFTER", GUILayout.Height(GUIElementHeight));
 
 		buildSection("After");
 	}
@@ -182,7 +183,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 			List<string> options = convertFromIList((IList)dict["Options"]);
 			string helperText = (string) dict["HelperText"];
 
-			if (currentState == QuestionnaireState.DURING) {
+			if (CurrentState == QuestionnaireState.DURING) {
 				id += "_" + currentDuring.ToString();
 			}
 
@@ -213,27 +214,27 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	private int addMultipleChoices(string id, string question, string[] options, string helperText, int selection) {
-		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(elementHeight));
+		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(GUIElementHeight));
 
-		selection = GUILayout.Toolbar(selection, options, GUILayout.Height(elementHeight));
+		selection = GUILayout.Toolbar(selection, options, GUILayout.Height(GUIElementHeight));
 		if (selection > -1) {
 			AddOrReplaceToDict(id, options[selection]);
 		}
 
-		GUILayout.Space(verticalSpacing);
+		GUILayout.Space(VerticalSpacing);
 
 		return selection;
 	}
 
 	private string addTextQuestion(string id, string question, string helperText, string returnText) {
-		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(elementHeight));
+		GUILayout.Box(question + "\n" + helperText, GUILayout.Height(GUIElementHeight));
 
-		returnText = GUILayout.TextArea(returnText, GUILayout.Height(textAreaHeight));
+		returnText = GUILayout.TextArea(returnText, GUILayout.Height(TextAreaHeight));
 		if (returnText.Length > 0) {
 			AddOrReplaceToDict(id, returnText);
 		}
 
-		GUILayout.Space(verticalSpacing);
+		GUILayout.Space(VerticalSpacing);
 
 		return returnText;
 	}

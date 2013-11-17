@@ -82,7 +82,7 @@ public class GameController : MonoBehaviour {
 			qHandler = this.GetComponentInChildren<QuestionnaireHandler>();
 		}
 
-		if (!qHandler.bQuestionnaireEnabled) {
+		if (!qHandler.QuestionnaireEnabled) {
 			CurrentGameState = GameState.MENU;
 		}
 	}
@@ -175,6 +175,10 @@ public class GameController : MonoBehaviour {
 
 				BuildTime += Time.deltaTime;
 
+				if (qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.STARTING) { 
+					CurrentGameState = GameState.QUESTIONNAIRE;
+				}
+
 				if (BuildTime >= GetMaxBuildTime() || ForceSpawn) {
 					OnCombatStart();
 				}
@@ -196,7 +200,7 @@ public class GameController : MonoBehaviour {
 			}
 		}
 		else if (CurrentGameState == GameState.ENDING) {
-			if (qHandler.bQuestionnaireEnabled) {
+			if (qHandler.QuestionnaireEnabled) {
 				this.CurrentGameState = GameState.QUESTIONNAIRE;
 			}
 			else {
@@ -211,11 +215,9 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void OnBuildStart() {
-		if (qHandler.bQuestionnaireEnabled) {
-			if (qHandler.currentState == QuestionnaireHandler.QuestionnaireState.STARTING) {
-				CurrentGameState = GameState.QUESTIONNAIRE;
-			}
-			else if (qHandler.currentState == QuestionnaireHandler.QuestionnaireState.DURING && (WaveCount+1 % qHandler.QuestionnaireWaveFrequency) == 0) {
+		if (qHandler.QuestionnaireEnabled) {
+			if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
+			    && (WaveCount+1 % qHandler.QuestionnaireWaveFrequency) == 0) {
 				CurrentGameState = GameState.QUESTIONNAIRE;
 			}
 		}
