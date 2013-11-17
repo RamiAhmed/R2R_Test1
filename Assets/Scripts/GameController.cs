@@ -176,11 +176,12 @@ public class GameController : MonoBehaviour {
 				if (qHandler.QuestionnaireEnabled && qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.STARTING) { 
 					CurrentGameState = GameState.QUESTIONNAIRE;
 				}
+				else {
+					BuildTime += Time.deltaTime;
 
-				BuildTime += Time.deltaTime;
-
-				if (BuildTime >= GetMaxBuildTime() || ForceSpawn) {
-					OnCombatStart();
+					if (BuildTime >= GetMaxBuildTime() || ForceSpawn) {
+						OnCombatStart();
+					}
 				}
 
 			}
@@ -201,6 +202,7 @@ public class GameController : MonoBehaviour {
 		}
 		else if (CurrentGameState == GameState.ENDING) {
 			if (qHandler.QuestionnaireEnabled && !isRestarting) {
+				qHandler.CurrentState = QuestionnaireHandler.QuestionnaireState.AFTER;
 				this.CurrentGameState = GameState.QUESTIONNAIRE;
 			}
 			else {
