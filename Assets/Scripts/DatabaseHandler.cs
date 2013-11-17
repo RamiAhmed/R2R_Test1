@@ -7,39 +7,52 @@ using MiniJSON;
 public class DatabaseHandler : MonoBehaviour {
 
 	string getURL = "www.alphastagestudios.com/test/questions.json";
-	string postURL = "www.alphastagestudios.com/test/answers.json";
-	private WWW www;
-	private WWW requestWWW;
+	string postURL = "www.alphastagestudios.com/test/answers.php";
+	private WWW www, requestWWW;
 
-	System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
+	public IDictionary questionsDict = null;
+
+	private WWWForm answersForm = null;
 
 	// Use this for initialization
 	void Start () {
-		StartCoroutine(SendData());
 		StartCoroutine(LoadQuestions());
 
+		answersForm = new WWWForm();
 	}
 
-	IEnumerator SendData() {
-		string sendString = "'Demographics': {'Responses': [{'Question': 'Gender','Answer': 'Male'},{'Question': 'Age',Answer': '21-25'},'Question': 'Frequency of Playing','Answer' : 'Weekly'},{'Question': 'Amount of Playing','Answer': '1 hour or less'{'Question': 'Favourite game or game genre',}]}";
+	public void ReadyData(Dictionary<string,string> dict) {
+		foreach (KeyValuePair<string,string> pair in dict) {
+			if (!pair.Key.Equals("") && !pair.Value.Equals("")) {
+				int outValue = 0;
+				if (int.TryParse(pair.Value, out outValue)) {
+					answersForm.AddField(pair.Key, outValue);
+				}
+				else {
+					answersForm.AddField(pair.Key, pair.Value);
+				}
+			}
+		}
+	}
 
-		string sendDict = Json.Serialize(sendString);
+	public void SubmitAllData() {
+		StartCoroutine(SendForm());
+	}
 
-		requestWWW = new WWW(postURL, encoding.GetBytes(sendDict));
-
+	IEnumerator SendForm() {
+		requestWWW = new WWW(postURL, answersForm);
+		
 		yield return requestWWW;
-
+		
 		// Print the error to the console		
 		if (!string.IsNullOrEmpty(requestWWW.error)) {			
-			Debug.Log("request error: " + requestWWW.error);
+			Debug.LogWarning("WWW request error: " + requestWWW.error);
 			yield return null;
 		}		
 		else {				
-			Debug.Log("returned data" + requestWWW.text);	
+			Debug.Log("WWW returned text: " + requestWWW.text);	
 			yield return requestWWW.text;
 		}
-
-
 	}
 
 	IEnumerator LoadQuestions() {
@@ -69,22 +82,6 @@ public class DatabaseHandler : MonoBehaviour {
 
 		IDictionary responseDict = (IDictionary) Json.Deserialize(response);
 
-		IDictionary demographics = (IDictionary) responseDict["Demographics"];
-
-		IList demographicsQuestions = (IList) demographics["Questions"];
-
-		foreach (IDictionary item in demographicsQuestions) {
-			string question = (string) item["Question"];
-			IList options = (IList) item["Options"];
-			string helperText = (string) item["HelperText"];
-
-			Debug.Log("Question: " + question);
-			Debug.Log("HelperText: " + helperText);
-
-			foreach (string option in options) {
-				Debug.Log("Option: " + option);
-			}
-		}
-
+		questionsDict = responseDict;
 	}
 }
