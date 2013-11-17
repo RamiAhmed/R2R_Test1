@@ -479,7 +479,7 @@ public class Entity : MonoBehaviour {
 
 				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
 					float damage = (GetDamage() - opponent.Armor);
-					damage = damage < 0f ? 0f : damage;
+					damage = damage < 1f ? 1f : damage;
 					opponent.ReceiveDamage(damage);
 					opponent.PlayRandomBeingHitSound();
 					hitResult = true;
