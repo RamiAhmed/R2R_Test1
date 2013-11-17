@@ -171,7 +171,6 @@ public class UnitController : Unit {
 		return result;
 	}
 
-	// Use this for initialization
 	protected override void Start () {
 		base.Start();
 
@@ -182,7 +181,6 @@ public class UnitController : Unit {
 		setupRenderCircle();
 	}
 
-	// Update is called once per frame
 	protected override void Update () {
 		base.Update();
 
@@ -197,7 +195,6 @@ public class UnitController : Unit {
 	private void activateTAIS() {
 		if (!playerOwner.bSelectingTactics) {
 			Select(playerOwner.SelectedUnits);
-			//Debug.Log("Activate TAIS");
 			playerOwner.bSelectingTactics = true;
 		}
 	}
@@ -232,7 +229,6 @@ public class UnitController : Unit {
 		Collider[] colliderHits = Physics.OverlapSphere(this.transform.position, radius);
 		foreach (Collider coll in colliderHits) {
 			if (coll.GetType() != typeof(TerrainCollider) && coll.gameObject != this.gameObject) {
-				//Debug.Log("Colliding with: " + coll);
 				allowBuildLocation(false);
 				collisions = true;
 				break;
@@ -415,10 +411,6 @@ public class UnitController : Unit {
 			lastAttacker = null;
 		}
 		else if (attackTarget != null) {
-			/*if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
-				// Flee by chance
-				this.currentUnitState = UnitState.FLEEING;
-			}*/
 			if (this.GetShouldFlee()) {
 				this.currentUnitState = UnitState.FLEEING;
 			}
@@ -449,7 +441,6 @@ public class UnitController : Unit {
 			lastAttacker = null;
 		}
 		else if (attackTarget != null) {
-			//if (this.MaxHitPoints - this.CurrentHitPoints > this.FleeThreshold * this.MaxHitPoints) {
 			if (!this.GetShouldFlee()) {
 				this.currentUnitState = UnitState.PLACED;
 				this.FleeThreshold /= 2f;

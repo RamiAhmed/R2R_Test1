@@ -15,8 +15,7 @@ public class EnemyController : Enemy {
 	private EnemyState currentEnemyState = EnemyState.SPAWNING;
 	
 	private PlayerController counterPlayer;	
-	
-	// Use this for initialization
+
 	protected override void Start () {
 		base.Start();
 		if (currentEnemyState == EnemyState.SPAWNING) {
@@ -53,8 +52,7 @@ public class EnemyController : Enemy {
 			this.currentEnemyState = EnemyState.DEAD;
 		}
 	}
-	
-	// Update is called once per frame
+
 	protected override void FixedUpdate () {
 		base.FixedUpdate();
 		
@@ -83,7 +81,6 @@ public class EnemyController : Enemy {
 			}
 		}
 		else if (currentEnemyState == EnemyState.ATTACKING) {
-			//if (this.CurrentHitPoints < this.MaxHitPoints * this.FleeThreshold && (fGetD20() * 5f) < (this.FleeThreshold * 100f)) {
 			if (this.GetShouldFlee()) {
 				this.currentEnemyState = EnemyState.FLEEING;
 			}			

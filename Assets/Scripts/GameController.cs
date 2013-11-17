@@ -51,8 +51,7 @@ public class GameController : MonoBehaviour {
 	private GameObject miniMapCam;
 	
 	private bool isRestarting = false;
-	
-	// Use this for initialization
+
 	void Start () {
 		enemies = new List<Entity>();
 		players = new List<PlayerController>();
@@ -139,8 +138,7 @@ public class GameController : MonoBehaviour {
 	public float GetMaxBuildTime() {
 		return WaveCount <= 0 ? MaxBuildTime * 2f : MaxBuildTime;	
 	}
-	
-	// Update is called once per frame
+
 	void Update () {
 
 		if (CurrentGameState != GameState.QUESTIONNAIRE && CurrentGameState != GameState.ENDING) {
@@ -272,7 +270,6 @@ public class GameController : MonoBehaviour {
 	
 	public void EndGame(bool bRestarting) {
 		if (!bRestarting) {
-			//Application.Quit();	
 			GameEnded = true;
 		}
 		else {

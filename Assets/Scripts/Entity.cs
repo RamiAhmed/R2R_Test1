@@ -7,8 +7,7 @@ public class Entity : MonoBehaviour {
 
 	public string Name = "Entity",
 				Class = "Entity";
-	public float //Damage = 1f,
-				MinimumDamage = 0f,
+	public float MinimumDamage = 0f,
 				MaximumDamage = 1f,
 				Accuracy = 1f,
 				Evasion = 1f,
@@ -20,7 +19,7 @@ public class Entity : MonoBehaviour {
 				AttackingRange = 2f,
 				AttacksPerSecond = 1f,
 				FleeThreshold = 0.1f,
-				MoralePointsPerSecond = 0.01f; // = 10 % health
+				MoralePointsPerSecond = 0.01f; 
 	public Texture2D ProfilePicture = null;
 
 	public GameObject Bullet = null,
@@ -36,8 +35,6 @@ public class Entity : MonoBehaviour {
 		DeathSounds = new List<AudioClip>(), 
 		BeingHitSounds = new List<AudioClip>();
 
-	//private AudioSource audioSource;
-	
 	[HideInInspector]
 	public bool Selected = false,
 				IsDead = false;
@@ -314,7 +311,6 @@ public class Entity : MonoBehaviour {
 				seeker.StartPath(this.transform.position, targetPosition, OnPathComplete);
 				
 				lookAtTarget(position);
-				//Debug.Log("Move to: " + position);
 			}
 		}
 
@@ -356,7 +352,6 @@ public class Entity : MonoBehaviour {
 	}
 
 	public void StopMoving() {
-		//Debug.Log("STOP MOVING");
 		if (path != null) {
 			path.Release(this);
 			path = null;
@@ -392,7 +387,6 @@ public class Entity : MonoBehaviour {
 
 		this.CurrentHitPoints -= damage;
 		if (this.CurrentHitPoints <= 0f) {
-			//Debug.Log(this.ToString() + " is dead");
 			PlayRandomDeathSound();
 			this.IsDead = true;
 		}
@@ -464,7 +458,6 @@ public class Entity : MonoBehaviour {
 
 		if (opponent.IsDead || opponent == null) {
 			attackTarget = null;
-			//this.killCount += 1;
 		}
 		else if (GetIsAlly(opponent)) {
 			attackTarget = null;

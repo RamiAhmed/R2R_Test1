@@ -36,13 +36,10 @@ public class PlayerController : MonoBehaviour {
 	private Color feedbackColor = Color.white;
 
 	private bool hasRespawnedUnits = true;
-	
-	// Tactical AI system
+
 	public bool bSelectingTactics = false;
 	 
-	// Use this for initialization
 	void Start () {
-		//playerFaction = this.GetComponent<Faction>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
 		unitsList = new List<Entity>();
@@ -52,7 +49,6 @@ public class PlayerController : MonoBehaviour {
 		SelectedUnits = new List<Entity>();		
 	}
 
-	// Update is called once per frame
 	void Update () {		
 		if (_gameController.CurrentGameState != GameController.GameState.PLAY) {
 			return;
@@ -137,7 +133,6 @@ public class PlayerController : MonoBehaviour {
 	public bool ClearPlacingUnit() {
 		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
 		if (currentlyPlacing != null) {
-			//unitsList.Remove(currentlyPlacing);
 			if (currentlyPlacing.GetIsPlacing()) {
 				Destroy(currentlyPlacing.gameObject);
 			}
