@@ -120,20 +120,21 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 					if (currentState == QuestionnaireState.DURING) {
 						currentDuring++;
-						if (currentDuring >= maxDuring) {
+						if (currentDuring > maxDuring) {
 							currentState++;
 						}
 					}
 					else {
 						currentState++;
 					}
-
+					/*
 					if (currentState-1 != QuestionnaireState.DEMOGRAPHICS) {
 						_gameController.CurrentGameState = GameController.GameState.PLAY;
 					}
 					else {
 						_gameController.CurrentGameState = GameController.GameState.MENU;
 					}
+					*/
 				}
 			}
 			else {
@@ -153,18 +154,26 @@ public class QuestionnaireHandler : MonoBehaviour {
 	}
 
 	private void buildDemographics() {
+		GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(elementHeight));
+
 		buildSection("Demographics");
 	}
 
 	private void buildStarting() {
+		GUILayout.Box("BEFORE STARTING", GUILayout.Height(elementHeight));
+
 		buildSection("Starting");
 	}
 
 	private void buildDuring() {
+		GUILayout.Box("DURING " + currentDuring.ToString(), GUILayout.Height(elementHeight));
+
 		buildSection("During");
 	}
 
 	private void buildAfter() {
+		GUILayout.Box("AFTER", GUILayout.Height(elementHeight));
+
 		buildSection("After");
 	}
 
