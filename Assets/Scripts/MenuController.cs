@@ -18,9 +18,7 @@ public class MenuController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		/*if (_gameController.CurrentGameState == GameController.GameState.LOADING) {
-			_gameController.CurrentGameState = GameController.GameState.MENU;	
-		}*/
+
 	}
 	
 	void OnGUI() {

@@ -212,8 +212,14 @@ public class GameController : MonoBehaviour {
 
 	private void OnBuildStart() {
 		if (qHandler.bQuestionnaireEnabled) {
-			CurrentGameState = GameState.QUESTIONNAIRE;
+			if (qHandler.currentState == QuestionnaireHandler.QuestionnaireState.DURING && (WaveCount+1 % qHandler.QuestionnaireWaveFrequency) == 0) {
+				CurrentGameState = GameState.QUESTIONNAIRE;
+			}
+			else if (qHandler.currentState == QuestionnaireHandler.QuestionnaireState.STARTING) {
+				CurrentGameState = GameState.QUESTIONNAIRE;
+			}
 		}
+
 		CurrentPlayState = PlayState.BUILD;
 		hasSpawnedThisWave = false;
 		stopCombatMusic();

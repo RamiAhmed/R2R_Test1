@@ -10,7 +10,7 @@ public class GateOfLife : Entity {
 		Name = "Gate of Life";
 		MaxHitPoints = 200f;
 		CurrentHitPoints = MaxHitPoints;
-		Armor = 15f;
+		Armor = 10f;
 		
 		MovementSpeed = 0f;
 		AttacksPerSecond = 0.5f;

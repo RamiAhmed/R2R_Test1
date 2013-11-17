@@ -16,6 +16,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 	public QuestionnaireState currentState = QuestionnaireState.NONE;
 
+	public int QuestionnaireWaveFrequency = 3;
+
 	private int currentDuring = 1,
 				maxDuring = 3;
 

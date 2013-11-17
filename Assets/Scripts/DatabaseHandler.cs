@@ -81,7 +81,7 @@ public class DatabaseHandler : MonoBehaviour {
 		}
 
 		if (!www.isDone || !string.IsNullOrEmpty(www.error)) {
-			Debug.LogError(string.Format("WWW request to URL: " + getURL + " failed\n{0}", www.error));
+			Debug.LogError("WWW request to URL: " + getURL + " failed.\n" + www.error);
 			yield break;
 		}
 
