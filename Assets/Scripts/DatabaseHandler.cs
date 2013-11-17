@@ -14,11 +14,17 @@ public class DatabaseHandler : MonoBehaviour {
 
 	private WWWForm answersForm = null;
 
-	// Use this for initialization
+	GameController _gameController = null;
+
 	void Start () {
 		StartCoroutine(LoadQuestions());
 
 		answersForm = new WWWForm();
+
+		_gameController = this.GetComponent<GameController>();
+		if (_gameController == null) {
+			_gameController = this.GetComponentInChildren<GameController>();
+		}
 	}
 
 	public void ReadyData(Dictionary<string,string> dict) {
@@ -36,6 +42,9 @@ public class DatabaseHandler : MonoBehaviour {
 	}
 
 	public void SubmitAllData() {
+		answersForm.AddField("raw_time_played", Mathf.RoundToInt(_gameController.GameTime));
+		answersForm.AddField("raw_wave_count", _gameController.WaveCount);
+
 		StartCoroutine(SendForm());
 	}
 
@@ -78,7 +87,7 @@ public class DatabaseHandler : MonoBehaviour {
 
 		string response = www.text;
 		Debug.Log("Received text: " + response);
-		Debug.Log("WWW request took: " + elapsedTime.ToString() + " seconds.");
+		Debug.Log("WWW request (loading questions) took: " + elapsedTime.ToString() + " seconds.");
 
 		IDictionary responseDict = (IDictionary) Json.Deserialize(response);
 
