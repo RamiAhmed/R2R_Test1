@@ -22,7 +22,7 @@ public class MenuController : MonoBehaviour {
 	}
 	
 	void OnGUI() {
-		if (_gameController.CurrentGameState == GameController.GameState.MENU) {
+		if (_gameController.CurrentGameState == GameController.GameState.MENU || _gameController.CurrentGameState == GameController.GameState.ENDING) {
 			if (MenuSkin != null && GUI.skin != MenuSkin) {
 				GUI.skin = MenuSkin;
 			}

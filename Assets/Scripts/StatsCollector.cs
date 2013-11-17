@@ -33,7 +33,7 @@ public class StatsCollector : MonoBehaviour {
 		}
 	}
 
-	void LateUpdate() {
+	void Update() {
 		if (WaveCount != _gameController.WaveCount) {
 			WaveCount = _gameController.WaveCount;
 		}
