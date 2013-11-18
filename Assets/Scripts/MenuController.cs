@@ -50,7 +50,9 @@ public class MenuController : MonoBehaviour {
 			if (!_gameController.GameEnded) {
 				if (GUILayout.Button(new GUIContent(playText, playTip), GUILayout.Height(elementHeight))) {
 					_gameController.CurrentGameState = GameController.GameState.PLAY;
-					_gameController.CurrentPlayState = GameController.PlayState.BUILD;
+					if (_gameController.CurrentPlayState == GameController.PlayState.NONE) {
+						_gameController.CurrentPlayState = GameController.PlayState.BUILD;
+					}
 				}
 			}
 			else {

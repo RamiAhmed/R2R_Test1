@@ -283,7 +283,12 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public void QuitGame() {
-		Application.Quit();	
+		if (qHandler.QuestionnaireEnabled && (qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER)) {
+			CurrentGameState = GameState.QUESTIONNAIRE;
+		}
+		else {
+			Application.Quit();	
+		}
 	}
 	
 }
