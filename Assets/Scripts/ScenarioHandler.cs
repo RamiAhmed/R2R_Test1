@@ -12,7 +12,7 @@ public class ScenarioHandler : MonoBehaviour {
 	public ScenarioState CurrentScenario = ScenarioState.NONE;
 	public ScenarioState LastScenario = ScenarioState.NONE;
 
-	public static bool DoneTesting = false;
+	public bool DoneTesting = false;
 
 	// Use this for initialization
 	void Start () {	
