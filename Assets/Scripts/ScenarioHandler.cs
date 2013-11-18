@@ -30,6 +30,11 @@ public class ScenarioHandler : MonoBehaviour {
 		if (LastScenario == ScenarioState.NONE) {
 			LastScenario = CurrentScenario;
 			CurrentScenario = LastScenario == ScenarioState.WITH_TAIS ? ScenarioState.WITHOUT_TAIS : ScenarioState.WITH_TAIS;
+			Invoke("reloadLevel", 3f);
 		}
+	}
+
+	private void reloadLevel() {
+		Application.LoadLevel(0);
 	}
 }

@@ -24,13 +24,19 @@ public class StatsCollector : MonoBehaviour {
 		AmountOfEnemySelections = 0,
 		AmountOfForceSpawns = 0;
 
+	public static string Scenario = "";
+
 	private GameController _gameController = null;
+	private ScenarioHandler scenarioHandler = null;
+
 
 	void Start() {
 		_gameController = this.GetComponent<GameController>();
 		if (_gameController == null) {
 			_gameController = this.GetComponentInChildren<GameController>();
 		}
+
+		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 	}
 
 	void Update() {
@@ -43,8 +49,10 @@ public class StatsCollector : MonoBehaviour {
 		if (_gameController.players[0].PlayerGold != GoldDepositLeft) {
 			GoldDepositLeft = _gameController.players[0].PlayerGold;
 		}
+		if (Scenario == "") {
+			Scenario = scenarioHandler.CurrentScenario.ToString();
+		}
 		TotalTimeSpent += Time.deltaTime;
-
 	}
 
 }
