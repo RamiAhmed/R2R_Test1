@@ -18,20 +18,13 @@ public class ScenarioHandler : MonoBehaviour {
 	void Start () {	
 		DontDestroyOnLoad(this.gameObject);
 
-		if (LastScenario == ScenarioState.NONE) {
-			if (Random.Range(0, 2) == 0) {
-				CurrentScenario = ScenarioState.WITH_TAIS;
-			}
-			else {
-				CurrentScenario = ScenarioState.WITHOUT_TAIS;
-			}
-		}
+		CurrentScenario = Random.Range(0, 2) == 0 ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
 	}
 
 	public void IterateScenario() {
 		if (LastScenario == ScenarioState.NONE) {
 			LastScenario = CurrentScenario;
-			CurrentScenario = LastScenario == ScenarioState.WITH_TAIS ? ScenarioState.WITHOUT_TAIS : ScenarioState.WITH_TAIS;
+			CurrentScenario = LastScenario == ScenarioState.WITHOUT_TAIS ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
 		}
 		else {
 			DoneTesting = true;
