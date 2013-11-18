@@ -38,6 +38,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 	private Dictionary<string,string> textDict = null;
 
 	private Rect questionnaireRect;
+
+	private ScenarioHandler scenarioHandler = null;
 	
 	void Start () {
 		if (QuestionnaireEnabled) {
@@ -65,6 +67,12 @@ public class QuestionnaireHandler : MonoBehaviour {
 			questionnaireRect = new Rect((Screen.width/2f) - (width/2f), (Screen.height/2f) - (height/2f), width, height);
 
 			CurrentState++;
+
+			scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
+		}
+
+		if (scenarioHandler.DoneTesting) {
+			QuestionnaireEnabled = false;
 		}
 	}
 

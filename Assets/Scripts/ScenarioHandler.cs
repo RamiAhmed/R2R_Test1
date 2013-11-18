@@ -12,6 +12,8 @@ public class ScenarioHandler : MonoBehaviour {
 	public ScenarioState CurrentScenario = ScenarioState.NONE;
 	public ScenarioState LastScenario = ScenarioState.NONE;
 
+	public static bool DoneTesting = false;
+
 	// Use this for initialization
 	void Start () {	
 		DontDestroyOnLoad(this.gameObject);
@@ -30,8 +32,13 @@ public class ScenarioHandler : MonoBehaviour {
 		if (LastScenario == ScenarioState.NONE) {
 			LastScenario = CurrentScenario;
 			CurrentScenario = LastScenario == ScenarioState.WITH_TAIS ? ScenarioState.WITHOUT_TAIS : ScenarioState.WITH_TAIS;
-			Invoke("reloadLevel", 3f);
 		}
+		else {
+			DoneTesting = true;
+			CurrentScenario = ScenarioState.WITH_TAIS;
+		}
+
+		Invoke("reloadLevel", 3f);
 	}
 
 	private void reloadLevel() {
