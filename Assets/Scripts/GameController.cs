@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour {
 	private Dictionary<string, AudioSource> audioSources;
 
 	private QuestionnaireHandler qHandler = null;
+
+	private ScenarioHandler scenarioHandler = null;
 	
 	public enum GameState {
 		MENU,
@@ -84,6 +86,8 @@ public class GameController : MonoBehaviour {
 		if (!qHandler.QuestionnaireEnabled) {
 			CurrentGameState = GameState.MENU;
 		}
+
+		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 	}
 
 	private void stopBuildMusic() {
@@ -271,6 +275,7 @@ public class GameController : MonoBehaviour {
 	public void EndGame(bool bRestarting) {
 		if (!bRestarting) {
 			GameEnded = true;
+			scenarioHandler.IterateScenario();
 		}
 		else {
 			Application.LoadLevel(0);	

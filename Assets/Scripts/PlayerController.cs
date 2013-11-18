@@ -39,6 +39,8 @@ public class PlayerController : MonoBehaviour {
 
 	public bool bSelectingTactics = false;
 	 
+	private ScenarioHandler scenarioHandler = null;
+
 	void Start () {
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
@@ -47,6 +49,8 @@ public class PlayerController : MonoBehaviour {
 		playerCam = this.GetComponentInChildren<Camera>();
 		_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 		SelectedUnits = new List<Entity>();		
+
+		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 	}
 
 	void Update () {		
@@ -631,103 +635,108 @@ public class PlayerController : MonoBehaviour {
 
 		// Tactical AI System
 		GUI.BeginGroup(new Rect(elementX, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
-		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
-			UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
-			
-			float columnWidth = (elementWidth-5f)/3f,
-				rowHeight = elementHeight * 0.25f;
-			
-			GUI.BeginGroup(new Rect(0f, 0f, columnWidth, elementHeight)); // Tactics
-			
-				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Tactics");
-			
-				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
-			
-					if (selectedUnitController != null) {
-						string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
-						string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
-						
-						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetTacticsIcon(selectedUnitController.currentTactic), ScaleMode.ScaleToFit);
-
-						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(tacticsString, tacticsTip))) {
-							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								if (!bSelectingTactics) 
-									bSelectingTactics = true;
-							}
-							else {
-								DisplayFeedbackMessage("You can only set Tactics in the Build phase.");
-							}
-						}
-					}
-			
-				GUI.EndGroup();
-			GUI.EndGroup();
-			
-			GUI.BeginGroup(new Rect(columnWidth, 0f, columnWidth, elementHeight)); // Target
+		if (scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
+			if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
+				UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 				
-				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Target");
+				float columnWidth = (elementWidth-5f)/3f,
+					rowHeight = elementHeight * 0.25f;
 				
-				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
-			
-					if (selectedUnitController != null) {
-						string targetString = selectedUnitController.GetTargetName(selectedUnitController.currentTarget);
-						Texture2D icon = GetTargetIcon(selectedUnitController.currentTactic, selectedUnitController.currentTarget);
-						if (selectedUnitController.currentTactic == UnitController.Tactics.HoldTheLine) {
-							targetString = "Self";
-							icon = playerFaction.TAISSelf;
-						}
-						
-						string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
+				GUI.BeginGroup(new Rect(0f, 0f, columnWidth, elementHeight)); // Tactics
+				
+					GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Tactics");
+				
+					GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+				
+						if (selectedUnitController != null) {
+							string tacticsString = selectedUnitController.GetTacticsName(selectedUnitController.currentTactic);
+							string tacticsTip = "Set tactical orders for this unit. Changing the tactics will affect the units behaviour.";
+							
+							GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetTacticsIcon(selectedUnitController.currentTactic), ScaleMode.ScaleToFit);
 
-						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), icon, ScaleMode.ScaleToFit);
-
-						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(targetString, targetTip))) {
-							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								if (!bSelectingTactics) 
-									bSelectingTactics = true;
-							}
-							else {
-								DisplayFeedbackMessage("You can only set Targets in the Build phase.");
-							}
-						}						
-					}
-			
-				GUI.EndGroup();
-			
-			GUI.EndGroup();
-			
-			GUI.BeginGroup(new Rect(columnWidth*2f, 0f, columnWidth, elementHeight)); // Condition
-			
-				GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Condition");
-			
-				GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
-			
-					if (selectedUnitController != null) {
-						string conditionString = selectedUnitController.GetConditionName(selectedUnitController.currentCondition);
-						string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
-
-						GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetConditionIcon(selectedUnitController.currentCondition), ScaleMode.ScaleToFit);
-
-						if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(conditionString, conditionTip))) {
-							if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-								if (!bSelectingTactics) 
-									bSelectingTactics = true;
-							}
-							else {
-								DisplayFeedbackMessage("You can only set Conditions in the Build phase.");
+							if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(tacticsString, tacticsTip))) {
+								if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+									if (!bSelectingTactics) 
+										bSelectingTactics = true;
+								}
+								else {
+									DisplayFeedbackMessage("You can only set Tactics in the Build phase.");
+								}
 							}
 						}
-					}
+				
+					GUI.EndGroup();
 				GUI.EndGroup();
-			
-			GUI.EndGroup();
-			
-		}
-		else if (SelectedUnits.Count > 0 && !SelectedUnits[0].GetIsUnit()) {
-			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics on your own units.");
+				
+				GUI.BeginGroup(new Rect(columnWidth, 0f, columnWidth, elementHeight)); // Target
+					
+					GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Target");
+					
+					GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+				
+						if (selectedUnitController != null) {
+							string targetString = selectedUnitController.GetTargetName(selectedUnitController.currentTarget);
+							Texture2D icon = GetTargetIcon(selectedUnitController.currentTactic, selectedUnitController.currentTarget);
+							if (selectedUnitController.currentTactic == UnitController.Tactics.HoldTheLine) {
+								targetString = "Self";
+								icon = playerFaction.TAISSelf;
+							}
+							
+							string targetTip = "Set the tactical target for this unit. Unit's tactics will be applied to the chosen target.";
+
+							GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), icon, ScaleMode.ScaleToFit);
+
+							if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(targetString, targetTip))) {
+								if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+									if (!bSelectingTactics) 
+										bSelectingTactics = true;
+								}
+								else {
+									DisplayFeedbackMessage("You can only set Targets in the Build phase.");
+								}
+							}						
+						}
+				
+					GUI.EndGroup();
+				
+				GUI.EndGroup();
+				
+				GUI.BeginGroup(new Rect(columnWidth*2f, 0f, columnWidth, elementHeight)); // Condition
+				
+					GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Condition");
+				
+					GUI.BeginGroup(new Rect(0f, rowHeight+5f, columnWidth, elementHeight-rowHeight+5f));
+				
+						if (selectedUnitController != null) {
+							string conditionString = selectedUnitController.GetConditionName(selectedUnitController.currentCondition);
+							string conditionTip = "Set the tactical condition for this unit. The condition will affect when the unit's tactic is executed.";
+
+							GUI.DrawTexture(new Rect(0f, 0f, columnWidth/6f, rowHeight), GetConditionIcon(selectedUnitController.currentCondition), ScaleMode.ScaleToFit);
+
+							if (GUI.Button(new Rect(columnWidth/6f, 0f, columnWidth-(columnWidth/6f), rowHeight), new GUIContent(conditionString, conditionTip))) {
+								if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+									if (!bSelectingTactics) 
+										bSelectingTactics = true;
+								}
+								else {
+									DisplayFeedbackMessage("You can only set Conditions in the Build phase.");
+								}
+							}
+						}
+					GUI.EndGroup();
+				
+				GUI.EndGroup();
+				
+			}
+			else if (SelectedUnits.Count > 0 && !SelectedUnits[0].GetIsUnit()) {
+				GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics on your own units.");
+			}
+			else {
+				GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	
+			}
 		}
 		else {
-			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "No unit selected");	
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "");
 		}
 				
 		GUI.EndGroup(); // End Tactics
@@ -764,11 +773,13 @@ public class PlayerController : MonoBehaviour {
 		
 		
 		GUI.EndGroup(); // End Bottom HUD
-		
-		if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {
-			renderTacticsInterface();
+
+		if (scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
+			if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {
+				renderTacticsInterface();
+			}
 		}
-		
+
 		if (GUI.tooltip != "") {
 			GUI.skin.box.wordWrap = true;
 			Vector2 mousePos = Input.mousePosition;
@@ -783,7 +794,7 @@ public class PlayerController : MonoBehaviour {
 		if (selectedUnit == null) {
 			Debug.LogWarning("Could not find selected unit in renderTacticsInterface");
 		}		
-		else if (bSelectingTactics) {
+		else if (bSelectingTactics && scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
 			float width = screenWidth * 0.6f,
 			height = screenHeight * 0.35f;
 			float x = (screenWidth - width)/2f,
