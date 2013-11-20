@@ -436,9 +436,11 @@ public class PlayerController : MonoBehaviour {
 		
 		GUILayout.FlexibleSpace();
 		
-		GUILayout.Box("Last wave: " + _gameController.WaveCount, GUILayout.Height(height));
+
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+			GUILayout.Box("Next Wave: " + (_gameController.WaveCount+1), GUILayout.Height(height));
+
 			float maxBuildTime = _gameController.GetMaxBuildTime();
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
 			
@@ -448,6 +450,8 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+			GUILayout.Box("Current Wave: " + _gameController.WaveCount, GUILayout.Height(height));
+
 			GUI.color = Color.red;
 			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize, GUILayout.Height(height));	
 			GUI.color = Color.white;

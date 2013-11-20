@@ -9,7 +9,9 @@ public class GameController : MonoBehaviour {
 	
 	public float GameTime = 0f;
 	public float BuildTime = 0f;
-	public int WaveCount = 0;
+	public int WaveCount = 0,
+				WaveAdditionFactor = 1,
+				MaxWaveSize = 20;
 	
 	[HideInInspector]
 	public bool ForceSpawn = false;
@@ -238,6 +240,11 @@ public class GameController : MonoBehaviour {
 	private void OnCombatStart() {
 		ForceSpawn = false;
 		WaveCount++;
+		if (WaveCount > 1) {
+			WaveSize += WaveAdditionFactor;
+			WaveSize = WaveSize > MaxWaveSize ? MaxWaveSize : WaveSize;
+		}
+
 		BuildTime = 0f;
 		CurrentPlayState = PlayState.COMBAT;
 		stopBuildMusic();
