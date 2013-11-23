@@ -104,8 +104,14 @@ public class PlayerController : MonoBehaviour {
 				}
 			}
 
-			if (Input.GetKeyUp(KeyCode.Q)) {
-				bSelectingTactics = !bSelectingTactics;	
+			if (scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
+				if (Input.GetKeyUp(KeyCode.Q)) {
+					bSelectingTactics = !bSelectingTactics;	
+				}
+			}
+			else {
+				if (bSelectingTactics)
+					bSelectingTactics = false;
 			}
 		}
 		else {
@@ -128,7 +134,7 @@ public class PlayerController : MonoBehaviour {
 
 		bool selectionBool = 
 			SelectedUnits.Count == 0 || 
-			_gameController.CurrentPlayState == GameController.PlayState.COMBAT || 
+			//_gameController.CurrentPlayState == GameController.PlayState.COMBAT || 
 			getCurrentlyPlacingUnit() != null || 
 			(!disallowedRect.Contains(mousePos) && !bSelectingTactics);
 
@@ -210,6 +216,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private void clearSelection() {		
 		if (SelectedUnits.Count > 0) {
+			Debug.Log("clearSelection");
 			while (SelectedUnits.Count > 0) {
 				SelectedUnits[0].Deselect(SelectedUnits);
 			}
@@ -307,6 +314,7 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void clearMarqueeRect() {
+		Debug.Log("clearMarqueeRect");
 		marqueeRect.width = 0;
 		marqueeRect.height = 0;
 		backupRect.width = 0;
@@ -331,10 +339,8 @@ public class PlayerController : MonoBehaviour {
 	void OnGUI() {
 		 if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			renderTopHUD();
-			renderBottomHUD();
-			
-			renderSelectedUnitsHealthbar();
-			
+			renderBottomHUD();		
+
 			renderFeedbackMessage();			
 			renderMarqueeSelection();
 			
@@ -344,6 +350,9 @@ public class PlayerController : MonoBehaviour {
 
 			if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.AltGr)) {
 				renderAllUnitsHealthbar();
+			}
+			else {
+				renderSelectedUnitsHealthbar();
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
@@ -505,10 +514,10 @@ public class PlayerController : MonoBehaviour {
 	private Texture2D GetTacticsIcon(UnitController.Tactics tactic) {
 		Texture2D icon = null;
 		switch (tactic) {
-		case UnitController.Tactics.Attack: icon = playerFaction.TAISAttack; break;
-		case UnitController.Tactics.Follow: icon = playerFaction.TAISAssist; break;
-		case UnitController.Tactics.Guard: icon = playerFaction.TAISGuard; break;
-		case UnitController.Tactics.HoldTheLine: icon = playerFaction.TAISStandGuard; break;
+			case UnitController.Tactics.Attack: icon = playerFaction.TAISAttack; break;
+			case UnitController.Tactics.Follow: icon = playerFaction.TAISAssist; break;
+			case UnitController.Tactics.Guard: icon = playerFaction.TAISGuard; break;
+			case UnitController.Tactics.HoldTheLine: icon = playerFaction.TAISStandGuard; break;
 		}	
 		
 		return icon;
@@ -520,20 +529,20 @@ public class PlayerController : MonoBehaviour {
 		
 		if (bAlly) {
 			switch (target) {
-			case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ALLY; break;
-			case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ALLY; break;
-			case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ALLY; break;
-			case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ALLY; break;
-			case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ALLY; break;
+				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ALLY; break;
+				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ALLY; break;
+				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ALLY; break;
+				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ALLY; break;
+				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ALLY; break;
 			}
 		}
 		else {
 			switch (target) {
-			case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ENEMY; break;
-			case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ENEMY; break;
-			case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ENEMY; break;
-			case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ENEMY; break;
-			case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ENEMY; break;
+				case UnitController.Target.Nearest: icon = playerFaction.TAISNearest_ENEMY; break;
+				case UnitController.Target.Strongest: icon = playerFaction.TAISStrongest_ENEMY; break;
+				case UnitController.Target.Weakest: icon = playerFaction.TAISWeakest_ENEMY; break;
+				case UnitController.Target.HighestHP: icon = playerFaction.TAISLeastDamaged_ENEMY; break;
+				case UnitController.Target.LowestHP: icon = playerFaction.TAISMostDamaged_ENEMY; break;
 			}
 		}
 		
@@ -543,11 +552,11 @@ public class PlayerController : MonoBehaviour {
 	private Texture2D GetConditionIcon(UnitController.Condition condition) {
 		Texture2D icon = null;
 		switch (condition) {
-		case UnitController.Condition.Always: icon = playerFaction.TAISAlways; break;
-		case UnitController.Condition.HP_75: icon = playerFaction.TAIS75HP; break;
-		case UnitController.Condition.HP_50: icon = playerFaction.TAIS50HP; break;
-		case UnitController.Condition.HP_25: icon = playerFaction.TAIS25HP; break;
-		case UnitController.Condition.HP_less: icon = playerFaction.TAISLessHP; break;
+			case UnitController.Condition.Always: icon = playerFaction.TAISAlways; break;
+			case UnitController.Condition.HP_75: icon = playerFaction.TAIS75HP; break;
+			case UnitController.Condition.HP_50: icon = playerFaction.TAIS50HP; break;
+			case UnitController.Condition.HP_25: icon = playerFaction.TAIS25HP; break;
+			case UnitController.Condition.HP_less: icon = playerFaction.TAISLessHP; break;
 		}
 		
 		return icon;
