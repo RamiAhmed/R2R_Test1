@@ -7,19 +7,46 @@ public class Entity : MonoBehaviour {
 
 	public string Name = "Entity",
 				Class = "Entity";
-	public float MinimumDamage = 0f,
-				MaximumDamage = 1f,
-				Accuracy = 1f,
-				Evasion = 1f,
-				Armor = 1f,
-				CurrentHitPoints = 100f,
-				MaxHitPoints = 100f,
-				MovementSpeed = 2f,
-				PerceptionRange = 10f,
-				AttackingRange = 2f,
-				AttacksPerSecond = 1f,
-				FleeThreshold = 0.1f,
-				MoralePointsPerSecond = 0.01f; 
+
+	[Range(0, 100)]
+	public float MinimumDamage = 0f;
+
+	[Range(1, 100)]
+	public float MaximumDamage = 1f;
+
+	[Range(0f, 1f)]
+	public float Accuracy = 0.5f;
+
+	[Range(0f, 1f)]
+	public float Evasion = 0.5f;
+
+	[Range(0, 100)]
+	public float Armor = 1f;
+
+	[Range(10, 1000)]
+	public float MaxHitPoints = 100f;
+
+	[HideInInspector]
+	public float CurrentHitPoints = 100f;
+
+	[Range(0, 1000)]
+	public float MovementSpeed = 2f;
+
+	[Range(0, 100)]
+	public float PerceptionRange = 10f;
+
+	[Range(0, 100)]
+	public float AttackingRange = 2f;
+
+	[Range(0f, 10f)]
+	public float AttacksPerSecond = 1f;
+
+	[Range(0f, 1f)]
+	public float FleeThreshold = 0.1f;
+
+	[Range(0f, 1f)]
+	public float MoralePointsPerSecond = 0.01f; 
+
 	public Texture2D ProfilePicture = null;
 
 	public GameObject Bullet = null,
@@ -371,7 +398,7 @@ public class Entity : MonoBehaviour {
 	}
 	
 	public float GetDamagePerSecond() {
-		return this.GetDamage(true) * AttacksPerSecond;
+		return this.GetDamage(true) * AttacksPerSecond * Accuracy;
 	}
 
 	public void ReceiveDamage(float damage) {
@@ -474,7 +501,7 @@ public class Entity : MonoBehaviour {
 					ShootBullet(opponent);
 				}
 
-				if (this.Accuracy + fGetD20() > opponent.Evasion + fGetD20()) {
+				if (this.Accuracy + Random.value > opponent.Evasion + Random.value) {
 					float damage = (GetDamage() - opponent.Armor);
 					damage = damage < 1f ? 1f : damage;
 					opponent.ReceiveDamage(damage);

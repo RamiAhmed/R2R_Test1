@@ -16,8 +16,6 @@ public class Enemy : Entity {
 				AttacksPerSecondScaleFactor = 0.1f,
 				FleeThresholdScaleFactor = 0.01f;
 
-				
-
 	// Use this for initialization
 	protected override void Start () {
 		Debug.Log (_gameController.GameTime + ": Enemy created");

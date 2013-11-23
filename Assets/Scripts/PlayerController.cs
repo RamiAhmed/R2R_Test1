@@ -643,7 +643,7 @@ public class PlayerController : MonoBehaviour {
 				GUI.BeginGroup(new Rect(detailsWidth, 0f, elementWidth, detailsHeight));
 					GUI.Box(new Rect(0f, 0f, detailsWidth, detailsHeight), new GUIContent(swordHUD, swordTip));
 					
-					string dpsLabel = "DPS: " + selectedUnit.GetDamagePerSecond().ToString("F0");
+					string dpsLabel = "DPS: " + selectedUnit.GetDamagePerSecond().ToString("F1");
 					GUI.Label(new Rect(5f, detailsHeight/3f, detailsWidth, detailsHeight), new GUIContent(dpsLabel));
 				GUI.EndGroup();		
 			
