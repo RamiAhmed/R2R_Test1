@@ -40,6 +40,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 	private Rect questionnaireRect;
 
 	private ScenarioHandler scenarioHandler = null;
+
+	private Vector2 scrollPosition;
 	
 	void Start () {
 		if (QuestionnaireEnabled) {
@@ -114,6 +116,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 		}
 
 		GUILayout.BeginVertical();
+		scrollPosition = GUILayout.BeginScrollView(scrollPosition);
 
 		switch (CurrentState) {
 			case QuestionnaireState.DEMOGRAPHICS: buildDemographics(); break;
@@ -156,6 +159,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 			}
 		}
 
+		GUILayout.EndScrollView();
 		GUILayout.EndVertical();
 	}
 

@@ -363,7 +363,7 @@ public class Entity : MonoBehaviour {
 	}
 
 	protected int GetD20() {
-		return Random.Range(1, 20);
+		return Random.Range(1, 21);
 	}
 
 	protected float fGetD20() {
@@ -435,7 +435,7 @@ public class Entity : MonoBehaviour {
 
 	public void PlayRandomDeathSound() {
 		if (DeathSounds.Count > 0) {
-			AudioClip sound = DeathSounds.Count > 1 ? DeathSounds[Random.Range(1, DeathSounds.Count)-1] : DeathSounds[0];
+			AudioClip sound = DeathSounds.Count > 1 ? DeathSounds[Random.Range(0, DeathSounds.Count)] : DeathSounds[0];
 			AudioSource.PlayClipAtPoint(sound, this.transform.position);
 		}
 	}
@@ -444,7 +444,7 @@ public class Entity : MonoBehaviour {
 		if (audioSources.ContainsKey(type)) {
 			if (sounds.Count > 0) {
 				if (!audioSources[type].isPlaying) {
-					AudioClip sound = sounds.Count > 1 ? sounds[Random.Range(1, sounds.Count)-1] : sounds[0];
+					AudioClip sound = sounds.Count > 1 ? sounds[Random.Range(0, sounds.Count)] : sounds[0];
 					audioSources[type].clip = sound;
 					audioSources[type].Play();
 				}
