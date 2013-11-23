@@ -501,7 +501,13 @@ public class Entity : MonoBehaviour {
 					ShootBullet(opponent);
 				}
 
-				if (this.Accuracy + Random.value > opponent.Evasion + Random.value) {
+				float accuracy = this.Accuracy + Random.value;
+				accuracy = accuracy > 1f ? 1f : accuracy;
+
+				float evasion = opponent.Evasion + Random.value;
+				evasion = evasion > 1f ? 1f : evasion;
+
+				if (accuracy > evasion) {
 					float damage = (GetDamage() - opponent.Armor);
 					damage = damage < 1f ? 1f : damage;
 					opponent.ReceiveDamage(damage);
