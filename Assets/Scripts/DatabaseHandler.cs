@@ -14,16 +14,22 @@ public class DatabaseHandler : MonoBehaviour {
 
 	private WWWForm answersForm = null;
 
-	GameController _gameController = null;
+	private GameController _gameController = null;
+
+	private ScenarioHandler scenarioHandler = null;
 
 	void Start () {
-		StartCoroutine(LoadQuestions());
+		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 
-		answersForm = new WWWForm();
+		if (!scenarioHandler.DoneTesting) {
+			StartCoroutine(LoadQuestions());
 
-		_gameController = this.GetComponent<GameController>();
-		if (_gameController == null) {
-			_gameController = this.GetComponentInChildren<GameController>();
+			answersForm = new WWWForm();
+
+			_gameController = this.GetComponent<GameController>();
+			if (_gameController == null) {
+				_gameController = this.GetComponentInChildren<GameController>();
+			}
 		}
 	}
 
