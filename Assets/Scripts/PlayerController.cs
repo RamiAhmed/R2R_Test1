@@ -327,13 +327,17 @@ public class PlayerController : MonoBehaviour {
 			renderTopHUD();
 			renderBottomHUD();
 			
-			renderSelectedUnitHealthbar();
+			renderSelectedUnitsHealthbar();
 			
 			renderFeedbackMessage();			
 			renderMarqueeSelection();
 			
 			if (isDebugging) {
 				renderSelectedDebugFeedback();	
+			}
+
+			if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.AltGr)) {
+				renderAllUnitsHealthbar();
 			}
 		}
 		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
@@ -354,15 +358,38 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.EndArea();
 	}
 
-	private void renderSelectedUnitHealthbar() {
+	private void renderAllUnitsHealthbar() {
+		float width = 100f, height = 20f;
+
+		foreach (Entity unit in unitsList) {
+			Vector3 healthBarPos = playerCam.WorldToScreenPoint(unit.transform.position);
+			float barWidth = width * (unit.CurrentHitPoints / unit.MaxHitPoints);
+			
+			GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
+				GUI.DrawTexture(new Rect(0f, 0f, width, height), healthBarHUD, ScaleMode.StretchToFill);
+			GUI.EndGroup();
+		}
+
+		foreach (Entity enemy in _gameController.enemies) {
+			Vector3 healthBarPos = playerCam.WorldToScreenPoint(enemy.transform.position);
+			float barWidth = width * (enemy.CurrentHitPoints / enemy.MaxHitPoints);
+			
+			GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
+				GUI.DrawTexture(new Rect(0f, 0f, width, height), healthBarHUD, ScaleMode.StretchToFill);
+			GUI.EndGroup();
+		}
+
+	}
+
+	private void renderSelectedUnitsHealthbar() {
 		if (SelectedUnits.Count > 0) {
-			float width = 100f, height = 30f;
+			float width = 100f, height = 20f;
 			foreach (Entity selected in SelectedUnits) {
 				Vector3 healthBarPos = playerCam.WorldToScreenPoint(selected.transform.position);
 				float barWidth = width * (selected.CurrentHitPoints / selected.MaxHitPoints);
 				
 				GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
-					GUI.Label(new Rect(0f, 0f, width, height), healthBarHUD);
+					GUI.DrawTexture(new Rect(0f, 0f, width, height), healthBarHUD, ScaleMode.StretchToFill);
 				GUI.EndGroup();
 			}
 		}
