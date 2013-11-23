@@ -14,27 +14,33 @@ public class ScenarioHandler : MonoBehaviour {
 
 	public bool DoneTesting = false;
 
-	// Use this for initialization
-	void Start () {	
-		DontDestroyOnLoad(this.gameObject);
+	void Awake() {
+		DontDestroyOnLoad(transform.gameObject);
 
-		CurrentScenario = Random.Range(0, 2) == 0 ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+		GameObject[] scenarioHandlers = GameObject.FindGameObjectsWithTag("ScenarioHandler");
+		if (scenarioHandlers.Length > 1) {
+			for (int i = 1; i < scenarioHandlers.Length; i++) {
+				Destroy(scenarioHandlers[i]);
+			}
+		}
+	}
+
+	void Start () {	
+		if (CurrentScenario == ScenarioState.NONE) {
+			CurrentScenario = Random.Range(0, 2) == 0 ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+		}
 	}
 
 	public void IterateScenario() {
 		if (LastScenario == ScenarioState.NONE) {
 			LastScenario = CurrentScenario;
 			CurrentScenario = LastScenario == ScenarioState.WITHOUT_TAIS ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+			Debug.Log("Second Scenario commencing");
 		}
 		else {
 			DoneTesting = true;
 			CurrentScenario = ScenarioState.WITH_TAIS;
+			Debug.Log("Done Scenario testing");
 		}
-
-		Invoke("reloadLevel", 3f);
-	}
-
-	private void reloadLevel() {
-		Application.LoadLevel(0);
 	}
 }

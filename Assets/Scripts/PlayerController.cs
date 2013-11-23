@@ -85,6 +85,12 @@ public class PlayerController : MonoBehaviour {
 
 			hasRespawnedUnits = false;
 		}
+
+		if (isDebugging) {
+			if (Input.GetKeyDown(KeyCode.End)) {
+				PlayerLives = 0;
+			}
+		}
 		
 		if (SelectedUnits.Count > 0) {
 			if (Input.GetMouseButtonDown(1)) {
@@ -416,6 +422,7 @@ public class PlayerController : MonoBehaviour {
 				else {
 					debugLabel += "\nAttack target: None"; 
 				}
+
 				debugLabel += "\nAttack count: " + selectedUnit.attackCount;
 				debugLabel += "\nKill count: " + selectedUnit.killCount;
 				debugLabel += "\nAttacked count: " + selectedUnit.attackedCount;

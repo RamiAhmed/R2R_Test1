@@ -146,7 +146,6 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update () {
-
 		if (CurrentGameState != GameState.QUESTIONNAIRE && CurrentGameState != GameState.ENDING) {
 			/*if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				if (CurrentGameState == GameState.PAUSED) {
@@ -212,6 +211,9 @@ public class GameController : MonoBehaviour {
 			else {
 				EndGame(isRestarting);
 			}
+		}
+		else if (CurrentGameState == GameState.QUESTIONNAIRE && !qHandler.QuestionnaireEnabled) {
+			CurrentGameState = GameState.MENU;
 		}
 		else {
 			if (miniMapCam.activeSelf) {
@@ -280,7 +282,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	public void EndGame(bool bRestarting) {
-		if (!bRestarting) {
+		if (!bRestarting && !GameEnded) {
 			GameEnded = true;
 			scenarioHandler.IterateScenario();
 		}
