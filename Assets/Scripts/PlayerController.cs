@@ -314,7 +314,6 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void clearMarqueeRect() {
-		Debug.Log("clearMarqueeRect");
 		marqueeRect.width = 0;
 		marqueeRect.height = 0;
 		backupRect.width = 0;

@@ -19,16 +19,19 @@ public class DatabaseHandler : MonoBehaviour {
 	private ScenarioHandler scenarioHandler = null;
 
 	void Start () {
-		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
+		scenarioHandler = this.GetComponent<ScenarioHandler>();
+		if (scenarioHandler == null) {
+			scenarioHandler = this.GetComponentInChildren<ScenarioHandler>();
+		}
 
 		if (!scenarioHandler.DoneTesting) {
 			StartCoroutine(LoadQuestions());
 
 			answersForm = new WWWForm();
 
-			_gameController = this.GetComponent<GameController>();
+			_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
 			if (_gameController == null) {
-				_gameController = this.GetComponentInChildren<GameController>();
+				_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponentInChildren<GameController>();
 			}
 		}
 	}

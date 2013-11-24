@@ -16,11 +16,6 @@ public class MenuController : MonoBehaviour {
 		screenHeight = Screen.height;
 	}
 	
-	// Update is called once per frame
-	void Update () {
-
-	}
-	
 	void OnGUI() {
 		if (_gameController.CurrentGameState == GameController.GameState.MENU || _gameController.CurrentGameState == GameController.GameState.ENDING) {
 			if (MenuSkin != null && GUI.skin != MenuSkin) {

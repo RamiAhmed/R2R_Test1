@@ -63,114 +63,6 @@ public class UnitController : Unit {
 	
 	public Condition currentCondition = Condition.Always;
 
-	public System.Array GetTacticsValues() {
-		return System.Enum.GetValues(typeof(Tactics));		
-	}
-
-	public System.Array GetTargetsValues() {
-		return currentTactic != Tactics.HoldTheLine ? System.Enum.GetValues(typeof(Target)) : null;
-	}
-
-	public System.Array GetConditionsValues() {
-		return System.Enum.GetValues(typeof(Condition));
-	}
-	
-	public string GetTacticsTip(Tactics tactic) {
-		string tip = "";
-		switch (tactic) {
-			case Tactics.Attack: tip = "Attack: Unit will attack target at will (default behaviour)."; break;
-			case Tactics.Guard: tip = "Guard: Unit will attempt to protect target, by attacking any enemy attacking target."; break;
-			case Tactics.Follow: tip = "Assist: Unit will attempt to follow and assist target, by attacking the same enemy as target."; break;
-			case Tactics.HoldTheLine: tip = "Stand Ground: Unit will attempt to stand ground and not move far from the initial position."; break;
-		}
-		return tip;			
-	}
-	
-	public string GetTacticsName(Tactics tactic) {
-		string name = "";
-		switch (tactic) {
-			case Tactics.Attack: name = "Attack"; break;
-			case Tactics.Guard: name = "Guard"; break;
-			case Tactics.Follow: name = "Assist"; break;
-			case Tactics.HoldTheLine: name = "Stand Ground"; break;
-		}
-		return name;
-	}
-	
-	public string GetTargetTip(Target target) {
-		string tip = "";
-		switch (target) {
-			case Target.Nearest: tip = "Nearest: Target will be the nearest enemy."; break;
-			case Target.Strongest: tip = "Strongest: Target will be the strongest enemy."; break;
-			case Target.Weakest: tip = "Weakest: Target will be the weakest enemy."; break;
-			case Target.LowestHP: tip = "Most Damaged: Target will be the most damaged enemy."; break;
-			case Target.HighestHP: tip = "Least Damaged: Target will be the least damaged enemy"; break;
-		}
-		return tip;		
-	}
-	
-	public string GetTargetName(Target target) {
-		string name = "";
-
-		switch (currentTactic) {
-			case Tactics.Attack:
-			case Tactics.HoldTheLine: name += "(Enemy) "; break;
-			case Tactics.Follow:
-			case Tactics.Guard: name += "(Ally) "; break;
-		}
-
-		switch (target) {
-			case Target.Nearest: name += "Nearest"; break;
-			case Target.Strongest: name += "Strongest"; break;
-			case Target.Weakest: name += "Weakest"; break;
-			case Target.LowestHP: name += "Most Damaged"; break;
-			case Target.HighestHP: name += "Least Damaged"; break;
-		}
-		return name;
-	}
-	
-	public Entity GetTacticalTarget(List<Entity> list) {
-		Entity obj = null;	
-		if (list != null) {
-			switch (currentTarget) {
-				case Target.Strongest: obj = GetStrongestUnit(list); break;
-				case Target.Weakest: obj = GetWeakestUnit(list); break;
-				case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
-				case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
-			}
-			
-			if (obj == null) {
-				obj = GetNearestUnit(list);
-			}
-		}
-		
-		return obj;
-	}
-	
-	public string GetConditionName(Condition condition) {
-		string name = "";
-		switch (condition) {
-			case Condition.Always: name = "Always"; break;
-			case Condition.HP_75: name = "Over 75% HP"; break;
-			case Condition.HP_50: name = "Over 50% HP"; break;
-			case Condition.HP_25: name = "Over 25% HP"; break;
-			case Condition.HP_less: name = "Less than 25% HP"; break;
-		}
-		return name;
-	}
-	
-	public bool GetIsCurrentConditionTrue() {
-		bool result = false;	
-		switch (currentCondition) {
-			case Condition.Always: result = true; break;
-			case Condition.HP_75: result = this.CurrentHitPoints / this.MaxHitPoints > 0.75f; break;
-			case Condition.HP_50: result = this.CurrentHitPoints / this.MaxHitPoints > 0.50f; break;
-			case Condition.HP_25: result = this.CurrentHitPoints / this.MaxHitPoints > 0.25f; break;
-			case Condition.HP_less: result = this.CurrentHitPoints / this.MaxHitPoints <= 0.25f; break;
-		}
-		return result;
-	}
-
 	protected override void Start () {
 		base.Start();
 
@@ -610,6 +502,114 @@ public class UnitController : Unit {
 		else if (currentUnitState == UnitState.DEAD) {
 			OnDeath();
 		}
+	}
+
+	public System.Array GetTacticsValues() {
+		return System.Enum.GetValues(typeof(Tactics));		
+	}
+	
+	public System.Array GetTargetsValues() {
+		return currentTactic != Tactics.HoldTheLine ? System.Enum.GetValues(typeof(Target)) : null;
+	}
+	
+	public System.Array GetConditionsValues() {
+		return System.Enum.GetValues(typeof(Condition));
+	}
+	
+	public string GetTacticsTip(Tactics tactic) {
+		string tip = "";
+		switch (tactic) {
+		case Tactics.Attack: tip = "Attack: Unit will attack target at will (default behaviour)."; break;
+		case Tactics.Guard: tip = "Guard: Unit will attempt to protect target, by attacking any enemy attacking target."; break;
+		case Tactics.Follow: tip = "Assist: Unit will attempt to follow and assist target, by attacking the same enemy as target."; break;
+		case Tactics.HoldTheLine: tip = "Stand Ground: Unit will attempt to stand ground and not move far from the initial position."; break;
+		}
+		return tip;			
+	}
+	
+	public string GetTacticsName(Tactics tactic) {
+		string name = "";
+		switch (tactic) {
+		case Tactics.Attack: name = "Attack"; break;
+		case Tactics.Guard: name = "Guard"; break;
+		case Tactics.Follow: name = "Assist"; break;
+		case Tactics.HoldTheLine: name = "Stand Ground"; break;
+		}
+		return name;
+	}
+	
+	public string GetTargetTip(Target target) {
+		string tip = "";
+		switch (target) {
+		case Target.Nearest: tip = "Nearest: Target will be the nearest enemy."; break;
+		case Target.Strongest: tip = "Strongest: Target will be the strongest enemy."; break;
+		case Target.Weakest: tip = "Weakest: Target will be the weakest enemy."; break;
+		case Target.LowestHP: tip = "Most Damaged: Target will be the most damaged enemy."; break;
+		case Target.HighestHP: tip = "Least Damaged: Target will be the least damaged enemy"; break;
+		}
+		return tip;		
+	}
+	
+	public string GetTargetName(Target target) {
+		string name = "";
+		
+		switch (currentTactic) {
+		case Tactics.Attack:
+		case Tactics.HoldTheLine: name += "(Enemy) "; break;
+		case Tactics.Follow:
+		case Tactics.Guard: name += "(Ally) "; break;
+		}
+		
+		switch (target) {
+		case Target.Nearest: name += "Nearest"; break;
+		case Target.Strongest: name += "Strongest"; break;
+		case Target.Weakest: name += "Weakest"; break;
+		case Target.LowestHP: name += "Most Damaged"; break;
+		case Target.HighestHP: name += "Least Damaged"; break;
+		}
+		return name;
+	}
+	
+	public Entity GetTacticalTarget(List<Entity> list) {
+		Entity obj = null;	
+		if (list != null) {
+			switch (currentTarget) {
+			case Target.Strongest: obj = GetStrongestUnit(list); break;
+			case Target.Weakest: obj = GetWeakestUnit(list); break;
+			case Target.LowestHP: obj = GetMostDamagedUnit(list); break;
+			case Target.HighestHP: obj = GetLeastDamagedUnit(list); break;
+			}
+			
+			if (obj == null) {
+				obj = GetNearestUnit(list);
+			}
+		}
+		
+		return obj;
+	}
+	
+	public string GetConditionName(Condition condition) {
+		string name = "";
+		switch (condition) {
+		case Condition.Always: name = "Always"; break;
+		case Condition.HP_75: name = "Over 75% HP"; break;
+		case Condition.HP_50: name = "Over 50% HP"; break;
+		case Condition.HP_25: name = "Over 25% HP"; break;
+		case Condition.HP_less: name = "Less than 25% HP"; break;
+		}
+		return name;
+	}
+	
+	public bool GetIsCurrentConditionTrue() {
+		bool result = false;	
+		switch (currentCondition) {
+		case Condition.Always: result = true; break;
+		case Condition.HP_75: result = this.CurrentHitPoints / this.MaxHitPoints > 0.75f; break;
+		case Condition.HP_50: result = this.CurrentHitPoints / this.MaxHitPoints > 0.50f; break;
+		case Condition.HP_25: result = this.CurrentHitPoints / this.MaxHitPoints > 0.25f; break;
+		case Condition.HP_less: result = this.CurrentHitPoints / this.MaxHitPoints <= 0.25f; break;
+		}
+		return result;
 	}
 	
 	private void OnDeath() {

@@ -45,9 +45,9 @@ public class QuestionnaireHandler : MonoBehaviour {
 	
 	void Start () {
 		if (QuestionnaireEnabled) {
-			dbHandler = this.GetComponent<DatabaseHandler>();
+			dbHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<DatabaseHandler>();
 			if (dbHandler == null) {
-				dbHandler = this.GetComponentInChildren<DatabaseHandler>();
+				dbHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponentInChildren<DatabaseHandler>();
 			}
 
 			_gameController = this.GetComponent<GameController>();
