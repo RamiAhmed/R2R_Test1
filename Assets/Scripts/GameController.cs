@@ -9,9 +9,16 @@ public class GameController : MonoBehaviour {
 	
 	public float GameTime = 0f;
 	public float BuildTime = 0f;
-	public int WaveCount = 0,
-				WaveAdditionFactor = 1,
-				MaxWaveSize = 20;
+	public int WaveCount = 0;
+
+	[Range(1, 10)]
+	public int WaveAdditionFactor = 1;
+
+	[Range(5, 50)]
+	public int MaxWaveSize = 20;
+
+	[Range(9, 100)]
+	public int MaximumWaveCount = 10;
 	
 	[HideInInspector]
 	public bool ForceSpawn = false;
@@ -24,6 +31,7 @@ public class GameController : MonoBehaviour {
 	public float StartYPosition = 30f;
 	
 	public bool GameEnded = false;
+	public bool GameWon = false;
 
 	public AudioClip BuildMusic, CombatMusic, BackgroundMusic;
 	private Dictionary<string, AudioSource> audioSources;
@@ -223,25 +231,36 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void OnBuildStart() {
-		if (qHandler.QuestionnaireEnabled) {
-			if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
-			    && ((WaveCount+1) % qHandler.QuestionnaireWaveFrequency) == 0) {
-				CurrentGameState = GameState.QUESTIONNAIRE;
+		if (WaveCount <= MaximumWaveCount) {
+			if (qHandler.QuestionnaireEnabled) {
+				if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
+				    && ((WaveCount+1) % qHandler.QuestionnaireWaveFrequency) == 0) {
+					CurrentGameState = GameState.QUESTIONNAIRE;
+				}
+			}
+
+			CurrentPlayState = PlayState.BUILD;
+			hasSpawnedThisWave = false;
+			stopCombatMusic();
+
+			foreach (PlayerController player in players) {
+				player.DisplayFeedbackMessage("Build Phase is starting.", Color.white);
 			}
 		}
+		else {
+			GameWon = true;
+			foreach (PlayerController player in players) {
+				player.DisplayFeedbackMessage("You have won the game!", Color.green);
+			}
 
-		CurrentPlayState = PlayState.BUILD;
-		hasSpawnedThisWave = false;
-		stopCombatMusic();
-
-		foreach (PlayerController player in players) {
-			player.DisplayFeedbackMessage("Build Phase is starting.", Color.white);
+			CurrentGameState = GameState.ENDING;
 		}
 	}
 
 	private void OnCombatStart() {
-		ForceSpawn = false;
 		WaveCount++;
+		ForceSpawn = false;
+
 		if (WaveCount > 1) {
 			WaveSize += WaveAdditionFactor;
 			WaveSize = WaveSize > MaxWaveSize ? MaxWaveSize : WaveSize;

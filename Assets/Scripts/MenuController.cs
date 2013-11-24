@@ -51,7 +51,12 @@ public class MenuController : MonoBehaviour {
 				}
 			}
 			else {
-				GUILayout.Box("Your Gate of Life died - You have lost the game.");	
+				if (!_gameController.GameWon) {
+					GUILayout.Box("Your Gate of Life died - You have lost the game.");	
+				}
+				else {
+					GUILayout.Box("You have won the game by reaching wave " + _gameController.MaximumWaveCount + ". Congratulations!");
+				}
 			}
 			
 			if (GUILayout.Button(new GUIContent("Restart Game", "Click to restart the current level"), GUILayout.Height(elementHeight))) {
