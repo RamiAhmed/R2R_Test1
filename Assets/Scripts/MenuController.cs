@@ -64,7 +64,7 @@ public class MenuController : MonoBehaviour {
 			
 			GUILayout.FlexibleSpace();
 			
-			if (GUILayout.Button(new GUIContent("A Tower Defense game by Alpha Stage Studios - www.alphastagestudios.com", "Click to open up the\n website in default browser."), GUILayout.Height(elementHeight))) {
+			if (GUILayout.Button(new GUIContent("A Tower Defense game by Alpha Stage Studios - www.alphastagestudios.com", "Click to open up the\n website in your default browser."), GUILayout.Height(elementHeight))) {
 				Application.OpenURL("www.alphastagestudios.com");	
 			}
 			

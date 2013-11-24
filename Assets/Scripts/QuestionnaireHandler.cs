@@ -190,10 +190,10 @@ public class QuestionnaireHandler : MonoBehaviour {
 	private void buildSection(string section) {
 		IList sectionList = (IList) questionsDict[section];
 		foreach (IDictionary dict in sectionList) {
-			string id = (string) dict["ID"];
-			string question = (string) dict["Question"];
+			string id = dict["ID"].ToString();
+			string question = dict["Question"].ToString();
 			List<string> options = convertFromIList((IList)dict["Options"]);
-			string helperText = (string) dict["HelperText"];
+			string helperText = dict["HelperText"].ToString();
 
 			if (CurrentState == QuestionnaireState.DURING) {
 				id += "_" + currentDuring.ToString();
