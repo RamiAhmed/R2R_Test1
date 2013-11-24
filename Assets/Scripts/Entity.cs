@@ -14,6 +14,12 @@ public class Entity : MonoBehaviour {
 	[Range(1, 100)]
 	public float MaximumDamage = 1f;
 
+	[Range(0, 100)]
+	public float MinimumHealPower = 0f;
+
+	[Range(1, 100)]
+	public float MaximumHealPower = 0f;
+
 	[Range(0f, 1f)]
 	public float Accuracy = 0.5f;
 
@@ -210,6 +216,10 @@ public class Entity : MonoBehaviour {
 
 	public float GetDamage() {
 		return Random.Range(MinimumDamage, MaximumDamage);
+	}
+
+	public float GetHealPower() {
+		return Random.Range(MinimumHealPower, MaximumHealPower);
 	}
 
 	public float GetTotalScore() {
@@ -519,8 +529,8 @@ public class Entity : MonoBehaviour {
 					Debug.Log(_gameController.GameTime + ": " + this.Name + " missed " + opponent.Name);
 				}
 				
-				this.attackCount += 1;
-				opponent.attackedCount += 1;
+				this.attackCount++;
+				opponent.attackedCount++;
 
 				if (opponent.lastAttacker == null) {
 					opponent.lastAttacker = this;
