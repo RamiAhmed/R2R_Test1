@@ -11,6 +11,8 @@ public class Unit : Entity {
 	// Use this for initialization
 	protected override void Start () {
 		Debug.Log (_gameController.GameTime + ": Unit created");
+
+		this.CurrentHitPoints = this.MaxHitPoints;
 	}
 	
 	
