@@ -28,8 +28,7 @@ public class StatsCollector : MonoBehaviour {
 
 	private GameController _gameController = null;
 	private ScenarioHandler scenarioHandler = null;
-
-
+	
 	void Start() {
 		_gameController = this.GetComponent<GameController>();
 		if (_gameController == null) {
