@@ -597,7 +597,7 @@ public class Entity : MonoBehaviour {
 		float shortestDistance = PerceptionRange;
 		foreach (Entity unit in list) {
 			float distance = Vector3.Distance(unit.transform.position, this.transform.position);
-			if (distance < shortestDistance && unit.gameObject != this.gameObject) {
+			if (distance < shortestDistance && unit.gameObject != this.gameObject && GetIsWithinPerceptionRange(unit)) {
 				nearest = unit;
 				shortestDistance = distance;
 			}
@@ -614,7 +614,7 @@ public class Entity : MonoBehaviour {
 		float weakestScore = list[0].GetTotalScore();
 		foreach (Entity unit in list) {
 			float score = unit.GetTotalScore();
-			if (score < weakestScore && unit.gameObject != this.gameObject)	{
+			if (score < weakestScore && unit.gameObject != this.gameObject && GetIsWithinPerceptionRange(unit))	{
 				weakest = unit;
 				weakestScore = score;
 			}
@@ -631,7 +631,7 @@ public class Entity : MonoBehaviour {
 		float strongestScore = 0;
 		foreach (Entity unit in list) {
 			float score = unit.GetTotalScore();
-			if (score > strongestScore && unit.gameObject != this.gameObject) {
+			if (score > strongestScore && unit.gameObject != this.gameObject && GetIsWithinPerceptionRange(unit)) {
 				strongest = unit;
 				strongestScore = score;
 			}
@@ -649,7 +649,7 @@ public class Entity : MonoBehaviour {
 		float damage = 100;
 		foreach (Entity unit in list) {
 			float hpDiff = unit.MaxHitPoints - unit.CurrentHitPoints;
-			if (hpDiff < damage || hpDiff <= 0f && unit.gameObject != this.gameObject) {
+			if (hpDiff < damage || hpDiff <= 0f && unit.gameObject != this.gameObject && GetIsWithinPerceptionRange(unit)) {
 				leastDamaged = unit;
 				damage = hpDiff;
 			}
@@ -666,7 +666,7 @@ public class Entity : MonoBehaviour {
 		float damage = 0;
 		foreach (Entity unit in list) {
 			float hpDiff = unit.MaxHitPoints - unit.CurrentHitPoints;
-			if (hpDiff > damage && hpDiff >= 0f && unit.gameObject != this.gameObject) {
+			if (hpDiff > damage && hpDiff >= 0f && unit.gameObject != this.gameObject && GetIsWithinPerceptionRange(unit)) {
 				mostDamaged = unit;
 				damage = hpDiff;
 			}
