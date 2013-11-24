@@ -9,6 +9,9 @@ public class CameraController : MonoBehaviour {
 				MaximumY = 30;
 	public float CameraScrollMultiplier = 2f,
 				CameraRotateMultiplier = 3f;
+
+	[Range(5, 50)]
+	public float NonPassibleBorderWidth = 25f;
 	
 	
 	private int screenWidth, screenHeight;
@@ -17,7 +20,7 @@ public class CameraController : MonoBehaviour {
 	private Terrain terrain;
 	private Vector3 mapMinBounds = Vector3.zero, 
 					mapMaxBounds = Vector3.zero;
-	private float nonPassibleBorderWidth = 25f;
+
 	
 	private GameController _gameController;
 
@@ -34,10 +37,10 @@ public class CameraController : MonoBehaviour {
 		mapMinBounds = new Vector3(terrain.transform.position.x, 0f, terrain.transform.position.z);
 		mapMaxBounds += mapMinBounds + new Vector3(terrainSize.x, 0f, terrainSize.z);
 		
-		mapMinBounds.x += nonPassibleBorderWidth;
-		mapMinBounds.z += nonPassibleBorderWidth;
-		mapMaxBounds.x -= nonPassibleBorderWidth;
-		mapMaxBounds.z -= nonPassibleBorderWidth;
+		mapMinBounds.x += NonPassibleBorderWidth;
+		mapMinBounds.z += NonPassibleBorderWidth;
+		mapMaxBounds.x -= NonPassibleBorderWidth;
+		mapMaxBounds.z -= NonPassibleBorderWidth;
 	}
 	
 	// Update is called once per frame
