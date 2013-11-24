@@ -14,8 +14,6 @@ public class DatabaseHandler : MonoBehaviour {
 
 	private WWWForm answersForm = null;
 
-	private GameController _gameController = null;
-
 	private ScenarioHandler scenarioHandler = null;
 
 	void Start () {
@@ -28,11 +26,6 @@ public class DatabaseHandler : MonoBehaviour {
 			StartCoroutine(LoadQuestions());
 
 			answersForm = new WWWForm();
-
-			_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-			if (_gameController == null) {
-				_gameController = GameObject.FindGameObjectWithTag("GameController").GetComponentInChildren<GameController>();
-			}
 		}
 	}
 
