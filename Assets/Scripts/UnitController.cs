@@ -303,6 +303,20 @@ public class UnitController : Unit {
 			lastAttacker = null;
 		}
 		else if (attackTarget != null) {
+			if (isHealer) {
+				Entity tacTarget = GetTacticalTarget(target, playerOwner.unitsList);
+				if (tacTarget == null || (tacTarget.CurrentHitPoints > tacTarget.MaxHitPoints * HealThreshold)) {
+					tacTarget = GetMostDamagedUnit(playerOwner.unitsList);
+				}
+				
+				if (tacTarget != null && (tacTarget.CurrentHitPoints <= tacTarget.MaxHitPoints * HealThreshold)) {
+					if (GetIsWithinPerceptionRange(tacTarget)) {
+						healTarget = tacTarget;
+						this.currentUnitState = UnitController.UnitState.HEALING;
+					}
+				}
+			}
+
 			if (this.GetShouldFlee()) {
 				this.currentUnitState = UnitState.FLEEING;
 			}
