@@ -13,6 +13,7 @@ public class UnitController : Unit {
 
 	public enum UnitState {
 		PLACING,
+		REPLACING,
 		PLACED,
 		HEALING,
 		ATTACKING,
@@ -154,6 +155,9 @@ public class UnitController : Unit {
 		else if (currentUnitState == UnitState.PLACING) {
 			PlacingBehaviour();
 		}
+		else if (currentUnitState == UnitState.REPLACING) {
+			ReplacingBehaviour();
+		}
 		else if (currentUnitState == UnitState.PLACED) {
 			PlacedBehaviour();
 		}
@@ -209,13 +213,42 @@ public class UnitController : Unit {
 				if (hit.collider.GetType() == typeof(TerrainCollider)) {
 					float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
 					height += this.transform.collider.bounds.size.y/2f + 0.1f;
-					this.transform.position = new Vector3(hit.point.x, height, hit.point.z);
+					Vector3 newPos = new Vector3(hit.point.x, height, hit.point.z);
+					if (this.GetIsPosWalkable(newPos)) {
+						this.transform.position = newPos;
+					}
 					break;
 				}
 			}
 
 			checkForCollisions();
 			
+			DrawRangeCircles();
+		}
+	}
+
+	protected virtual void ReplacingBehaviour() {
+		if (this.playerOwner != null) {
+			if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
+				currentUnitState = UnitState.PLACED;
+			}
+
+			Ray ray = playerOwner.GetComponentInChildren<Camera>().ScreenPointToRay(Input.mousePosition);
+			foreach (RaycastHit hit in Physics.RaycastAll(ray)) {
+				if (hit.collider.GetType() == typeof(TerrainCollider)) {
+					float height = Terrain.activeTerrain.SampleHeight(new Vector3(hit.point.x, 0f, hit.point.z));
+					height += this.transform.collider.bounds.size.y/2f + 0.1f;
+					Vector3 newPos = new Vector3(hit.point.x, height, hit.point.z);
+					if (this.GetIsPosWalkable(newPos)) {
+						this.transform.position = newPos;
+					}
+					
+					break;
+				}
+			}
+
+			checkForCollisions();
+
 			DrawRangeCircles();
 		}
 	}
