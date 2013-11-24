@@ -282,20 +282,24 @@ public class QuestionnaireHandler : MonoBehaviour {
 			}
 		}
 
-		foreach (KeyValuePair<string,string> text in textDict) {
-			if ((text.Value == "" || text.Key == "") && !text.Key.Contains("comment")) {
-				bAnswered = false;
-				break;
+		if (bAnswered) {
+			foreach (KeyValuePair<string,string> text in textDict) {
+				if ((text.Value == "" || text.Key == "") && !text.Key.Contains("comment")) {
+					bAnswered = false;
+					break;
+				}
 			}
 		}
 
-		foreach (KeyValuePair<string,int> selection in selectionDict) {
-			if (selection.Value < 0 || selection.Key == "") {
-				bAnswered = false;
-				break;
+		if (bAnswered) {
+			foreach (KeyValuePair<string,int> selection in selectionDict) {
+				if (selection.Value < 0 || selection.Key == "") {
+					bAnswered = false;
+					break;
+				}
 			}
 		}
-		
+
 		return bAnswered;
 	}
 }
