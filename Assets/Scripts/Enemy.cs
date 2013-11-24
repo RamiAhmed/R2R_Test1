@@ -2,8 +2,12 @@
 using System.Collections;
 
 public class Enemy : Entity {
-	
+
+	[Range(1, 10)]
 	public int GoldReward = 1;
+
+	[Range(1, 20)]
+	public int MaxGoldReward = 10;
 	
 	public float HitPointsScaleFactor = 10f,
 				DamageScaleFactor = 1f,
@@ -14,7 +18,8 @@ public class Enemy : Entity {
 				PerceptionRangeScaleFactor = 0.5f,
 				AttackingRangeScaleFactor = 0.3f,
 				AttacksPerSecondScaleFactor = 0.1f,
-				FleeThresholdScaleFactor = 0.01f;
+				FleeThresholdScaleFactor = 0.01f,
+				GoldScaleFactor = 0.0f;
 
 	// Use this for initialization
 	protected override void Start () {
@@ -26,7 +31,7 @@ public class Enemy : Entity {
 		
 		int wave = _gameController.WaveCount-1;
 				
-		GoldReward = Mathf.Clamp(wave, 1, 10);
+		GoldReward = Mathf.RoundToInt(Mathf.Clamp(wave * GoldScaleFactor, (float)GoldReward, (float)MaxGoldReward));
 		
 		MaxHitPoints += (wave*HitPointsScaleFactor);
 		CurrentHitPoints = MaxHitPoints;
