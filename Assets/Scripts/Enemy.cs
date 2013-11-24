@@ -33,24 +33,27 @@ public class Enemy : Entity {
 				
 		GoldReward = Mathf.RoundToInt(Mathf.Clamp(wave * GoldScaleFactor, (float)GoldReward, (float)MaxGoldReward));
 		
-		MaxHitPoints += (wave*HitPointsScaleFactor);
+		MaxHitPoints += (wave*HitPointsScaleFactor) + Random.Range(0f, 5f);
 		CurrentHitPoints = MaxHitPoints;
 		
-		MinimumDamage += wave*DamageScaleFactor;
-		MaximumDamage += wave*DamageScaleFactor;
+		MinimumDamage += wave*DamageScaleFactor + Random.value;
+		MaximumDamage += wave*DamageScaleFactor + Random.value;
 		Accuracy += wave*AccuracyScaleFactor;
+		if (Accuracy > 1f) 
+			Accuracy = 1f;
+
 		Evasion += wave*EvasionScaleFactor;
+		if (Evasion > 1f) 
+			Evasion = 1f;
+
 		Armor += wave*ArmorScaleFactor;
 		
-		MovementSpeed += (wave*MovementSpeedScaleFactor);
+		MovementSpeed += (wave*MovementSpeedScaleFactor) + Random.value;
 		
 		PerceptionRange += (wave*PerceptionRangeScaleFactor);
 		AttackingRange += (wave*AttackingRangeScaleFactor);
 		
 		AttacksPerSecond += (wave*AttacksPerSecondScaleFactor);
 		FleeThreshold -= (wave*FleeThresholdScaleFactor);
-		
-		//_gameController.WaveSize += wave * WaveAdditionFactor;
-		//_gameController.WaveSize = _gameController.WaveSize > MaxWaveSize ? MaxWaveSize : _gameController.WaveSize;
 	}
 }
