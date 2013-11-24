@@ -269,7 +269,7 @@ public class UnitController : Unit {
 			this.currentUnitState = UnitState.ATTACKING;
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints) {
+			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints && gateRef.lastAttacker != null) {
 				GuardOther(gateRef);
 			}
 			else {
