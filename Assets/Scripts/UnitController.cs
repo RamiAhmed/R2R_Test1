@@ -304,7 +304,7 @@ public class UnitController : Unit {
 		}
 		else if (attackTarget != null) {
 			if (isHealer) {
-				Entity tacTarget = GetTacticalTarget(target, playerOwner.unitsList);
+				Entity tacTarget = GetTacticalTarget(currentTarget, playerOwner.unitsList);
 				if (tacTarget == null || (tacTarget.CurrentHitPoints > tacTarget.MaxHitPoints * HealThreshold)) {
 					tacTarget = GetMostDamagedUnit(playerOwner.unitsList);
 				}
