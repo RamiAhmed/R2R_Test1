@@ -286,15 +286,15 @@ public class Entity : MonoBehaviour {
 		return newTarget;
 	}
 
-	public Entity StandGround(PlayerController playerOwner) {
+	public Entity StandGround(List<Entity> list) {
 		Entity target = GetNearestUnit(_gameController.enemies), 
 				newTarget = null;
 		if (target != null) {
 			if (GetIsWithinAttackingRange(target)) {
 				newTarget = target; 
 			}
-			else if (GetIsWithinAttackingRange(GetNearestUnit(playerOwner.unitsList).lastAttacker)) {
-				newTarget = GetNearestUnit(playerOwner.unitsList).lastAttacker;
+			else if (GetIsWithinAttackingRange(GetNearestUnit(list).lastAttacker)) {
+				newTarget = GetNearestUnit(list).lastAttacker;
 			}
 		}
 

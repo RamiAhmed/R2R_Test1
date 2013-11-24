@@ -563,7 +563,7 @@ public class PlayerController : MonoBehaviour {
 
 	
 	private void renderBottomHUD() {
-		float width = (screenWidth * (1f - 0.13f)) - 0.01f ,
+		float width = (screenWidth * (1f - 0.13f - 0.01f)),
 			height = screenHeight * 0.25f;
 		float x = screenWidth - width,
 			y = screenHeight - height;
@@ -677,7 +677,7 @@ public class PlayerController : MonoBehaviour {
 
 		elementX += elementWidth;
 		elementHeight -= unitButtonsHeight + healthBarHeight;		
-		elementWidth += elementWidth/2f;
+		elementWidth = width * 0.466f;
 
 		// Tactical AI System
 		GUI.BeginGroup(new Rect(elementX, unitButtonsHeight + healthBarHeight, elementWidth-5f, elementHeight)); 
@@ -788,7 +788,7 @@ public class PlayerController : MonoBehaviour {
 		GUI.EndGroup(); // End Tactics
 
 		elementX += elementWidth;
-		elementWidth = elementWidth/3f-5f;
+		elementWidth = width * 0.2f;
 
 		GUI.BeginGroup(new Rect(elementX, unitButtonsHeight + healthBarHeight, elementWidth, elementHeight)); // Spawn Grid	
 		if (playerFaction.FactionUnits.Count > 0) {
