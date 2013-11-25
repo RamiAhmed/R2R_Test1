@@ -231,7 +231,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void OnBuildStart() {
-		if (WaveCount <= MaximumWaveCount) {
+		if (WaveCount < MaximumWaveCount) {
 			if (qHandler.QuestionnaireEnabled) {
 				if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
 				    && ((WaveCount+1) % qHandler.QuestionnaireWaveFrequency) == 0) {
