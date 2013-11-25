@@ -249,10 +249,6 @@ public class GameController : MonoBehaviour {
 		}
 		else {
 			GameWon = true;
-			foreach (PlayerController player in players) {
-				player.DisplayFeedbackMessage("You have won the game!", Color.green);
-			}
-
 			CurrentGameState = GameState.ENDING;
 		}
 	}
