@@ -12,6 +12,9 @@ public class DatabaseHandler : MonoBehaviour {
 
 	public IDictionary questionsDict = null;
 
+	public Dictionary<string,string> DemographicsDict = null;
+	public bool SavedDemographics = false;
+
 	private WWWForm answersForm = null;
 
 	private ScenarioHandler scenarioHandler = null;
@@ -23,24 +26,48 @@ public class DatabaseHandler : MonoBehaviour {
 		}
 
 		if (!scenarioHandler.DoneTesting) {
-			StartCoroutine(LoadQuestions());
+			if (questionsDict == null) {
+				StartCoroutine(LoadQuestions());
+			}
 
 			answersForm = new WWWForm();
 		}
 	}
 
 	public void ReadyData(Dictionary<string,string> dict) {
-		foreach (KeyValuePair<string,string> pair in dict) {
-			if (!pair.Key.Equals("") && !pair.Value.Equals("")) {
-				int outValue = 0;
-				if (int.TryParse(pair.Value, out outValue)) {
-					answersForm.AddField(pair.Key, outValue);
-				}
-				else {
-					answersForm.AddField(pair.Key, pair.Value);
+		ReadyData(dict, false);
+	}
+
+	public void ReadyData(Dictionary<string,string> dict, bool bDemographics) {
+		if (bDemographics) {
+			if (!SavedDemographics) {
+				SavedDemographics = true;
+				DemographicsDict = dict;
+				//Debug.Log("Saving demographics: " + DemographicsDict.ToString());
+			}
+			else {
+				//Debug.Log("Load previous demographics: " + DemographicsDict.ToString());
+				dict = DemographicsDict;
+			}
+		}
+
+		if (dict != null) {
+			foreach (KeyValuePair<string,string> pair in dict) {
+				if (!pair.Key.Equals("") && !pair.Value.Equals("")) {
+					int outValue = 0;
+					if (int.TryParse(pair.Value, out outValue)) {
+						answersForm.AddField(pair.Key, outValue);
+					}
+					else {
+						answersForm.AddField(pair.Key, pair.Value);
+					}
 				}
 			}
 		}
+		else {
+			Debug.LogWarning("Could not find dictionary in ReadyData. bDemographics: " + bDemographics);
+		}
+
 	}
 
 	public void SubmitAllData() {

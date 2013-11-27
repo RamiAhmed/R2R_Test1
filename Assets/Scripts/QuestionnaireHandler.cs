@@ -125,48 +125,61 @@ public class QuestionnaireHandler : MonoBehaviour {
 			case QuestionnaireState.AFTER: buildAfter(); break;
 		}
 
-		if (GetQuestionsAnswered()) {
-			GUILayout.FlexibleSpace();
+		if (_gameController.CurrentGameState == GameController.GameState.QUESTIONNAIRE) {
+			if (GetQuestionsAnswered()) {
+				GUILayout.FlexibleSpace();
 
-			if (CurrentState != QuestionnaireState.AFTER) {
-				if (GUILayout.Button("Continue", GUILayout.Height(GUIElementHeight))) {
-					dbHandler.ReadyData(answersDict);
-					answersDict.Clear();
+				if (CurrentState != QuestionnaireState.AFTER) {
+					if (GUILayout.Button("Continue", GUILayout.Height(GUIElementHeight))) {
+						dbHandler.ReadyData(answersDict, (CurrentState == QuestionnaireState.DEMOGRAPHICS));
+						answersDict.Clear();
 
-					if (CurrentState == QuestionnaireState.DURING) {
-						currentDuring++;
-						if (currentDuring > MaxDuringInterrupts) {
+						if (CurrentState == QuestionnaireState.DURING) {
+							currentDuring++;
+							if (currentDuring > MaxDuringInterrupts) {
+								CurrentState++;
+							}
+						}
+						else {
 							CurrentState++;
 						}
-					}
-					else {
-						CurrentState++;
-					}
 
-					_gameController.CurrentGameState = GameController.GameState.PLAY;
+						_gameController.CurrentGameState = GameController.GameState.PLAY;
+					}
+				}
+				else {
+					if (GUILayout.Button("Submit Answers", GUILayout.Height(GUIElementHeight))) {
+						dbHandler.ReadyData(answersDict);
+						answersDict.Clear();
+
+						dbHandler.SubmitAllData();
+						QuestionnaireEnabled = false;
+
+						_gameController.CurrentGameState = GameController.GameState.PLAY;
+					}
 				}
 			}
-			else {
-				if (GUILayout.Button("Submit Answers", GUILayout.Height(GUIElementHeight))) {
-					dbHandler.ReadyData(answersDict);
-					answersDict.Clear();
 
-					dbHandler.SubmitAllData();
-					QuestionnaireEnabled = false;
-
-					_gameController.CurrentGameState = GameController.GameState.PLAY;
-				}
-			}
+			GUILayout.EndScrollView();
+			GUILayout.EndVertical();
 		}
-
-		GUILayout.EndScrollView();
-		GUILayout.EndVertical();
+		else {
+			Debug.Log("Return to game, no time for questionnaire");
+		}
 	}
 
 	private void buildDemographics() {
-		GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(GUIElementHeight));
+		if (!dbHandler.SavedDemographics) {
+			GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(GUIElementHeight));
 
-		buildSection("Demographics");
+			buildSection("Demographics");
+		}
+		else {
+			//Debug.Log("Loading previous demographics");
+			dbHandler.ReadyData(null, true);
+			CurrentState++;
+			_gameController.CurrentGameState = GameController.GameState.PLAY;
+		}
 	}
 
 	private void buildStarting() {
