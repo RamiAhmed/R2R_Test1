@@ -727,7 +727,7 @@ public class PlayerController : MonoBehaviour {
 			if (SelectedUnits.Count > 0 && SelectedUnits[0].GetIsUnit()) {			
 				UnitController selectedUnitController = SelectedUnits[0].GetComponent<UnitController>();
 				
-				float columnWidth = (elementWidth-5f)/3f,
+				float columnWidth = (elementWidth-5f)/2f, ///3f, // removed due to removal of conditions
 					rowHeight = elementHeight * 0.25f;
 				
 				GUI.BeginGroup(new Rect(0f, 0f, columnWidth, elementHeight)); // Tactics
@@ -788,7 +788,7 @@ public class PlayerController : MonoBehaviour {
 					GUI.EndGroup();
 				
 				GUI.EndGroup();
-				
+				/*
 				GUI.BeginGroup(new Rect(columnWidth*2f, 0f, columnWidth, elementHeight)); // Condition
 				
 					GUI.Box(new Rect(0f, 0f, columnWidth, rowHeight), "Condition");
@@ -812,9 +812,9 @@ public class PlayerController : MonoBehaviour {
 							}
 						}
 					GUI.EndGroup();
-				
+
 				GUI.EndGroup();
-				
+				*/
 			}
 			else if (SelectedUnits.Count > 0 && !SelectedUnits[0].GetIsUnit()) {
 				GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You can only set Tactics on your own units.");
@@ -884,11 +884,12 @@ public class PlayerController : MonoBehaviour {
 		}		
 		else if (bSelectingTactics && scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
 			float width = screenWidth * 0.6f,
-			height = screenHeight * 0.35f;
+			height = screenHeight * 0.4f;
 			float x = (screenWidth - width)/2f,
 			y = height/2f;
 
-			float elementWidth = width/3f, elementHeight = height/8f;
+			float elementWidth = width/2f, //width/3f, // removed 3 because of removal of conditions
+			elementHeight = height/8f;
 
 			System.Array arr;
 			int count;
@@ -999,6 +1000,7 @@ public class PlayerController : MonoBehaviour {
 				}
 			GUILayout.EndVertical();
 
+			/*
 			// Conditions
 			GUILayout.BeginVertical(GUILayout.Width(elementWidth));
 
@@ -1037,7 +1039,7 @@ public class PlayerController : MonoBehaviour {
 				}
 
 			GUILayout.EndVertical();
-
+*/
 			GUILayout.EndHorizontal();
 
 			GUILayout.FlexibleSpace();
