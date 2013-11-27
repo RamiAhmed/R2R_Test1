@@ -228,7 +228,7 @@ public class GameController : MonoBehaviour {
 		}
 		else if (CurrentGameState == GameState.ENDING) {
 			if (qHandler.QuestionnaireEnabled && !isRestarting) {
-				Debug.Log("Game ending; set questionnaireState to AFTER");
+				//Debug.Log("Game ending; set questionnaireState to AFTER");
 				qHandler.CurrentState = QuestionnaireHandler.QuestionnaireState.AFTER;
 				this.CurrentGameState = GameState.QUESTIONNAIRE;
 			}
