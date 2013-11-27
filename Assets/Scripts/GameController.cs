@@ -88,7 +88,7 @@ public class GameController : MonoBehaviour {
 		audioSources = new Dictionary<string, AudioSource>();
 
 		addAudioSource("Background", BackgroundMusic);
-		addAudioSource("Build", BuildMusic, 0.5f);
+		addAudioSource("Build", BuildMusic, 0.5f, true);
 		addAudioSource("Combat", CombatMusic, 0.1f);
 
 		qHandler = this.GetComponent<QuestionnaireHandler>();
@@ -122,11 +122,16 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void addAudioSource(string type, AudioClip audioClip, float volume) {
+		addAudioSource(type, audioClip, volume, false);
+	}
+
+	private void addAudioSource(string type, AudioClip audioClip, float volume, bool looping) {
 		if (audioClip != null) {
 			audioSources.Add(type, this.gameObject.AddComponent<AudioSource>());
 			audioSources[type].playOnAwake = false;
 			audioSources[type].clip = audioClip;
 			audioSources[type].volume = volume;
+			audioSources[type].loop = looping;
 		}
 	}
 
