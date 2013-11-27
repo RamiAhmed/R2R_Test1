@@ -116,7 +116,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else {
 			if (Input.GetMouseButtonDown(0)) {
-				UnitController currentlySelectedUnit = getCurrentlyPlacingUnit();
+				UnitController currentlySelectedUnit = GetCurrentlyPlacingUnit();
 				if (currentlySelectedUnit != null) {
 					currentlySelectedUnit.BuildUnit();
 				}
@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour {
 		bool selectionBool = 
 			SelectedUnits.Count == 0 || 
 			//_gameController.CurrentPlayState == GameController.PlayState.COMBAT || 
-			getCurrentlyPlacingUnit() != null || 
+			GetCurrentlyPlacingUnit() != null || 
 			(!disallowedRect.Contains(mousePos) && !bSelectingTactics);
 
 		if (selectionBool) {
@@ -147,7 +147,7 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	public bool ClearPlacingUnit() {
-		UnitController currentlyPlacing = getCurrentlyPlacingUnit();
+		UnitController currentlyPlacing = GetCurrentlyPlacingUnit();
 		if (currentlyPlacing != null) {
 			if (currentlyPlacing.GetIsPlacing()) {
 				Destroy(currentlyPlacing.gameObject);
@@ -1029,7 +1029,7 @@ public class PlayerController : MonoBehaviour {
 		}
 	}
 	
-	private UnitController getCurrentlyPlacingUnit() {
+	public UnitController GetCurrentlyPlacingUnit() {
 		return currentlyPlacingUnit;
 	}
 
@@ -1050,7 +1050,7 @@ public class PlayerController : MonoBehaviour {
 		}
 		else if (PlayerGold >= cost) {
 			SetCurrentlyPlacingUnit(newUnit.GetComponent<UnitController>());
-			getCurrentlyPlacingUnit().playerOwner = this;
+			GetCurrentlyPlacingUnit().playerOwner = this;
 		}
 		else {
 			Destroy(newUnit);

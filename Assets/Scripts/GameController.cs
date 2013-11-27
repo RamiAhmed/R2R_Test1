@@ -165,12 +165,18 @@ public class GameController : MonoBehaviour {
 			}*/
 			
 			if (Input.GetKeyUp(KeyCode.Escape)) {
-				if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.PAUSED) {
-					CurrentGameState = GameState.MENU;	
+				if (players[0].GetCurrentlyPlacingUnit() != null) {
+					players[0].ClearPlacingUnit();
 				}
-				else if (CurrentGameState == GameState.MENU && GameTime > 0f) {
-					CurrentGameState = GameState.PLAY;
-				}					
+				else {
+
+					if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.PAUSED) {
+						CurrentGameState = GameState.MENU;	
+					}
+					else if (CurrentGameState == GameState.MENU && GameTime > 0f) {
+						CurrentGameState = GameState.PLAY;
+					}					
+				}
 			}
 		}
 		
