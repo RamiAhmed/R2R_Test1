@@ -39,8 +39,11 @@ public class GameController : MonoBehaviour {
 	private QuestionnaireHandler qHandler = null;
 
 	private ScenarioHandler scenarioHandler = null;
-	
+
+	private bool bIntroductionShown = false;
+
 	public enum GameState {
+		INTRODUCTION,
 		MENU,
 		PLAY,
 		PAUSED,
@@ -154,7 +157,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	void Update () {
-		if (CurrentGameState != GameState.QUESTIONNAIRE && CurrentGameState != GameState.ENDING) {
+		if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.MENU) {
 			/*if (Input.GetKeyUp(KeyCode.Pause) || Input.GetKeyUp(KeyCode.P)) {
 				if (CurrentGameState == GameState.PAUSED) {
 					CurrentGameState = GameState.PLAY;
@@ -169,7 +172,6 @@ public class GameController : MonoBehaviour {
 					players[0].ClearPlacingUnit();
 				}
 				else {
-
 					if (CurrentGameState == GameState.PLAY || CurrentGameState == GameState.PAUSED) {
 						CurrentGameState = GameState.MENU;	
 					}
@@ -179,8 +181,14 @@ public class GameController : MonoBehaviour {
 				}
 			}
 		}
-		
+
 		if (CurrentGameState == GameState.PLAY) {
+			if (!bIntroductionShown) {
+				CurrentGameState = GameState.INTRODUCTION;
+				bIntroductionShown = true;
+				return;
+			}
+
 			GameTime += Time.deltaTime;
 			
 			if (!miniMapCam.activeSelf) {
@@ -214,11 +222,13 @@ public class GameController : MonoBehaviour {
 				}
 			}
 			else {
-				CurrentGameState = GameState.MENU;
+				//CurrentGameState = GameState.MENU;
+				CurrentPlayState = PlayState.BUILD;
 			}
 		}
 		else if (CurrentGameState == GameState.ENDING) {
 			if (qHandler.QuestionnaireEnabled && !isRestarting) {
+				Debug.Log("Game ending; set questionnaireState to AFTER");
 				qHandler.CurrentState = QuestionnaireHandler.QuestionnaireState.AFTER;
 				this.CurrentGameState = GameState.QUESTIONNAIRE;
 			}

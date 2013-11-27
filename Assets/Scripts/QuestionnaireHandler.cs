@@ -68,6 +68,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 			questionnaireRect = new Rect((Screen.width/2f) - (width/2f), (Screen.height/2f) - (height/2f), width, height);
 
+			//Debug.Log("Iterate scenario: " + CurrentState.ToString() + " => " + (CurrentState+1).ToString());
 			CurrentState++;
 
 			scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
@@ -137,10 +138,12 @@ public class QuestionnaireHandler : MonoBehaviour {
 						if (CurrentState == QuestionnaireState.DURING) {
 							currentDuring++;
 							if (currentDuring > MaxDuringInterrupts) {
+								//Debug.Log("Iterate scenario: " + CurrentState.ToString() + " => " + (CurrentState+1).ToString());
 								CurrentState++;
 							}
 						}
 						else {
+							//Debug.Log("Iterate scenario: " + CurrentState.ToString() + " => " + (CurrentState+1).ToString());
 							CurrentState++;
 						}
 
@@ -159,16 +162,17 @@ public class QuestionnaireHandler : MonoBehaviour {
 					}
 				}
 			}
-
-			GUILayout.EndScrollView();
-			GUILayout.EndVertical();
 		}
 		else {
 			Debug.Log("Return to game, no time for questionnaire");
 		}
+
+		GUILayout.EndScrollView();
+		GUILayout.EndVertical();
 	}
 
 	private void buildDemographics() {
+		//Debug.Log("build demographics");
 		if (!dbHandler.SavedDemographics) {
 			GUILayout.Box("DEMOGRAPHICS", GUILayout.Height(GUIElementHeight));
 
@@ -177,6 +181,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 		else {
 			//Debug.Log("Loading previous demographics");
 			dbHandler.ReadyData(null, true);
+			//Debug.Log("Iterate scenario: " + CurrentState.ToString() + " => " + (CurrentState+1).ToString());
 			CurrentState++;
 			_gameController.CurrentGameState = GameController.GameState.PLAY;
 		}

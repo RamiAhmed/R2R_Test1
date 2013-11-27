@@ -336,13 +336,55 @@ public class PlayerController : MonoBehaviour {
 	
 	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
-		 if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
+		if (_gameController.CurrentGameState == GameController.GameState.INTRODUCTION) {
+			float width = screenWidth * 0.4f,
+			height = screenHeight * 0.4f;
+			float x = (screenWidth/2f) - (width/2f),
+			y = (screenHeight/2f) - (height/2f);
+			
+			string boxString = "";
+			boxString += "Welcome to Right to Rule Prototype 0.0.2!\n";
+
+			if (scenarioHandler.LastScenario == ScenarioHandler.ScenarioState.NONE) {
+				boxString += "This game is inspired by Tower Defense games, thus creeps spawn at one side of the map and move towards your Gate of Life (see arrows in-game).";
+				boxString += "You must defend your Gate of Life by buying and placing units to defend against the incoming waves of creeps. Your units respawn if they die.";
+				boxString += "Since this is a prototype game meant for academic testing, the game features two scenarios.";
+				boxString += "This means that after you lose or win the first game, a second game will be automatically launched. Please play through both scenarios.";
+			}
+			else if (!scenarioHandler.DoneTesting) {
+				boxString += "Congratulations on finishing the first scenario and thank you for your feedback. The second scenario will commence as soon as you click 'continue'.";
+			}
+			else {
+				boxString += "Congratulations on finishing both scenarios and thereby concluding the formal test, and thank you very much for your feedback.";
+				boxString += "Now you may play freely without being interrupted by questions or you may quit the game at will.";
+			}
+
+			boxString += "\nGood luck and have fun!";
+
+			GUILayout.BeginArea(new Rect(x, y, width, height));
+
+			GUILayout.Box(boxString);
+
+			GUILayout.FlexibleSpace();
+
+			if (GUILayout.Button("Continue", GUILayout.Height(40f))) {
+				if (scenarioHandler.LastScenario == ScenarioHandler.ScenarioState.NONE) {
+					_gameController.CurrentGameState = GameController.GameState.MENU;
+				}
+				else {
+					_gameController.CurrentGameState = GameController.GameState.PLAY;
+				}
+			}
+			
+			GUILayout.EndArea();
+		}
+		else if (_gameController.CurrentGameState == GameController.GameState.PLAY) {			
 			renderTopHUD();
 			renderBottomHUD();		
 
 			renderFeedbackMessage();			
 			renderMarqueeSelection();
-			
+
 			if (isDebugging) {
 				renderSelectedDebugFeedback();	
 			}
@@ -354,11 +396,11 @@ public class PlayerController : MonoBehaviour {
 				renderSelectedUnitsHealthbar();
 			}
 		}
-		else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
+	/*	else if (_gameController.CurrentGameState == GameController.GameState.PAUSED) {
 			renderPauseGUI();
-		}
+		}*/
 	}
-
+	/*
 	private void renderPauseGUI() {
 		float width = screenWidth * 0.4f,
 		height = 50f;
@@ -370,7 +412,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.Box("PAUSED\n Press 'P' or 'Pause|Break' to resume game.");
 		
 		GUILayout.EndArea();
-	}
+	}*/
 
 	private void renderAllUnitsHealthbar() {
 		float width = 100f, height = 20f;
