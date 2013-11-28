@@ -550,7 +550,7 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		
 		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, GUILayout.Height(height));
-		GUILayout.Box(new GUIContent("Gold: " + PlayerGold + "g", GoldIconHUD), GUILayout.Height(height), GUILayout.Width(width*0.10f));	
+		GUILayout.Box(new GUIContent("Gold: " + PlayerGold + "g", GoldIconHUD), GUILayout.Height(height), GUILayout.Width(width*0.075f));	
 
 		
 		GUILayout.EndHorizontal();
