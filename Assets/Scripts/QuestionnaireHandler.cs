@@ -24,6 +24,8 @@ public class QuestionnaireHandler : MonoBehaviour {
 	 
 	public int MaxDuringInterrupts = 3;
 
+	public GUISkin QuestionnaireSkin = null;
+
 	private int currentDuring = 1;
 
 	private DatabaseHandler dbHandler = null;
@@ -105,6 +107,10 @@ public class QuestionnaireHandler : MonoBehaviour {
 	void OnGUI() {
 		if (QuestionnaireEnabled) {
 			if (showingQuestionnaire) {
+				if (QuestionnaireSkin != null && GUI.skin != QuestionnaireSkin) {
+					GUI.skin = QuestionnaireSkin;
+				}
+
 				questionnaireRect = GUILayout.Window(0, questionnaireRect, DrawQuestionnaire, "");
 				GUI.BringWindowToFront(0);
 			}

@@ -19,7 +19,9 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture marqueeGraphics;	
 	
-	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD;
+	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD;
+
+	public GUISkin PlayerHUDSkin = null;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -337,8 +339,12 @@ public class PlayerController : MonoBehaviour {
 	/* GUI & UNIT SPAWNING */
 	void OnGUI() {
 		if (_gameController.CurrentGameState == GameController.GameState.INTRODUCTION) {
-			float width = screenWidth * 0.4f,
-			height = screenHeight * 0.4f;
+			if (PlayerHUDSkin != null && GUI.skin != PlayerHUDSkin) {
+				GUI.skin = PlayerHUDSkin;
+			}
+
+			float width = screenWidth * 0.25f,
+			height = screenHeight * 0.3f;
 			float x = (screenWidth/2f) - (width/2f),
 			y = (screenHeight/2f) - (height/2f);
 			
@@ -365,7 +371,7 @@ public class PlayerController : MonoBehaviour {
 
 			GUILayout.Box(boxString);
 
-			GUILayout.FlexibleSpace();
+			//GUILayout.FlexibleSpace();
 
 			if (GUILayout.Button("Continue", GUILayout.Height(40f))) {
 				if (scenarioHandler.LastScenario == ScenarioHandler.ScenarioState.NONE) {
@@ -544,8 +550,8 @@ public class PlayerController : MonoBehaviour {
 		GUILayout.FlexibleSpace();
 		
 		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, GUILayout.Height(height));
-		
-		GUILayout.Box("Gold: " + PlayerGold + "g", GUILayout.Height(height));		
+		GUILayout.Box(new GUIContent("Gold: " + PlayerGold + "g", GoldIconHUD), GUILayout.Height(height), GUILayout.Width(width*0.10f));	
+
 		
 		GUILayout.EndHorizontal();
 		GUILayout.EndArea();
