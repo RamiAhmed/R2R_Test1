@@ -164,7 +164,12 @@ public class QuestionnaireHandler : MonoBehaviour {
 						dbHandler.SubmitAllData();
 						QuestionnaireEnabled = false;
 
-						_gameController.CurrentGameState = GameController.GameState.PLAY;
+						if (!_gameController.bQuittingGame) {
+							_gameController.CurrentGameState = GameController.GameState.PLAY;
+						}
+						else {
+							_gameController.QuitGame();
+						}
 					}
 				}
 			}

@@ -36,6 +36,8 @@ public class GameController : MonoBehaviour {
 	public AudioClip BuildMusic, CombatMusic, BackgroundMusic;
 	private Dictionary<string, AudioSource> audioSources;
 
+	public bool bQuittingGame = false;
+
 	private QuestionnaireHandler qHandler = null;
 
 	private ScenarioHandler scenarioHandler = null;
@@ -332,6 +334,7 @@ public class GameController : MonoBehaviour {
 			if (qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING) {
 				qHandler.CurrentState = QuestionnaireHandler.QuestionnaireState.AFTER;
 			}
+			bQuittingGame = true;
 			CurrentGameState = GameState.QUESTIONNAIRE;
 		}
 		else {
