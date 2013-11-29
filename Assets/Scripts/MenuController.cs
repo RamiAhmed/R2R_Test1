@@ -4,16 +4,27 @@ using System.Collections;
 public class MenuController : MonoBehaviour {
 	
 	public GUISkin MenuSkin;
+
+	public Texture2D HUDInstructions, UnitInstructions, TAISInstructions;
 	
 	private GameController _gameController;
 	
 	private float screenWidth, screenHeight;
+
+	private Rect instructionsRect;
+
+	private int showInstructions = 0;
 	
 	// Use this for initialization
 	void Start () {
 		_gameController = this.GetComponent<GameController>();
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
+
+		float instructionsWidth = screenWidth * 0.9f,
+		instructionsHeight = screenHeight * 0.9f;
+
+		instructionsRect = new Rect((screenWidth/2f) - (instructionsWidth/2f), (screenHeight/2f) - (instructionsHeight/2f), instructionsWidth, instructionsHeight);
 	}
 	
 	void OnGUI() {
@@ -58,7 +69,25 @@ public class MenuController : MonoBehaviour {
 					GUILayout.Box("You have won the game by reaching wave " + _gameController.MaximumWaveCount + ". Congratulations!");
 				}
 			}
-			
+
+			if (HUDInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View HUD Instructions", "Click this button to view the HUD intructions in a new window."), GUILayout.Height(elementHeight))) {
+					showInstructions = 1;
+				}
+			}
+
+			if (UnitInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View Unit Instructions", "Click this button to view the unit instructions in a new window."), GUILayout.Height(elementHeight))) {
+					showInstructions = 2;
+				}
+			}
+
+			if (TAISInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View Tactics Instructions", "Click this button to view the tactics system instructions in a new window."), GUILayout.Height(elementHeight))) {
+					showInstructions = 3;
+				}
+			}
+
 			if (GUILayout.Button(new GUIContent("Restart Game", "Click to restart the current level"), GUILayout.Height(elementHeight))) {
 				_gameController.RestartGame();	
 			}
@@ -84,6 +113,44 @@ public class MenuController : MonoBehaviour {
 				
 				GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), new GUIContent(GUI.tooltip));
 			}
+
+			if (showInstructions > 0) {
+				instructionsRect = GUI.Window(1, instructionsRect, drawInstructions, "");
+				GUI.BringWindowToFront(1);
+			}
+		}
+	}
+
+	private void drawInstructions(int windowID) {
+		if (showInstructions > 0) {
+			float width = instructionsRect.width,
+			height = instructionsRect.height;
+
+			GUI.BeginGroup(new Rect(5f, 5f, instructionsRect.width-5f, instructionsRect.height-5f));
+
+			Texture2D texture = null;
+			if (showInstructions == 1) {
+				texture = HUDInstructions;
+			}
+			else if (showInstructions == 2) {
+				texture = UnitInstructions;
+			}
+			else if (showInstructions == 3) {
+				texture = TAISInstructions;
+			}
+
+			if (texture != null) {
+				GUI.DrawTexture(new Rect((instructionsRect.width/2f) - (width/2f), 5f, width-10f, height*0.9f), texture, ScaleMode.StretchToFill);
+			}
+			else {
+				showInstructions = 0;
+			}
+
+			if (GUI.Button(new Rect(0f, height-(height*0.075f), instructionsRect.width, (height*0.075f)), "Back")) {
+				showInstructions = 0;
+			}
+
+			GUI.EndGroup();
 		}
 	}
 }
