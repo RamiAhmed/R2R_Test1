@@ -655,7 +655,7 @@ public class PlayerController : MonoBehaviour {
 			
 			// Health bar
 			float hpWidth = elementWidth * (selectedUnit.CurrentHitPoints / selectedUnit.MaxHitPoints);		
-			string hpLabel = selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints;
+			string hpLabel = selectedUnit.CurrentHitPoints.ToString("F0") + " / " + selectedUnit.MaxHitPoints.ToString("F0");
 			GUI.BeginGroup(new Rect(elementX, unitButtonsHeight, hpWidth, healthBarHeight));				
 				GUI.DrawTexture(new Rect(0f, 0f, elementWidth, healthBarHeight), healthBarHUD, ScaleMode.StretchToFill);
 			GUI.EndGroup();
