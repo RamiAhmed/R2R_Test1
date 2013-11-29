@@ -344,7 +344,7 @@ public class PlayerController : MonoBehaviour {
 			}
 
 			float width = screenWidth * 0.25f,
-			height = screenHeight * 0.3f;
+			height = screenHeight * 0.5f;
 			float x = (screenWidth/2f) - (width/2f),
 			y = (screenHeight/2f) - (height/2f);
 			
