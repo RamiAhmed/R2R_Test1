@@ -83,7 +83,7 @@ public class MenuController : MonoBehaviour {
 			}
 
 			if (TAISInstructions != null) {
-				if (GUILayout.Button(new GUIContent("View Tactics Instructions", "Click this button to view the tactics system instructions in a new window."), GUILayout.Height(elementHeight))) {
+				if (GUILayout.Button(new GUIContent("View Tactics Instructions (Only applicable for scenario with tactics)", "Click this button to view the tactics system (only exists in one of the testing scenarios) instructions in a new window."), GUILayout.Height(elementHeight))) {
 					showInstructions = 3;
 				}
 			}
@@ -109,7 +109,7 @@ public class MenuController : MonoBehaviour {
 			if (GUI.tooltip != "") {
 				Vector2 mousePos = Input.mousePosition;
 				float tipWidth = 200f, 
-					  tipHeight = 50f;
+					  tipHeight = 100f;
 				
 				GUI.Box(new Rect(mousePos.x - tipWidth, screenHeight - mousePos.y - tipHeight, tipWidth, tipHeight), new GUIContent(GUI.tooltip));
 			}
