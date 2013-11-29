@@ -57,7 +57,7 @@ public class StatsCollector : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.Print) || Input.GetKeyDown(KeyCode.SysReq)) {
 			Debug.Log("Saving Screenshot");
-			Application.CaptureScreenshot("ScreenShot_" + System.DateTime.Now.ToString());
+			Application.CaptureScreenshot(Application.dataPath + "/ScreenShot_" + System.DateTime.Now.ToString());
 		}
 	}
 
