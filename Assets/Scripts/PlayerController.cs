@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour {
 	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD;
 
 	public GUISkin PlayerHUDSkin = null;
+
+	public int CountdownFontSize = 70;
 	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
@@ -362,12 +364,22 @@ public class PlayerController : MonoBehaviour {
 				renderSelectedDebugFeedback();	
 			}
 
-			//if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.AltGr)) {
 			if (bShowingHealthbars) {
 				renderAllUnitsHealthbar();
 			}
 			else {
 				renderSelectedUnitsHealthbar();
+			}
+
+			if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
+				int buildTimeLeft = Mathf.RoundToInt(_gameController.GetMaxBuildTime() - _gameController.BuildTime);
+
+				if (buildTimeLeft == 10 || buildTimeLeft <= 5) {
+					float width = CountdownFontSize + 10f, height = CountdownFontSize + 10f;
+					GUI.skin.label.fontSize = CountdownFontSize;
+					GUI.color = Color.red;
+					GUI.Label(new Rect((screenWidth/2f) - (width/2f), (screenHeight/2f) - (height/2f), width, height), buildTimeLeft.ToString());
+				}
 			}
 		}
 	}
@@ -442,14 +454,16 @@ public class PlayerController : MonoBehaviour {
 	}
 
 	private void renderHealthbar(Entity entity) {
-		float width = 100f, height = 20f;
+		if (entity != null && !entity.IsDead) {
+			float width = 100f, height = 20f;
 
-		Vector3 healthBarPos = playerCam.WorldToScreenPoint(entity.transform.position);
-		float barWidth = width * (entity.CurrentHitPoints / entity.MaxHitPoints);
-		
-		GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
-		GUI.DrawTexture(new Rect(0f, 0f, width, height), healthBarHUD, ScaleMode.StretchToFill);
-		GUI.EndGroup();
+			Vector3 healthBarPos = playerCam.WorldToScreenPoint(entity.transform.position);
+			float barWidth = width * (entity.CurrentHitPoints / entity.MaxHitPoints);
+			
+			GUI.BeginGroup(new Rect(healthBarPos.x - (width/2f), screenHeight - healthBarPos.y - (width/2f), barWidth, height));
+			GUI.DrawTexture(new Rect(0f, 0f, width, height), healthBarHUD, ScaleMode.StretchToFill);
+			GUI.EndGroup();
+		}
 	}
 	
 	private void renderSelectedDebugFeedback() {
@@ -524,7 +538,7 @@ public class PlayerController : MonoBehaviour {
 
 		
 		if (_gameController.CurrentPlayState == GameController.PlayState.BUILD) {
-			GUILayout.Box("Next Wave: " + (_gameController.WaveCount+1), GUILayout.Height(height));
+			GUILayout.Box("Next Wave: " + (_gameController.WaveCount+1) + " / " + _gameController.MaximumWaveCount, GUILayout.Height(height));
 
 			float maxBuildTime = _gameController.GetMaxBuildTime();
 			GUILayout.Box("Build time left: " + Mathf.Round(_gameController.BuildTime) + " / " + Mathf.Round(maxBuildTime), GUILayout.Height(height));	
