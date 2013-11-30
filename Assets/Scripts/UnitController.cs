@@ -345,7 +345,7 @@ public class UnitController : Unit {
 				if (tacTarget != null && (tacTarget.CurrentHitPoints <= tacTarget.MaxHitPoints * HealThreshold)) {
 					if (GetIsWithinPerceptionRange(tacTarget)) {
 						healTarget = tacTarget;
-						this.currentUnitState = UnitController.UnitState.HEALING;
+						this.currentUnitState = UnitState.HEALING;
 					}
 				}
 			}
