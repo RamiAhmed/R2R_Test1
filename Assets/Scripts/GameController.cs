@@ -93,7 +93,7 @@ public class GameController : MonoBehaviour {
 
 		addAudioSource("Background", BackgroundMusic);
 		addAudioSource("Build", BuildMusic, 0.5f, true);
-		addAudioSource("Combat", CombatMusic, 0.1f);
+		addAudioSource("Combat", CombatMusic, 0.1f, true);
 
 		qHandler = this.GetComponent<QuestionnaireHandler>();
 		if (qHandler == null) {
@@ -265,6 +265,8 @@ public class GameController : MonoBehaviour {
 
 	private void OnBuildStart() {
 		if (WaveCount < MaximumWaveCount) {
+			playBuildMusic();
+
 			if (qHandler.QuestionnaireEnabled) {
 				if ((qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.DURING || qHandler.CurrentState == QuestionnaireHandler.QuestionnaireState.AFTER) 
 				    && ((WaveCount+1) % qHandler.QuestionnaireWaveFrequency) == 0) {

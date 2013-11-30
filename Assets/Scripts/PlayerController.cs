@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture marqueeGraphics;	
 	
-	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD;
+	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD, UnitCountIcon;
 
 	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null;
 
@@ -565,7 +565,7 @@ public class PlayerController : MonoBehaviour {
 		
 		GUILayout.FlexibleSpace();
 		
-		GUILayout.Box("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, GUILayout.Height(height));
+		GUILayout.Box(new GUIContent("Unit count: " + unitsList.Count + " / " + _gameController.MaxUnitCount, UnitCountIcon), GUILayout.Height(height), GUILayout.Width(width*0.1f));
 		GUILayout.Box(new GUIContent("Gold: " + PlayerGold + "g", GoldIconHUD), GUILayout.Height(height), GUILayout.Width(width*0.075f));	
 
 		
