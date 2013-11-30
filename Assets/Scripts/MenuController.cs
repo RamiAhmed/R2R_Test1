@@ -15,6 +15,8 @@ public class MenuController : MonoBehaviour {
 
 	[HideInInspector]
 	public int ShowingInstructions = 0;
+
+	private ScenarioHandler scenarioHandler;
 	
 	// Use this for initialization
 	void Start () {
@@ -26,6 +28,8 @@ public class MenuController : MonoBehaviour {
 		instructionsHeight = screenHeight * 0.9f;
 
 		instructionsRect = new Rect((screenWidth/2f) - (instructionsWidth/2f), (screenHeight/2f) - (instructionsHeight/2f), instructionsWidth, instructionsHeight);
+
+		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 	}
 	
 	void OnGUI() {
@@ -51,8 +55,13 @@ public class MenuController : MonoBehaviour {
 			GUILayout.BeginArea(new Rect(x, y, width, height));
 			
 			GUILayout.BeginVertical();
+
+			string scenario = scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS ? "With Tactics" : "Without Tactics";
+
+			string title = "Right to Rule - Prototype 1";
+			title += "\nCurrent Scenario: " + scenario;
 			
-			GUILayout.Box(new GUIContent("Right to Rule - Prototype 1"), GUILayout.Height(elementHeight));
+			GUILayout.Box(new GUIContent(title), GUILayout.Height(elementHeight));
 			
 			if (!_gameController.GameEnded) {
 				if (GUILayout.Button(new GUIContent(playText, playTip), GUILayout.Height(elementHeight))) {
@@ -83,14 +92,14 @@ public class MenuController : MonoBehaviour {
 				}
 			}
 
-			if (TAISInstructions != null) {
-				if (GUILayout.Button(new GUIContent("View Tactics Instructions (Only applicable for scenario with tactics)", "Click this button to view the tactics system (only exists in one of the testing scenarios) instructions in a new window."), GUILayout.Height(elementHeight))) {
+			if (UnitBreakdownInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View Unit Breakdown Instructions", "Click this button to view the unit breakdown, e.g. what the different units can do."), GUILayout.Height(elementHeight))) {
 					ShowingInstructions = 3;
 				}
 			}
 
-			if (UnitBreakdownInstructions != null) {
-				if (GUILayout.Button(new GUIContent("View Unit Breakdown Instructions", "Click this button to view the unit breakdown, e.g. what the different units can do."), GUILayout.Height(elementHeight))) {
+			if (TAISInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View Tactics Instructions (Only applicable for scenario with tactics)", "Click this button to view the tactics system (only exists in one of the testing scenarios) instructions in a new window."), GUILayout.Height(elementHeight))) {
 					ShowingInstructions = 4;
 				}
 			}
@@ -145,8 +154,8 @@ public class MenuController : MonoBehaviour {
 			switch (ShowingInstructions) {
 				case 1: texture = HUDInstructions; break;
 				case 2: texture = UnitInstructions; break;
-				case 3: texture = TAISInstructions; break;
-				case 4: texture = UnitBreakdownInstructions; break;
+				case 3: texture = UnitBreakdownInstructions; break;
+				case 4: texture = TAISInstructions; break;
 			}
 
 			if (texture != null) {
