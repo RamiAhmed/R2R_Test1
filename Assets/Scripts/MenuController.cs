@@ -138,7 +138,8 @@ public class MenuController : MonoBehaviour {
 			}
 		}
 		else {
-			ShowingInstructions = 0;
+			if (ShowingInstructions > 0) 
+				ShowingInstructions = 0;
 		}
 	}
 
