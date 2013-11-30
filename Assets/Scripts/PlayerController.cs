@@ -850,7 +850,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else {
-			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "");
+			GUI.Box(new Rect(0f, 0f, elementWidth, elementHeight), "You cannot set Tactics in this scenario.");
 		}
 				
 		GUI.EndGroup(); // End Tactics
