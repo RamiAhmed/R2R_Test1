@@ -38,7 +38,7 @@ public class MenuController : MonoBehaviour {
 				GUI.skin = MenuSkin;
 			}
 			
-			float width = screenWidth * 0.75f,
+			float width = screenWidth * 0.6f,
 				height = screenHeight * 0.75f;
 			float x = (screenWidth - width)/2f,
 				y = (screenHeight - height)/2f;
@@ -99,7 +99,8 @@ public class MenuController : MonoBehaviour {
 			}
 
 			if (TAISInstructions != null) {
-				if (GUILayout.Button(new GUIContent("View Tactics Instructions (Only applicable for scenario with tactics)", "Click this button to view the tactics system (only exists in one of the testing scenarios) instructions in a new window."), GUILayout.Height(elementHeight))) {
+				string applicable = scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS ? "Useful for this scenario" : "NOT useful for this scenario";
+				if (GUILayout.Button(new GUIContent("View Tactics Instructions (" + applicable + ")", "Click this button to view the tactics system (only exists in one of the testing scenarios) instructions in a new window."), GUILayout.Height(elementHeight))) {
 					ShowingInstructions = 4;
 				}
 			}
@@ -166,7 +167,7 @@ public class MenuController : MonoBehaviour {
 				ShowingInstructions = 0;
 			}
 
-			if (GUI.Button(new Rect(0f, height-(height*0.1f)-1f, instructionsRect.width, (height*0.1f)-1f), "Back")) {
+			if (GUI.Button(new Rect(0f, height-(height*0.1f)-1f, width, (height*0.1f)-1f), "Back")) {
 				ShowingInstructions = 0;
 			}
 

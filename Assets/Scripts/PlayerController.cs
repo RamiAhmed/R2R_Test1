@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD, UnitCountIcon;
 
-	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null;
+	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null, TAISSkin = null;
 
 	public int CountdownFontSize = 70;
 	
@@ -738,7 +738,7 @@ public class PlayerController : MonoBehaviour {
 			GUI.EndGroup();
 		}
 		else {
-			GUI.Box(new Rect(0f, unitButtonsHeight + healthBarHeight, elementWidth, elementHeight), "No unit selected");	
+			GUI.Box(new Rect(0f, unitButtonsHeight + healthBarHeight, elementWidth, elementHeight - healthBarHeight - unitButtonsHeight), "No unit selected");	
 		}
 				
 		GUI.EndGroup(); // End unit details
@@ -909,6 +909,10 @@ public class PlayerController : MonoBehaviour {
 			Debug.LogWarning("Could not find selected unit in renderTacticsInterface");
 		}		
 		else if (bSelectingTactics && scenarioHandler.CurrentScenario == ScenarioHandler.ScenarioState.WITH_TAIS) {
+			if (TAISSkin != null && GUI.skin != TAISSkin) {
+				GUI.skin = TAISSkin;
+			}
+
 			float width = screenWidth * 0.6f,
 			height = screenHeight * 0.4f;
 			float x = (screenWidth - width)/2f,
