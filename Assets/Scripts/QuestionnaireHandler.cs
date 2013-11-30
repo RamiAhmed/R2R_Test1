@@ -70,13 +70,12 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 			questionnaireRect = new Rect((Screen.width/2f) - (width/2f), (Screen.height/2f) - (height/2f), width, height);
 
-			//Debug.Log("Iterate scenario: " + CurrentState.ToString() + " => " + (CurrentState+1).ToString());
 			CurrentState++;
 
 			scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
 		}
 
-		if (scenarioHandler.DoneTesting) {
+		if (scenarioHandler != null && scenarioHandler.DoneTesting) {
 			QuestionnaireEnabled = false;
 		}
 	}

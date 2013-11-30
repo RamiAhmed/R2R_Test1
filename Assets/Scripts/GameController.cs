@@ -69,6 +69,8 @@ public class GameController : MonoBehaviour {
 	
 	private bool isRestarting = false;
 
+	private MenuController menuController = null;
+
 	void Start () {
 		enemies = new List<Entity>();
 		players = new List<PlayerController>();
@@ -103,6 +105,11 @@ public class GameController : MonoBehaviour {
 		}
 
 		scenarioHandler = GameObject.FindGameObjectWithTag("ScenarioHandler").GetComponent<ScenarioHandler>();
+
+		menuController = this.GetComponent<MenuController>();
+		if (menuController == null) {
+			menuController = this.GetComponentInChildren<MenuController>();
+		}
 	}
 
 	private void stopBuildMusic() {
@@ -175,7 +182,10 @@ public class GameController : MonoBehaviour {
 			}*/
 			
 			if (Input.GetKeyUp(KeyCode.Escape)) {
-				if (players[0].GetCurrentlyPlacingUnit() != null) {
+				if (menuController.ShowingInstructions > 0) {
+					menuController.ShowingInstructions = 0;
+				}
+				else if (players[0].GetCurrentlyPlacingUnit() != null) {
 					players[0].ClearPlacingUnit();
 				}
 				else {
