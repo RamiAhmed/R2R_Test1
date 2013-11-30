@@ -45,6 +45,8 @@ public class PlayerController : MonoBehaviour {
 
 	private GateOfLife gateRef = null;
 
+	private bool bShowingHealthbars = false;
+
 	void Start () {
 		screenWidth = Screen.width;
 		screenHeight = Screen.height;
@@ -96,6 +98,10 @@ public class PlayerController : MonoBehaviour {
 			if (Input.GetKeyDown(KeyCode.End)) {
 				PlayerLives = 0;
 			}
+		}
+
+		if (Input.GetKeyDown(KeyCode.AltGr) || Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt)) {
+			bShowingHealthbars = !bShowingHealthbars;
 		}
 		
 		if (SelectedUnits.Count > 0) {
@@ -356,7 +362,8 @@ public class PlayerController : MonoBehaviour {
 				renderSelectedDebugFeedback();	
 			}
 
-			if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.AltGr)) {
+			//if (Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt) || Input.GetKey(KeyCode.AltGr)) {
+			if (bShowingHealthbars) {
 				renderAllUnitsHealthbar();
 			}
 			else {
