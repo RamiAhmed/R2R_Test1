@@ -556,7 +556,7 @@ public class PlayerController : MonoBehaviour {
 			}
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
-			GUILayout.Box("Current Wave: " + _gameController.WaveCount, GUILayout.Height(height));
+			GUILayout.Box("Current Wave: " + _gameController.WaveCount + " / " + _gameController.MaximumWaveCount, GUILayout.Height(height));
 
 			GUI.color = Color.red;
 			GUILayout.Box("Combat! Creeps: " + _gameController.enemies.Count + " / " + _gameController.WaveSize, GUILayout.Height(height));	
