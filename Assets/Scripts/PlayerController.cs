@@ -21,10 +21,8 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD, UnitCountIcon;
 
-	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null, TAISSkin = null;
+	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null, TAISSkin = null, CountdownSkin = null;
 
-	public int CountdownFontSize = 70;
-	
 	private float screenWidth = 0f,
 				screenHeight = 0f;
 	
@@ -230,7 +228,7 @@ public class PlayerController : MonoBehaviour {
 	
 	private void clearSelection() {		
 		if (SelectedUnits.Count > 0) {
-			Debug.Log("clearSelection");
+			//Debug.Log("clearSelection");
 			while (SelectedUnits.Count > 0) {
 				SelectedUnits[0].Deselect(SelectedUnits);
 			}
@@ -375,13 +373,13 @@ public class PlayerController : MonoBehaviour {
 				int buildTimeLeft = Mathf.RoundToInt(_gameController.GetMaxBuildTime() - _gameController.BuildTime);
 
 				if (buildTimeLeft == 10 || buildTimeLeft <= 5) {
-					float width = CountdownFontSize + 10f, height = CountdownFontSize + 10f;
+					if (CountdownSkin != null && GUI.skin != CountdownSkin) {
+						GUI.skin = CountdownSkin;
+					}
 
-					GUI.skin.label.fontSize = CountdownFontSize;
-					GUI.color = Color.red;
+					float width = 100f, height = 100f;
 
-					GUI.Label(new Rect((screenWidth/2f) - (width/2f), (screenHeight/2f) - (height/2f), width, height), buildTimeLeft.ToString());
-	
+					GUI.Label(new Rect((screenWidth/2f) - (width/2f), (screenHeight/2f) - (height/2f), width, height), buildTimeLeft.ToString());	
 				}
 			}
 		}
@@ -655,8 +653,8 @@ public class PlayerController : MonoBehaviour {
 				
 				if (selectedUnitController != null) { 
 					// Sell & Upgrade buttons if unit
-					string sellTip = "Sell Value: " + selectedUnitController.GetSellAmount() + "g",
-							sellLabel = "Sell (Cost: " + selectedUnitController.GoldCost + "g)";
+					string sellTip = "Sell this unit for 50% of the cost.",
+					sellLabel = "Sell (Value: " + selectedUnitController.GetSellAmount() + "g)";
 					sellTip += "\nSelling will remove the unit permanently.";
 					if (GUI.Button(new Rect(0f, 0f, elementWidth/2f, unitButtonsHeight), new GUIContent(sellLabel, sellTip))) {
 						selectedUnitController.SellUnit();	

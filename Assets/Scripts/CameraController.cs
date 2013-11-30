@@ -95,10 +95,10 @@ public class CameraController : MonoBehaviour {
 			playerObject.transform.position = new Vector3(playerPos.x, playerPos.y, mapMinBounds.z);
 		}		
 		if (this.transform.position.y > MaximumY) {
-			this.transform.position = new Vector3(playerPos.x, MaximumY, playerPos.z);	
+			this.transform.position = new Vector3(this.transform.position.x, MaximumY, this.transform.position.z);	
 		}
 		else if (this.transform.position.y < MinimumY) {
-			this.transform.position = new Vector3(playerPos.x, MinimumY, playerPos.z);
+			this.transform.position = new Vector3(this.transform.position.x, MinimumY, this.transform.position.z);
 		}
 	}
 	

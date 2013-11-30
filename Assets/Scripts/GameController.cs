@@ -157,10 +157,12 @@ public class GameController : MonoBehaviour {
 	}
 
 	private void playAudioClip(string type) {
-		if (audioSources.ContainsKey(type)) {
-			if (audioSources[type].clip != null) {
-				if (!audioSources[type].isPlaying) {
-					audioSources[type].Play();
+		if (audioSources != null) {
+			if (audioSources.ContainsKey(type)) {
+				if (audioSources[type].clip != null) {
+					if (!audioSources[type].isPlaying) {
+						audioSources[type].Play();
+					}
 				}
 			}
 		}
