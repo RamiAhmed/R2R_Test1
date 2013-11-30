@@ -379,8 +379,10 @@ public class Entity : MonoBehaviour {
         }
 		else {
 	        Vector3 direction = (path.vectorPath[currentWaypoint] - this.transform.position).normalized;
-	        direction *= MovementSpeed * Time.fixedDeltaTime * 2f;
+	        direction *= MovementSpeed * Time.deltaTime * 2f;
 	        controller.SimpleMove(direction);
+
+			lookAtTarget(path.vectorPath[currentWaypoint]);
 
 			if ((this.transform.position - vectorPath[currentWaypoint]).sqrMagnitude < nextWaypointDistance * nextWaypointDistance) {
 	            currentWaypoint++;
@@ -501,7 +503,6 @@ public class Entity : MonoBehaviour {
 
 	protected virtual bool Attack(Entity opponent) {
 		bool hitResult = false;
-		StopMoving();
 
 		if (opponent.IsDead || opponent == null) {
 			attackTarget = null;
@@ -511,11 +512,12 @@ public class Entity : MonoBehaviour {
 			Debug.LogWarning(this.Name + " tried to attack ally " + opponent);
 		}
 		else {
+			StopMoving();
+			lookAtTarget(opponent.transform.position);
+
 			float currentTime = Time.time;
 			if (currentTime - lastAttack > 1f/AttacksPerSecond) {
 				lastAttack = currentTime;
-				
-				lookAtTarget(opponent.transform.position);
 
 				if (Bullet != null) {
 					ShootBullet(opponent);

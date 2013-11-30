@@ -60,8 +60,7 @@ public class EnemyController : Enemy {
 			return;
 		}
 		
-		if (currentEnemyState == EnemyState.MOVING) {
-			
+		if (currentEnemyState == EnemyState.MOVING) {			
 			Entity nearest = GetNearestUnit(counterPlayer.unitsList);
 			if (nearest != null) {
 				attackTarget = nearest;
@@ -69,14 +68,11 @@ public class EnemyController : Enemy {
 			}
 			else if (gateRef != null) {
 				if (GetIsWithinAttackingRange(gateRef)) {
-					StopMoving();
 					attackTarget = gateRef;
 					currentEnemyState = EnemyState.ATTACKING;
 				}
 				else {
-					if (!isMoving) {
-						MoveTo(gateRef.transform);
-					}
+					MoveTo(gateRef.transform);
 				}
 			}
 		}
@@ -86,7 +82,6 @@ public class EnemyController : Enemy {
 			}			
 			else if (attackTarget != null) {
 				if (GetIsWithinAttackingRange(attackTarget)) {
-					StopMoving();
 					Attack(attackTarget);	
 				}
 				else {
@@ -138,7 +133,8 @@ public class EnemyController : Enemy {
 	
 	protected override void RemoveSelf() {
 		base.RemoveSelf();
-		
+
+		Deselect(counterPlayer.SelectedUnits);
 		_gameController.enemies.Remove(this);
 		Destroy(this.gameObject);
 	}
