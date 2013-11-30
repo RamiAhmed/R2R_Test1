@@ -5,7 +5,7 @@ public class MenuController : MonoBehaviour {
 	
 	public GUISkin MenuSkin;
 
-	public Texture2D HUDInstructions, UnitInstructions, TAISInstructions;
+	public Texture2D HUDInstructions, UnitInstructions, TAISInstructions, UnitBreakdownInstructions;
 	
 	private GameController _gameController;
 	
@@ -88,6 +88,13 @@ public class MenuController : MonoBehaviour {
 					ShowingInstructions = 3;
 				}
 			}
+
+			if (UnitBreakdownInstructions != null) {
+				if (GUILayout.Button(new GUIContent("View Unit Breakdown Instructions", "Click this button to view the unit breakdown, e.g. what the different units can do."), GUILayout.Height(elementHeight))) {
+					ShowingInstructions = 4;
+				}
+			}
+
 			/*
 			if (GUILayout.Button(new GUIContent("Restart Game", "Click to restart the current level"), GUILayout.Height(elementHeight))) {
 				_gameController.RestartGame();	
@@ -128,30 +135,28 @@ public class MenuController : MonoBehaviour {
 
 	private void drawInstructions(int windowID) {
 		if (ShowingInstructions > 0) {
-			float width = instructionsRect.width,
-			height = instructionsRect.height;
+			float width = instructionsRect.width-10f,
+			height = instructionsRect.height-10f;
 
-			GUI.BeginGroup(new Rect(5f, 5f, instructionsRect.width-5f, instructionsRect.height-5f));
+			GUI.BeginGroup(new Rect(5f, 5f, width, height));
 
 			Texture2D texture = null;
-			if (ShowingInstructions == 1) {
-				texture = HUDInstructions;
-			}
-			else if (ShowingInstructions == 2) {
-				texture = UnitInstructions;
-			}
-			else if (ShowingInstructions == 3) {
-				texture = TAISInstructions;
+
+			switch (ShowingInstructions) {
+				case 1: texture = HUDInstructions; break;
+				case 2: texture = UnitInstructions; break;
+				case 3: texture = TAISInstructions; break;
+				case 4: texture = UnitBreakdownInstructions; break;
 			}
 
 			if (texture != null) {
-				GUI.DrawTexture(new Rect((instructionsRect.width/2f) - (width/2f), 5f, width-10f, height*0.9f), texture, ScaleMode.StretchToFill);
+				GUI.DrawTexture(new Rect((instructionsRect.width/2f) - (width/2f), 0f, width, height*0.9f), texture, ScaleMode.StretchToFill);
 			}
 			else {
 				ShowingInstructions = 0;
 			}
 
-			if (GUI.Button(new Rect(0f, height-(height*0.075f), instructionsRect.width, (height*0.075f)), "Back")) {
+			if (GUI.Button(new Rect(0f, height-(height*0.1f)-1f, instructionsRect.width, (height*0.1f)-1f), "Back")) {
 				ShowingInstructions = 0;
 			}
 
