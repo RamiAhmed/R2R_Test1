@@ -456,9 +456,14 @@ public class Entity : MonoBehaviour {
 	
 	protected void lookAtTarget(Vector3 target) {
 		if (!this.GetIsGate()) {
-			Vector3 targetLookPos = target;
-			targetLookPos.y = this.collider.bounds.extents.y;
-			this.transform.LookAt(targetLookPos);
+			/*Vector3 targetLookPos = target;
+			targetLookPos.y = 0f;//this.collider.bounds.extents.y;
+			this.transform.LookAt(targetLookPos);*/
+
+			Quaternion newRot = Quaternion.LookRotation(this.transform.position - target);
+			newRot.z = 0f;
+			newRot.x = 0f;
+			this.transform.rotation = Quaternion.Slerp(this.transform.rotation, newRot, Time.deltaTime * 12f);
 		}		
 	}
 

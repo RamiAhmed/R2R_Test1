@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour {
 	
 	public Texture2D swordHUD, bootHUD, shieldHUD, healthContainerHUD, healthBarHUD, TacticsCircleHUD, GoldIconHUD;
 
-	public GUISkin PlayerHUDSkin = null;
+	public GUISkin PlayerHUDSkin = null, IntroductionSkin = null;
 
 	public int CountdownFontSize = 70;
 	
@@ -376,17 +376,20 @@ public class PlayerController : MonoBehaviour {
 
 				if (buildTimeLeft == 10 || buildTimeLeft <= 5) {
 					float width = CountdownFontSize + 10f, height = CountdownFontSize + 10f;
+
 					GUI.skin.label.fontSize = CountdownFontSize;
 					GUI.color = Color.red;
+
 					GUI.Label(new Rect((screenWidth/2f) - (width/2f), (screenHeight/2f) - (height/2f), width, height), buildTimeLeft.ToString());
+	
 				}
 			}
 		}
 	}
 
 	private void renderIntroductionInstructions() {
-		if (PlayerHUDSkin != null && GUI.skin != PlayerHUDSkin) {
-			GUI.skin = PlayerHUDSkin;
+		if (IntroductionSkin != null && GUI.skin != IntroductionSkin) {
+			GUI.skin = IntroductionSkin;
 		}
 		
 		float width = screenWidth * 0.25f,
@@ -521,6 +524,10 @@ public class PlayerController : MonoBehaviour {
 	}
 	
 	private void renderTopHUD() {
+		if (PlayerHUDSkin != null && GUI.skin != PlayerHUDSkin) {
+			GUI.skin = PlayerHUDSkin;
+		}
+
 		float width = screenWidth * 0.99f,
 			height = screenHeight * 0.05f;
 		float x = 1f,
@@ -620,6 +627,10 @@ public class PlayerController : MonoBehaviour {
 
 	
 	private void renderBottomHUD() {
+		if (PlayerHUDSkin != null && GUI.skin != PlayerHUDSkin) {
+			GUI.skin = PlayerHUDSkin;
+		}
+
 		float width = (screenWidth * (1f - 0.13f - 0.01f)),
 			height = screenHeight * 0.25f;
 		float x = screenWidth - width,
