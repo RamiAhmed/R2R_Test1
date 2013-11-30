@@ -352,10 +352,10 @@ public class PlayerController : MonoBehaviour {
 			boxString += "Welcome to Right to Rule Prototype 0.0.2!\n\n";
 
 			if (scenarioHandler.LastScenario == ScenarioHandler.ScenarioState.NONE) {
-				boxString += "This game is inspired by Tower Defense games, thus creeps spawn at one side of the map and move towards your Gate of Life (see arrows in-game). ";
-				boxString += "You must defend your Gate of Life by buying and placing units to defend against the incoming waves of creeps. Your units respawn if they die. ";
-				boxString += "Since this is a prototype game meant for academic testing, the game features two scenarios. ";
-				boxString += "This means that after you lose or win the first game, a second game will be automatically launched. Please play through both scenarios. ";
+				boxString += "This game is inspired by Tower Defense games, thus you must defend your Gate of Life by buying and placing units to defend against incoming waves of creeps (see arrows in-game). ";
+				boxString += "Your units respawn if they die as soon as the next build phase starts. ";
+				boxString += "Since this is a prototype game meant for academic testing, the game features two scenarios - one with tactics and one without. ";
+				boxString += "This means that after you lose or win the first scenario, a second scenario will be automatically launched. Please play through both scenarios. ";
 			}
 			else if (!scenarioHandler.DoneTesting) {
 				boxString += "Congratulations on finishing the first scenario and thank you for your feedback. The second scenario will commence as soon as you click 'continue'. ";

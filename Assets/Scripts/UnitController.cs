@@ -303,7 +303,7 @@ public class UnitController : Unit {
 		}
 		else if (_gameController.CurrentPlayState == GameController.PlayState.COMBAT) {
 			if (gateRef != null && gateRef.CurrentHitPoints < gateRef.MaxHitPoints && gateRef.lastAttacker != null) {
-				GuardOther(gateRef);
+				attackTarget = GuardOther(gateRef);
 			}
 			else {
 				RunTAIS(currentTactic, currentTarget);
