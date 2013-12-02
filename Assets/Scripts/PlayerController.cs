@@ -390,8 +390,8 @@ public class PlayerController : MonoBehaviour {
 			GUI.skin = IntroductionSkin;
 		}
 		
-		float width = screenWidth * 0.25f,
-		height = screenHeight * 0.5f;
+		float width = screenWidth * 0.3f,
+		height = screenHeight * 0.6f;
 		float x = (screenWidth/2f) - (width/2f),
 		y = (screenHeight/2f) - (height/2f);
 		
@@ -1116,7 +1116,11 @@ public class PlayerController : MonoBehaviour {
 		newUnit.SetActive(true);
 		
 		int cost = newUnit.GetComponent<Unit>().GoldCost;
-		if (_gameController.MaxUnitCount <= unitsList.Count) {
+		if (_gameController.CurrentPlayState != GameController.PlayState.BUILD) {
+			Destroy(newUnit);
+			DisplayFeedbackMessage("You may only buy units in the Build phase.");
+		}
+		else if (_gameController.MaxUnitCount <= unitsList.Count) {
 			Destroy(newUnit);
 			DisplayFeedbackMessage("You cannot build more units, you have reached the maximum.");
 		}

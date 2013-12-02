@@ -20,7 +20,7 @@ public class QuestionnaireHandler : MonoBehaviour {
 
 	public float VerticalSpacing = 15f,
 				TextAreaHeight = 50f,
-				GUIElementHeight = 40f;
+				GUIElementHeight = 60f;
 	 
 	public int MaxDuringInterrupts = 3;
 
