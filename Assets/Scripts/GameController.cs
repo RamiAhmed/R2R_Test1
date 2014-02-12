@@ -202,7 +202,7 @@ public class GameController : MonoBehaviour {
 		}
 
 		if (CurrentGameState == GameState.PLAY) {
-			if (!bIntroductionShown) {
+			if (!bIntroductionShown && qHandler.QuestionnaireEnabled) {
 				CurrentGameState = GameState.INTRODUCTION;
 				bIntroductionShown = true;
 				return;

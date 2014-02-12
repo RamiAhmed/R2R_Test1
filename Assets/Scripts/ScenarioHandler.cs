@@ -14,6 +14,8 @@ public class ScenarioHandler : MonoBehaviour {
 
 	public bool DoneTesting = false;
 
+	private QuestionnaireHandler qHandler = null;
+
 	void Awake() {
 		DontDestroyOnLoad(transform.gameObject);
 
@@ -26,21 +28,31 @@ public class ScenarioHandler : MonoBehaviour {
 	}
 
 	void Start () {	
-		if (CurrentScenario == ScenarioState.NONE) {
-			CurrentScenario = Random.Range(0, 2) == 0 ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+		qHandler = GameObject.FindGameObjectWithTag("GameController").GetComponent<QuestionnaireHandler>();
+
+		if (!qHandler.QuestionnaireEnabled) {
+			DoneTesting = true;
+			CurrentScenario = ScenarioState.WITH_TAIS;
+		}
+		else {
+			if (CurrentScenario == ScenarioState.NONE) {
+				CurrentScenario = Random.Range(0, 2) == 0 ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+			}
 		}
 	}
 
 	public void IterateScenario() {
-		if (LastScenario == ScenarioState.NONE) {
-			LastScenario = CurrentScenario;
-			CurrentScenario = LastScenario == ScenarioState.WITHOUT_TAIS ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
-			Debug.Log("Second Scenario commencing");
-		}
-		else {
-			DoneTesting = true;
-			CurrentScenario = ScenarioState.WITH_TAIS;
-			Debug.Log("Done Scenario testing");
+		if (!DoneTesting) {
+			if (LastScenario == ScenarioState.NONE) {
+				LastScenario = CurrentScenario;
+				CurrentScenario = LastScenario == ScenarioState.WITHOUT_TAIS ? ScenarioState.WITH_TAIS : ScenarioState.WITHOUT_TAIS;
+				Debug.Log("Second Scenario commencing");
+			}
+			else {
+				DoneTesting = true;
+				CurrentScenario = ScenarioState.WITH_TAIS;
+				Debug.Log("Done Scenario testing");
+			}
 		}
 	}
 }
